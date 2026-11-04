@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useAuth } from "../../lib/authContext";
 import {
   Code2,
   Flame,
@@ -21,12 +22,16 @@ import {
   Briefcase,
   Menu,
   X,
-  MessageSquareQuote
+  MessageSquareQuote,
+  LogIn,
+  LogOut,
+  User as UserIcon,
 } from "lucide-react";
 
 export default function Navbar() {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { user, openAuthModal, logout } = useAuth();
 
   const primaryLinks = [
     { href: "/problems", label: "Problems", icon: BookOpen },
@@ -84,42 +89,68 @@ export default function Navbar() {
 
         {/* Right Status & Profile */}
         <div className="flex items-center gap-2 shrink-0">
-          {/* Daily Streak */}
+          {/* Daily Streak (Phase 3 Requirement 5: show in header) */}
           <Link
             href="/daily"
             className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-semibold hover:bg-amber-500/20 transition-all"
+            title={user ? `Current Streak: ${user.streak} days` : "Sign in to track your streak"}
           >
-            <Flame className="w-3.5 h-3.5 fill-amber-500 text-amber-500" />
-            <span className="hidden sm:inline">3 Days</span>
+            <Flame className={`w-3.5 h-3.5 ${user && user.streak > 0 ? "fill-amber-500 text-amber-500" : "text-amber-500/70"}`} />
+            <span className="hidden sm:inline">{user ? `${user.streak} Days` : "0 Days"}</span>
           </Link>
 
           {/* XP Leaderboard */}
           <Link
             href="/leaderboard"
             className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-violet-500/10 border border-violet-500/30 text-violet-300 text-xs font-semibold hover:bg-violet-500/20 transition-all"
+            title="Total XP"
           >
             <Zap className="w-3.5 h-3.5 fill-violet-400 text-violet-400" />
-            <span>185 XP</span>
+            <span>{user ? `${user.xp} XP` : "0 XP"}</span>
           </Link>
 
           {/* Settings */}
           <Link
             href="/settings"
             className="p-1.5 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition-colors"
+            title="Settings"
           >
             <Settings className="w-4 h-4" />
           </Link>
 
-          {/* Profile */}
-          <Link
-            href="/portfolio/coder_alex"
-            className="flex items-center gap-1.5 pl-1 pr-2.5 py-1 rounded-full bg-slate-800/60 hover:bg-slate-800 border border-slate-700/60 transition-colors"
-          >
-            <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-cyan-400 to-indigo-500 flex items-center justify-center font-bold text-xs text-slate-950">
-              A
+          {/* User Account / Profile or Sign In */}
+          {user ? (
+            <div className="flex items-center gap-1.5">
+              <Link
+                href={`/profile/${user.username}`}
+                className="flex items-center gap-1.5 pl-1 pr-2.5 py-1 rounded-full bg-slate-800/60 hover:bg-slate-800 border border-slate-700/60 transition-colors"
+                title={`Profile: ${user.display_name || user.username}`}
+              >
+                <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-cyan-400 to-indigo-500 flex items-center justify-center font-bold text-xs text-slate-950 uppercase">
+                  {user.username.slice(0, 1)}
+                </div>
+                <span className="text-xs font-medium text-slate-300 hidden md:inline truncate max-w-[90px]">
+                  {user.display_name || user.username}
+                </span>
+              </Link>
+              <button
+                onClick={logout}
+                className="p-1.5 rounded-lg text-slate-400 hover:text-red-400 hover:bg-slate-800 transition-colors"
+                title="Sign Out"
+                aria-label="Sign Out"
+              >
+                <LogOut className="w-4 h-4" />
+              </button>
             </div>
-            <span className="text-xs font-medium text-slate-300 hidden md:inline">Portfolio</span>
-          </Link>
+          ) : (
+            <button
+              onClick={openAuthModal}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-500 hover:from-cyan-600 hover:to-indigo-600 text-slate-950 font-bold text-xs shadow-md shadow-cyan-500/20 transition-all active:scale-95"
+            >
+              <LogIn className="w-3.5 h-3.5 stroke-[2.5]" />
+              <span>Sign In</span>
+            </button>
+          )}
 
           {/* Mobile Menu Hamburger Button */}
           <button

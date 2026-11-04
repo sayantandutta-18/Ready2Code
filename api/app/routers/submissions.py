@@ -1,6 +1,7 @@
 import re
 import json
-from datetime import datetime, date, timezone
+import zoneinfo
+from datetime import datetime, date, timezone, timedelta
 from typing import Optional, List
 from pydantic import BaseModel
 from fastapi import APIRouter, Depends, HTTPException
@@ -12,6 +13,7 @@ from ..models.entities import (
     Streak, XPLedger, User
 )
 from ..judge.client import run_code, LANGUAGE_MAP, map_status_id
+from ..auth_deps import get_current_user_optional
 
 router = APIRouter(prefix="/submissions", tags=["submissions"])
 
@@ -116,6 +118,9 @@ def run_sample_tests(req: RunRequest, db: Session = Depends(get_db)):
             timeout_s=max(1.0, problem.time_limit_ms / 1000.0)
         )
 
+        if exec_res.get("judge_unavailable"):
+            raise HTTPException(status_code=503, detail="Judge is unavailable, try again")
+
         status_info = exec_res["status"]
         verdict = map_status_id(status_info.get("id", 3))
 
@@ -151,7 +156,26 @@ def run_sample_tests(req: RunRequest, db: Session = Depends(get_db)):
     }
 
 @router.post("")
-def submit_solution(req: SubmitRequest, db: Session = Depends(get_db)):
+def submit_solution(
+    req: SubmitRequest,
+    current_user: Optional[User] = Depends(get_current_user_optional),
+    db: Session = Depends(get_db)
+):
+    # Enforce login for write action: submit
+    user = current_user if isinstance(current_user, User) else None
+    if not user and req.user_id and req.user_id.lower() != "guest":
+        user = db.query(User).filter(User.id == req.user_id).first()
+        if not user:
+            user = User(id=req.user_id, username=f"coder_{req.user_id[:6]}", display_name="Coder")
+            db.add(user)
+            db.commit()
+
+    if not user:
+        raise HTTPException(
+            status_code=401,
+            detail="Authentication required: please sign in to submit solutions and record your progress."
+        )
+
     problem = db.query(Problem).filter(
         (Problem.id == req.problem_id) | (Problem.slug == req.problem_id)
     ).first()
@@ -174,6 +198,9 @@ def submit_solution(req: SubmitRequest, db: Session = Depends(get_db)):
             stdin=test.input_text,
             timeout_s=max(1.0, problem.time_limit_ms / 1000.0)
         )
+
+        if exec_res.get("judge_unavailable"):
+            raise HTTPException(status_code=503, detail="Judge is unavailable, try again")
 
         v = map_status_id(exec_res["status"].get("id", 3))
         runtime = int(float(exec_res.get("time", "0.01")) * 1000)
@@ -206,15 +233,7 @@ def submit_solution(req: SubmitRequest, db: Session = Depends(get_db)):
         slower = sum(1 for s in past_ac if s.runtime_ms >= total_time_ms)
         faster_than_pct = max(5.0, round((slower / len(past_ac)) * 100, 1))
 
-    # Ensure a user exists for tracking (guest or logged-in)
-    user_id = req.user_id or "guest"
-    user = db.query(User).filter(User.id == user_id).first()
-    if not user:
-        user = User(id=user_id, username=f"coder_{user_id[:6]}", display_name="Coder")
-        db.add(user)
-        db.commit()
-
-    # Save submission
+    # Save submission (never returns hidden test inputs/outputs to client)
     sub = Submission(
         user_id=user.id,
         problem_id=problem.id,
@@ -227,15 +246,15 @@ def submit_solution(req: SubmitRequest, db: Session = Depends(get_db)):
     )
     db.add(sub)
 
-    # Update user status & awards if AC
+    # Progress tracking: solved status, attempted status, and best runtime saved per user
+    status_rec = db.query(UserProblemStatus).filter(
+        UserProblemStatus.user_id == user.id,
+        UserProblemStatus.problem_id == problem.id
+    ).first()
+
     first_time_solve = False
     xp_awarded = 0
     if final_verdict == "AC":
-        status_rec = db.query(UserProblemStatus).filter(
-            UserProblemStatus.user_id == user.id,
-            UserProblemStatus.problem_id == problem.id
-        ).first()
-
         if not status_rec:
             first_time_solve = True
             status_rec = UserProblemStatus(
@@ -262,15 +281,51 @@ def submit_solution(req: SubmitRequest, db: Session = Depends(get_db)):
                 reason=f"Solved {problem.title}",
                 ref_id=problem.id
             ))
+    else:
+        # Mark as attempted if not already solved
+        if not status_rec:
+            status_rec = UserProblemStatus(
+                user_id=user.id,
+                problem_id=problem.id,
+                status="attempted",
+                best_runtime_ms=None
+            )
+            db.add(status_rec)
+        elif status_rec.status != "solved":
+            status_rec.status = "attempted"
 
-        # Update streak
-        today_str = date.today().isoformat()
-        streak = db.query(Streak).filter(Streak.user_id == user.id).first()
-        if not streak:
-            streak = Streak(user_id=user.id, current_streak=1, longest_streak=1, last_active_date=today_str)
-            db.add(streak)
+    # Streak tracking: a day counts when the user submits at least once, using their timezone
+    user_tz_str = user.timezone or "UTC"
+    try:
+        user_tz = zoneinfo.ZoneInfo(user_tz_str)
+        today = datetime.now(user_tz).date()
+    except Exception:
+        today = datetime.now(timezone.utc).date()
+
+    today_str = today.isoformat()
+    streak = db.query(Streak).filter(Streak.user_id == user.id).first()
+    if not streak:
+        streak = Streak(user_id=user.id, current_streak=1, longest_streak=1, last_active_date=today_str, freezes_left=2)
+        db.add(streak)
+    else:
+        if not streak.last_active_date:
+            streak.current_streak = 1
+            streak.longest_streak = max(streak.longest_streak, 1)
+            streak.last_active_date = today_str
         elif streak.last_active_date != today_str:
-            streak.current_streak += 1
+            try:
+                last_d = date.fromisoformat(streak.last_active_date)
+                diff_days = (today - last_d).days
+                if diff_days == 1:
+                    streak.current_streak += 1
+                elif diff_days == 2 and streak.freezes_left > 0:
+                    streak.freezes_left -= 1
+                    streak.current_streak += 1
+                elif diff_days > 1:
+                    streak.current_streak = 1
+            except Exception:
+                streak.current_streak = 1
+
             if streak.current_streak > streak.longest_streak:
                 streak.longest_streak = streak.current_streak
             streak.last_active_date = today_str

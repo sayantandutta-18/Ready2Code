@@ -1,8 +1,43 @@
 # Ready2Code — Project Status & Roadmap
 
 Platform: **Ready2Code** (Interactive 3D DSA Arena)
-Current Phase: **Phase 2 (Problem Bank - 60 Problems) COMPLETED**
+Current Phase: **Phase 3 (Core Functionality) COMPLETED**
 Updated: November 2026
+
+---
+
+## ⚡ Phase 3 - Core Functionality — COMPLETE
+- [x] **Auth Guard on Write Actions & Public Anonymous Browsing**:
+  - Implemented `api/app/routers/auth.py` (`POST /auth/register`, `POST /auth/login`, `GET /auth/me`) and `api/app/auth_deps.py` with `get_current_user` / `get_current_user_optional`.
+  - Every write action (code submissions, note saving, bookmark toggling, and discussion posting) requires authentication and returns HTTP 401 for unauthenticated requests.
+  - Anonymous users can freely browse problems, read statements, view lists, and test sample cases without login.
+  - Built frontend `web/lib/authContext.tsx` and modal `web/components/ui/AuthModal.tsx` with quick one-click demo login (`algo_ninja`, `byte_master`) and seamless action resumption.
+- [x] **Judge0 Execution & Verdict Engine**:
+  - Real verdicts returned across all sample and hidden tests: Accepted (`AC`), Wrong Answer (`WA`), Time Limit Exceeded (`TLE`), Runtime Error (`RE`), Compilation Error (`CE`).
+  - Precise execution metrics: `runtime_ms`, `memory_kb`, and runtime percentiles.
+  - Hidden test inputs and outputs are strictly isolated on the backend and never exposed to the client.
+  - Graceful degradation with clear user feedback: `"Judge is unavailable, try again"` when Judge0 is unreachable.
+- [x] **Server-Side Problem List Filtering, Sorting, and Pagination (25 per page)**:
+  - Extended `GET /problems` with server-side pagination (25 items per page), multi-attribute sorting (`title`, `difficulty`, `topic`, `acceptance`, `status`, `runtime`), and granular filtering (`topic`, `difficulty`, `status`, `company`, `tag`, `search`).
+  - Synchronized all filters, sorting, and pagination state into the URL query parameters (`topic`, `difficulty`, `status`, `company`, `tag`, `sort`, `order`, `page`, `q`).
+  - Added bottom pagination controls with Prev/Next, numeric pages, and item range tracking ("Showing 1–25 of 60 problems").
+- [x] **User Progress Tracking & Runtime Badges**:
+  - Automatically records `solved` and `attempted` statuses along with user's personal `best_runtime_ms`.
+  - Displayed directly on problem table with status checkmarks and runtime badges (`24 ms`).
+- [x] **Timezone-Aware Streak Tracking**:
+  - Daily activity tracking calculated in user's localized timezone (`user.timezone` with `zoneinfo.ZoneInfo`) upon code submission.
+  - Real live streak counter displayed in the global navigation header (`🔥 N Days`).
+- [x] **Server-Persisted Notes and Bookmarks with Autosave Indicator**:
+  - Notes saved to `POST /notes` with a 1.5s debounce and visual indicator: `● Saved`, `● Saving...`, `● Unsaved changes`.
+  - Bookmarks stored on server via `POST /users/me/bookmarks/toggle`.
+- [x] **Productivity Keyboard Shortcuts**:
+  - `Ctrl + Enter` (or `Cmd + Enter`) runs sample test cases.
+  - `Ctrl + Shift + Enter` (or `Cmd + Shift + Enter`) submits solution against hidden tests.
+  - Added visual keyboard badges on the action buttons.
+- [x] **Verification**:
+  - All 18 backend pytest tests passing (`api/tests/test_api.py` and `api/tests/test_phase3.py`).
+  - All 60 problems pass CI validation harness with 100% test pass rate (`scripts/validate_problems.py`).
+  - Frontend `npm run build` succeeds cleanly across all 30 routes (code 0).
 
 ---
 

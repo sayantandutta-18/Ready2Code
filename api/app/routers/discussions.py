@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import desc
 from ..database import get_db
 from ..models.entities import Discussion, Comment, Vote, Problem, User
+from ..auth_deps import get_current_user_optional
 
 router = APIRouter(prefix="/discussions", tags=["discussions"])
 
@@ -67,7 +68,19 @@ def get_problem_discussions(
     ]
 
 @router.post("")
-def create_discussion(req: CreateDiscussionRequest, db: Session = Depends(get_db)):
+def create_discussion(
+    req: CreateDiscussionRequest,
+    current_user: Optional[User] = Depends(get_current_user_optional),
+    db: Session = Depends(get_db)
+):
+    user_obj = current_user if isinstance(current_user, User) else None
+    eff_author_id = user_obj.id if user_obj else (req.author_id if req.author_id and req.author_id.lower() != "guest" else None)
+    if not eff_author_id:
+        raise HTTPException(
+            status_code=401,
+            detail="Authentication required: please sign in to post discussions or solutions."
+        )
+
     prob = db.query(Problem).filter(Problem.slug == req.problem_slug).first()
     if not prob:
         raise HTTPException(status_code=404, detail="Problem not found")
@@ -81,9 +94,9 @@ def create_discussion(req: CreateDiscussionRequest, db: Session = Depends(get_db
                 detail=f"To share a solution, explain your approach in at least 50 words (currently {len(words)} words)."
             )
 
-    author = db.query(User).filter(User.id == req.author_id).first()
+    author = db.query(User).filter(User.id == eff_author_id).first()
     if not author:
-        author = User(id=req.author_id, username=f"user_{req.author_id[:6]}")
+        author = User(id=eff_author_id, username=f"user_{eff_author_id[:6]}")
         db.add(author)
         db.commit()
 

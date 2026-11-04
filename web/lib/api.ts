@@ -8,12 +8,23 @@ export async function fetchApi<T>(endpoint: string, options?: RequestInit): Prom
     ? endpoint
     : `${API_BASE}${endpoint.startsWith("/") ? "" : "/"}${endpoint}`;
 
+  // Attach auth token if available in browser
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+    ...(options?.headers as Record<string, string> || {}),
+  };
+
+  if (typeof window !== "undefined") {
+    const token = localStorage.getItem("ready2code_auth_token");
+    if (token) {
+      headers["Authorization"] = `Bearer ${token}`;
+      headers["X-User-Id"] = token;
+    }
+  }
+
   const res = await fetch(url, {
-    headers: {
-      "Content-Type": "application/json",
-      ...(options?.headers || {}),
-    },
     ...options,
+    headers,
   });
 
   if (!res.ok) {

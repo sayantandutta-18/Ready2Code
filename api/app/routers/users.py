@@ -6,6 +6,7 @@ from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from ..database import get_db
 from ..models.entities import User, Problem, UserProblemStatus, Streak, XPLedger, Bookmark, Note
+from ..auth_deps import get_current_user_optional, get_current_user
 
 router = APIRouter(prefix="/users", tags=["users"])
 
@@ -103,17 +104,52 @@ def update_profile(req: UpdateProfileRequest, user_id: str = "guest", db: Sessio
     return {"status": "ok", "username": user.username, "display_name": user.display_name}
 
 @router.get("/me/bookmarks")
-def get_user_bookmarks(user_id: str = "guest", db: Session = Depends(get_db)):
-    bookmarks = db.query(Bookmark).filter(Bookmark.user_id == user_id).all()
+def get_user_bookmarks(
+    problem_id: Optional[str] = None,
+    user_id: Optional[str] = None,
+    current_user: Optional[User] = Depends(get_current_user_optional),
+    db: Session = Depends(get_db)
+):
+    user_obj = current_user if isinstance(current_user, User) else None
+    eff_user_id = (user_obj.id if user_obj else None) or (user_id if user_id and user_id.lower() != "guest" else None)
+    if not eff_user_id:
+        return {"bookmarked": False, "bookmarks": []}
+
+    bookmarks = db.query(Bookmark).filter(Bookmark.user_id == eff_user_id).all()
     b_ids = [b.problem_id for b in bookmarks]
+
+    is_bookmarked = False
+    if problem_id:
+        # Check by id or slug
+        prob = db.query(Problem).filter((Problem.id == problem_id) | (Problem.slug == problem_id)).first()
+        target_id = prob.id if prob else problem_id
+        is_bookmarked = target_id in b_ids
+
     problems = db.query(Problem).filter(Problem.id.in_(b_ids)).all() if b_ids else []
-    return [{"id": p.id, "slug": p.slug, "title": p.title, "difficulty": p.difficulty} for p in problems]
+    items = [{"id": p.id, "slug": p.slug, "title": p.title, "difficulty": p.difficulty} for p in problems]
+    return {"bookmarked": is_bookmarked, "bookmarks": items}
 
 @router.post("/me/bookmarks/toggle")
-def toggle_bookmark(req: BookmarkRequest, user_id: str = "guest", db: Session = Depends(get_db)):
+def toggle_bookmark(
+    req: BookmarkRequest,
+    user_id: Optional[str] = None,
+    current_user: Optional[User] = Depends(get_current_user_optional),
+    db: Session = Depends(get_db)
+):
+    user_obj = current_user if isinstance(current_user, User) else None
+    eff_user_id = (user_obj.id if user_obj else None) or (user_id if user_id and user_id.lower() != "guest" else None)
+    if not eff_user_id:
+        raise HTTPException(
+            status_code=401,
+            detail="Authentication required: please sign in to bookmark problems."
+        )
+
+    prob = db.query(Problem).filter((Problem.id == req.problem_id) | (Problem.slug == req.problem_id)).first()
+    target_id = prob.id if prob else req.problem_id
+
     bm = db.query(Bookmark).filter(
-        Bookmark.user_id == user_id,
-        Bookmark.problem_id == req.problem_id
+        Bookmark.user_id == eff_user_id,
+        Bookmark.problem_id == target_id
     ).first()
 
     if bm:
@@ -121,7 +157,7 @@ def toggle_bookmark(req: BookmarkRequest, user_id: str = "guest", db: Session = 
         db.commit()
         return {"bookmarked": False}
     else:
-        new_bm = Bookmark(user_id=user_id, problem_id=req.problem_id)
+        new_bm = Bookmark(user_id=eff_user_id, problem_id=target_id)
         db.add(new_bm)
         db.commit()
         return {"bookmarked": True}

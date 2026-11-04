@@ -7,6 +7,8 @@ import CodeEditor from "../../../components/ui/CodeEditor";
 import TestCaseTable, { TestCaseResult } from "../../../components/ui/TestCaseTable";
 import DifficultyChip from "../../../components/ui/DifficultyChip";
 import VerdictBadge from "../../../components/ui/VerdictBadge";
+import { fetchApi } from "../../../lib/api";
+import { useAuth } from "../../../lib/authContext";
 import {
   Play,
   Send,
@@ -22,6 +24,7 @@ import {
   History,
   Layers,
   Check,
+  Loader2,
 } from "lucide-react";
 
 const STARTER_CODES: Record<string, string> = {
@@ -53,6 +56,7 @@ public:
 
 export default function ProblemSolvePage({ params }: { params: { slug: string } }) {
   const { slug } = params;
+  const { user, requireAuth } = useAuth();
 
   const [problem, setProblem] = useState<any>(null);
   const [activeTab, setActiveTab] = useState<
@@ -63,7 +67,7 @@ export default function ProblemSolvePage({ params }: { params: { slug: string } 
 
   // Notes state & autosave
   const [noteContent, setNoteContent] = useState<string>("");
-  const [noteStatus, setNoteStatus] = useState<string>("saved");
+  const [noteStatus, setNoteStatus] = useState<"saved" | "saving" | "unsaved" | "sign-in" | "error">("saved");
   const noteTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   // Bookmarking
@@ -93,8 +97,8 @@ export default function ProblemSolvePage({ params }: { params: { slug: string } 
 
   // Fetch problem details & past submissions
   useEffect(() => {
-    fetch(`/api/problems/${slug}`)
-      .then((res) => (res.ok ? res.json() : null))
+    const url = user ? `/problems/${slug}?user_id=${user.id}` : `/problems/${slug}`;
+    fetchApi<any>(url)
       .then((data) => {
         if (data) {
           setProblem(data);
@@ -105,24 +109,32 @@ export default function ProblemSolvePage({ params }: { params: { slug: string } 
       })
       .catch(() => {});
 
-    // Fetch note
-    fetch(`/api/notes/${slug}`)
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data) => {
-        if (data && data.body_md) {
-          setNoteContent(data.body_md);
-        }
-      })
-      .catch(() => {});
+    // Fetch note if user is logged in
+    if (user) {
+      fetchApi<{ body_md: string }>(`/notes/${slug}`)
+        .then((data) => {
+          if (data && data.body_md) {
+            setNoteContent(data.body_md);
+            setNoteStatus("saved");
+          }
+        })
+        .catch(() => {});
+
+      // Fetch bookmark status
+      fetchApi<{ bookmarked: boolean }>(`/users/me/bookmarks?problem_id=${slug}`)
+        .then((data) => {
+          if (data) setIsBookmarked(data.bookmarked);
+        })
+        .catch(() => {});
+    }
 
     // Fetch past submissions
-    fetch(`/api/submissions?problem_id=${slug}`)
-      .then((res) => (res.ok ? res.json() : null))
+    fetchApi<any[]>(`/submissions?problem_id=${slug}`)
       .then((data) => {
         if (Array.isArray(data)) setPastSubmissions(data);
       })
       .catch(() => {});
-  }, [slug]);
+  }, [slug, user]);
 
   // Set default starter template based on problem
   useEffect(() => {
@@ -150,88 +162,82 @@ export default function ProblemSolvePage({ params }: { params: { slug: string } 
     }
   }, [slug, language]);
 
-  // Autosave notes every 2 seconds (C1.8 specification)
+  // Autosave notes to server (Phase 3 Requirement 6)
   const handleNoteChange = (text: string) => {
     setNoteContent(text);
-    setNoteStatus("typing...");
+    if (!user) {
+      setNoteStatus("sign-in");
+      return;
+    }
+    setNoteStatus("unsaved");
     if (noteTimerRef.current) clearTimeout(noteTimerRef.current);
-    noteTimerRef.current = setTimeout(() => {
-      fetch("/api/notes", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ problem_id: slug, body_md: text }),
-      })
-        .then(() => {
-          setNoteStatus("autosaved");
-          showToast("Notes autosaved.");
-        })
-        .catch(() => setNoteStatus("error"));
-    }, 2000);
+    noteTimerRef.current = setTimeout(async () => {
+      setNoteStatus("saving");
+      try {
+        await fetchApi<{ status: string }>("/notes", {
+          method: "POST",
+          body: JSON.stringify({ problem_id: slug, body_md: text }),
+        });
+        setNoteStatus("saved");
+      } catch {
+        setNoteStatus("error");
+      }
+    }, 1500);
   };
 
+  // Toggle bookmark with server persistence (Phase 3 Requirement 6)
   const handleToggleBookmark = () => {
-    fetch("/api/users/me/bookmarks/toggle", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ problem_id: slug }),
-    })
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data) => {
-        if (data) {
-          setIsBookmarked(data.bookmarked);
-          showToast(data.bookmarked ? "Problem bookmarked!" : "Bookmark removed.");
-        }
-      })
-      .catch(() => {
-        setIsBookmarked((prev) => !prev);
-        showToast("Bookmark updated.");
-      });
+    requireAuth(async () => {
+      try {
+        const data = await fetchApi<{ bookmarked: boolean }>("/users/me/bookmarks/toggle", {
+          method: "POST",
+          body: JSON.stringify({ problem_id: slug }),
+        });
+        setIsBookmarked(data.bookmarked);
+        showToast(data.bookmarked ? "Problem bookmarked!" : "Bookmark removed.");
+      } catch {
+        showToast("Could not update bookmark.");
+      }
+    });
   };
 
-  // Run on Sample Tests (C1.5)
+  // Run on Sample Tests (Phase 3 Requirement 2)
   const handleRun = async () => {
     setIsRunning(true);
     setSubmissionVerdict(null);
     try {
-      const res = await fetch("/api/submissions/run", {
+      const data = await fetchApi<any>("/submissions/run", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           problem_id: slug,
           language,
           code,
         }),
       });
-      if (res.ok) {
-        const data = await res.json();
-        setTestResults(data.results || []);
-        showToast(data.overall_status === "Accepted" ? "Sample tests passed!" : "Some sample tests failed.");
-      } else {
-        const err = await res.json().catch(() => ({ detail: "Judge is unavailable, please try again." }));
-        showToast(err.detail || "Judge is unavailable, please try again.");
-      }
-    } catch {
-      showToast("Judge is unavailable, please try again.");
+      setTestResults(data.results || []);
+      showToast(data.overall_status === "Accepted" ? "Sample tests passed!" : "Some sample tests failed.");
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Judge is unavailable, try again";
+      showToast(msg);
     } finally {
       setIsRunning(false);
     }
   };
 
-  // Submit on Hidden Tests (C1.6)
-  const handleSubmit = async () => {
-    setIsSubmitting(true);
-    try {
-      const res = await fetch("/api/submissions", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          problem_id: slug,
-          language,
-          code,
-        }),
-      });
-      if (res.ok) {
-        const data = await res.json();
+  // Submit on Hidden Tests (Phase 3 Requirement 1 & 2)
+  const handleSubmit = () => {
+    requireAuth(async () => {
+      setIsSubmitting(true);
+      try {
+        const data = await fetchApi<any>("/submissions", {
+          method: "POST",
+          body: JSON.stringify({
+            problem_id: slug,
+            language,
+            code,
+            user_id: user?.id,
+          }),
+        });
         setSubmissionVerdict(data);
         if (data.verdict === "AC") {
           setEditorialRevealed(true);
@@ -247,20 +253,33 @@ export default function ProblemSolvePage({ params }: { params: { slug: string } 
         }
 
         // Refresh past submissions
-        fetch(`/api/submissions?problem_id=${slug}`)
-          .then((r) => (r.ok ? r.json() : []))
+        fetchApi<any[]>(`/submissions?problem_id=${slug}`)
           .then((d) => Array.isArray(d) && setPastSubmissions(d))
           .catch(() => {});
-      } else {
-        const err = await res.json().catch(() => ({ detail: "Judge is unavailable, please try again." }));
-        showToast(err.detail || "Judge is unavailable, please try again.");
+      } catch (err: unknown) {
+        const msg = err instanceof Error ? err.message : "Judge is unavailable, try again";
+        showToast(msg);
+      } finally {
+        setIsSubmitting(false);
       }
-    } catch {
-      showToast("Judge is unavailable, please try again.");
-    } finally {
-      setIsSubmitting(false);
-    }
+    });
   };
+
+  // Keyboard shortcut: Ctrl+Enter runs samples, Ctrl+Shift+Enter submits (Phase 3 Requirement 7)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+        e.preventDefault();
+        if (e.shiftKey) {
+          handleSubmit();
+        } else {
+          handleRun();
+        }
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [handleSubmit, handleRun]);
 
   // AI Code Review (C3.4)
   const handleRequestAiReview = async () => {
@@ -508,12 +527,37 @@ export default function ProblemSolvePage({ params }: { params: { slug: string } 
               <div className="space-y-3 h-full flex flex-col">
                 <div className="flex items-center justify-between text-xs text-slate-400">
                   <span>Markdown scratchpad</span>
-                  <span className="font-mono text-[11px] text-cyan-400">{noteStatus}</span>
+                  <div className="flex items-center gap-1.5 font-mono text-[11px]">
+                    {noteStatus === "saved" && (
+                      <span className="text-emerald-400 flex items-center gap-1">
+                        <CheckCircle2 className="w-3 h-3" /> Saved
+                      </span>
+                    )}
+                    {noteStatus === "saving" && (
+                      <span className="text-amber-400 flex items-center gap-1">
+                        <Loader2 className="w-3 h-3 animate-spin" /> Saving...
+                      </span>
+                    )}
+                    {noteStatus === "unsaved" && (
+                      <span className="text-slate-400">&bull; Unsaved changes</span>
+                    )}
+                    {noteStatus === "sign-in" && (
+                      <button
+                        onClick={() => requireAuth(() => {})}
+                        className="text-cyan-400 hover:underline flex items-center gap-1"
+                      >
+                        Sign in to save notes
+                      </button>
+                    )}
+                    {noteStatus === "error" && (
+                      <span className="text-red-400">Failed to save note</span>
+                    )}
+                  </div>
                 </div>
                 <textarea
                   value={noteContent}
                   onChange={(e) => handleNoteChange(e.target.value)}
-                  placeholder="Record your pattern observations, edge cases, and learnings here..."
+                  placeholder="Record your pattern observations, edge cases, and learnings here (autosaved to server)..."
                   className="flex-1 w-full min-h-[300px] p-3 rounded-xl bg-[#0B1220] border border-slate-800 text-slate-200 text-xs font-mono focus:outline-none focus:border-cyan-400 transition-colors"
                 />
               </div>
@@ -630,18 +674,26 @@ export default function ProblemSolvePage({ params }: { params: { slug: string } 
                 onClick={handleRun}
                 disabled={isRunning || isSubmitting}
                 className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 font-semibold text-xs flex items-center gap-1.5 transition-colors disabled:opacity-50"
+                title="Run on sample test cases (Ctrl + Enter)"
               >
                 <Play className="w-3.5 h-3.5 fill-slate-200" />
                 <span>{isRunning ? "Running..." : "Run"}</span>
+                <kbd className="hidden sm:inline-block px-1.5 py-0.5 rounded bg-slate-900 border border-slate-700 text-[10px] text-slate-400 font-mono ml-1">
+                  Ctrl+Enter
+                </kbd>
               </button>
 
               <button
                 onClick={handleSubmit}
                 disabled={isRunning || isSubmitting}
                 className="px-5 py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-bold text-xs shadow-lg shadow-emerald-500/20 flex items-center gap-1.5 transition-all disabled:opacity-50"
+                title="Submit solution against hidden tests (Ctrl + Shift + Enter)"
               >
                 <Send className="w-3.5 h-3.5" />
                 <span>{isSubmitting ? "Submitting..." : "Submit"}</span>
+                <kbd className="hidden sm:inline-block px-1.5 py-0.5 rounded bg-emerald-950 border border-emerald-700/60 text-[10px] text-emerald-300 font-mono ml-1">
+                  Ctrl+Shift+Enter
+                </kbd>
               </button>
             </div>
           </div>
