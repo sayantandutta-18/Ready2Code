@@ -1,89 +1,64 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Link from "next/link";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import DifficultyChip from "../../components/ui/DifficultyChip";
+import LoadingSkeleton from "../../components/ui/LoadingSkeleton";
+import EmptyState from "../../components/ui/EmptyState";
+import QueryErrorState from "../../components/ui/QueryErrorState";
+import { fetchApi } from "../../lib/api";
 import { RotateCcw, Calendar, CheckCircle2, XCircle, ArrowLeft, ChevronRight, Brain } from "lucide-react";
 
+interface ReviewItem {
+  problem_id: string;
+  slug: string;
+  title: string;
+  difficulty: "easy" | "medium" | "hard";
+  topic: string;
+  interval_days: number;
+  due_date?: string;
+}
+
+interface ReviewQueueData {
+  due_today: ReviewItem[];
+  upcoming: ReviewItem[];
+  overdue_count: number;
+}
+
 export default function ReviewQueuePage() {
-  const [reviewData, setReviewData] = useState<any>({
-    due_today: [
-      {
-        problem_id: "1",
-        slug: "two-sum",
-        title: "Two Sum",
-        difficulty: "easy",
-        topic: "Arrays",
-        interval_days: 1,
-      },
-      {
-        problem_id: "6",
-        slug: "maximum-subarray",
-        title: "Maximum Subarray",
-        difficulty: "medium",
-        topic: "Arrays",
-        interval_days: 1,
-      },
-    ],
-    upcoming: [
-      {
-        problem_id: "2",
-        slug: "valid-parentheses",
-        title: "Valid Parentheses",
-        difficulty: "easy",
-        topic: "Stack",
-        due_date: "In 3 Days",
-        interval_days: 3,
-      },
-      {
-        problem_id: "8",
-        slug: "number-of-islands",
-        title: "Number of Islands",
-        difficulty: "medium",
-        topic: "Graphs",
-        due_date: "In 7 Days",
-        interval_days: 7,
-      },
-    ],
-    overdue_count: 0,
+  const queryClient = useQueryClient();
+  const [selectedItem, setSelectedItem] = useState<ReviewItem | null>(null);
+
+  const {
+    data: reviewData,
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useQuery<ReviewQueueData>({
+    queryKey: ["review-queue"],
+    queryFn: () => fetchApi<ReviewQueueData>("/review"),
   });
 
-  const [activeItem, setActiveItem] = useState<any>(null);
+  const dueItems = reviewData?.due_today || [];
+  const activeItem = selectedItem || dueItems[0] || null;
 
-  useEffect(() => {
-    fetch("/api/review")
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data) => {
-        if (data) {
-          setReviewData(data);
-          if (data.due_today?.length > 0) setActiveItem(data.due_today[0]);
-        }
-      })
-      .catch(() => {});
-  }, []);
-
-  const handleGrade = async (passed: boolean) => {
-    if (!activeItem) return;
-    try {
-      await fetch("/api/review/grade", {
+  const gradeMutation = useMutation({
+    mutationFn: ({ problemId, passed }: { problemId: string; passed: boolean }) =>
+      fetchApi("/review/grade", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          problem_id: activeItem.problem_id,
-          passed: passed,
-        }),
-      });
+        body: JSON.stringify({ problem_id: problemId, passed }),
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["review-queue"] });
+      setSelectedItem(null);
+    },
+  });
 
-      // Advance queue locally
-      setReviewData((prev: any) => {
-        const nextDue = prev.due_today.filter((x: any) => x.slug !== activeItem.slug);
-        setActiveItem(nextDue.length > 0 ? nextDue[0] : null);
-        return {
-          ...prev,
-          due_today: nextDue,
-        };
-      });
-    } catch {}
+  const handleGrade = (passed: boolean) => {
+    if (!activeItem) return;
+    gradeMutation.mutate({ problemId: activeItem.problem_id, passed });
   };
 
   return (
@@ -110,93 +85,109 @@ export default function ReviewQueuePage() {
         <div className="p-4 rounded-2xl bg-[#0B1220] border border-slate-800 text-center sm:self-center">
           <div className="text-xs text-slate-400 mb-1">Due for Review Today</div>
           <div className="text-3xl font-black text-cyan-300 font-mono">
-            {reviewData.due_today?.length || 0}
+            {dueItems.length}
           </div>
           <div className="text-[11px] text-slate-500">Cards Remaining</div>
         </div>
       </div>
 
-      {/* Active Review Flashcard */}
-      {activeItem ? (
-        <div className="p-8 rounded-3xl bg-gradient-to-br from-[#121C2F] to-[#16233B] border border-cyan-500/30 space-y-6 shadow-2xl">
-          <div className="flex items-center justify-between border-b border-slate-800 pb-4">
-            <span className="text-xs font-mono uppercase tracking-wider text-cyan-400">
-              Active Recall Card &bull; Current Interval: {activeItem.interval_days} Day(s)
+      {isError && (
+        <QueryErrorState
+          title="Could not load review deck"
+          message={error instanceof Error ? error.message : "Error contacting review service"}
+          onRetry={() => refetch()}
+        />
+      )}
+
+      {isLoading ? (
+        <LoadingSkeleton rows={4} className="h-64" />
+      ) : activeItem ? (
+        <div className="p-8 rounded-3xl bg-gradient-to-br from-[#121C2F] to-[#16243D] border border-violet-500/30 shadow-2xl space-y-6">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-mono uppercase tracking-wider text-violet-400 font-semibold">
+              Current Active Recall Card &bull; Interval: {activeItem.interval_days} Day(s)
             </span>
             <DifficultyChip difficulty={activeItem.difficulty} />
           </div>
 
           <div className="space-y-2">
-            <h2 className="text-2xl font-black text-white">{activeItem.title}</h2>
-            <div className="text-xs text-slate-400">Topic: {activeItem.topic}</div>
+            <h2 className="text-2xl font-bold text-white">{activeItem.title}</h2>
+            <p className="text-xs text-slate-400 font-mono">Topic: {activeItem.topic}</p>
             <p className="text-sm text-slate-300 pt-2 leading-relaxed">
-              Mentally trace your optimal strategy for this problem. What is the time complexity?
-              Which data structure eliminates redundant iterations?
+              Without looking at the full solution, formulate your optimal intuition, data structure,
+              and asymptotic time complexity in your head.
             </p>
           </div>
 
-          <div className="pt-4 border-t border-slate-800 flex flex-wrap items-center justify-between gap-4">
+          <div className="flex flex-col sm:flex-row items-center gap-4 pt-4 border-t border-slate-800">
             <Link
               href={`/problems/${activeItem.slug}`}
-              className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 transition-colors"
+              className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold transition-all text-center"
             >
-              Open in Code Editor &rarr;
+              Solve in Arena
             </Link>
 
-            <div className="flex items-center gap-3">
+            <div className="flex-1 flex items-center justify-end gap-3 w-full sm:w-auto">
               <button
+                type="button"
                 onClick={() => handleGrade(false)}
-                className="px-4 py-2 rounded-xl bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border border-rose-500/40 text-xs font-bold flex items-center gap-1.5 transition-all"
+                disabled={gradeMutation.isPending}
+                className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/30 text-rose-300 font-bold text-xs transition-all disabled:opacity-50"
               >
                 <XCircle className="w-4 h-4" />
-                <span>Forgot (Reset to 1 Day)</span>
+                <span>Forgot / Reset Interval</span>
               </button>
 
               <button
+                type="button"
                 onClick={() => handleGrade(true)}
-                className="px-5 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-bold flex items-center gap-1.5 shadow transition-all"
+                disabled={gradeMutation.isPending}
+                className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-300 font-bold text-xs transition-all disabled:opacity-50"
               >
-                <CheckCircle2 className="w-4 h-4 text-slate-950" />
-                <span>Recalled (Advance Interval)</span>
+                <CheckCircle2 className="w-4 h-4" />
+                <span>Remembered (+Advance)</span>
               </button>
             </div>
           </div>
         </div>
       ) : (
-        <div className="p-12 text-center bg-[#121C2F] rounded-3xl border border-slate-800 space-y-3">
-          <CheckCircle2 className="w-12 h-12 text-emerald-400 mx-auto" />
-          <h2 className="text-xl font-bold text-white">All Caught Up For Today!</h2>
-          <p className="text-xs text-slate-400 max-w-md mx-auto">
-            You have successfully reviewed all scheduled problems. New cards will appear according
-            to your forgetting curve.
-          </p>
-        </div>
+        <EmptyState
+          title="Review queue cleared!"
+          description="You have completed all active recall flashcards for today. Great job keeping your algorithmic recall sharp!"
+          icon={<CheckCircle2 className="w-7 h-7 text-emerald-400" />}
+        />
       )}
 
-      {/* Upcoming Review Schedule */}
-      <div className="bg-[#121C2F] rounded-2xl border border-slate-800 p-6 space-y-4 shadow-xl">
-        <h2 className="text-sm font-bold uppercase tracking-wider text-slate-300 flex items-center gap-2">
-          <Calendar className="w-4 h-4 text-violet-400" />
-          <span>Upcoming Spaced Interval Pipeline</span>
-        </h2>
+      {/* Upcoming Deck Preview */}
+      {reviewData?.upcoming && reviewData.upcoming.length > 0 && (
+        <div className="space-y-4 pt-4">
+          <h3 className="text-lg font-bold text-white flex items-center gap-2">
+            <Calendar className="w-4 h-4 text-slate-400" />
+            <span>Upcoming Spaced Cards</span>
+          </h3>
 
-        <div className="divide-y divide-slate-800/80">
-          {(reviewData.upcoming || []).map((u: any) => (
-            <div key={u.slug} className="py-3 flex items-center justify-between text-xs">
-              <div className="flex items-center gap-2">
-                <span className="font-semibold text-slate-200">{u.title}</span>
-                <span className="text-slate-500">({u.topic})</span>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {reviewData.upcoming.map((u) => (
+              <div
+                key={u.problem_id}
+                className="p-4 rounded-xl bg-[#121C2F]/60 border border-slate-800 flex items-center justify-between"
+              >
+                <div>
+                  <div className="text-sm font-semibold text-slate-200">{u.title}</div>
+                  <div className="text-xs text-slate-500 font-mono mt-0.5">
+                    {u.topic} &bull; Interval: {u.interval_days} Days
+                  </div>
+                </div>
+                <div className="text-right">
+                  <span className="text-xs font-mono font-semibold text-cyan-400 bg-cyan-950/60 border border-cyan-800 px-2 py-0.5 rounded">
+                    {u.due_date}
+                  </span>
+                </div>
               </div>
-              <div className="flex items-center gap-3">
-                <span className="font-mono text-cyan-400">{u.due_date}</span>
-                <span className="px-2 py-0.5 rounded bg-[#0B1220] border border-slate-700 text-slate-400 font-mono">
-                  {u.interval_days}d interval
-                </span>
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

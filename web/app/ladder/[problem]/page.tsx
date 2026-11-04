@@ -1,92 +1,106 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Link from "next/link";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { fetchApi } from "@/lib/api";
+import LoadingSkeleton from "@/components/ui/LoadingSkeleton";
+import QueryErrorState from "@/components/ui/QueryErrorState";
 import TiltCard from "../../../components/ui/TiltCard";
 import confetti from "canvas-confetti";
-import { Layers, Lock, CheckCircle2, ArrowLeft, ArrowRight, Play, Zap } from "lucide-react";
+import { Layers, Lock, CheckCircle2, ArrowLeft, Play, Zap } from "lucide-react";
+
+interface LadderStage {
+  stage: string;
+  title: string;
+  time_complexity: string;
+  space_complexity: string;
+  hint: string;
+  unlocked: boolean;
+  completed: boolean;
+}
+
+interface LadderDetail {
+  problem_slug: string;
+  problem_title: string;
+  current_stage: string;
+  stages: LadderStage[];
+}
+
+interface StageSubmitResponse {
+  passed: boolean;
+  message: string;
+}
 
 export default function BruteToOptimalLadderPage({ params }: { params: { problem: string } }) {
   const { problem } = params;
-
-  const [ladder, setLadder] = useState<any>({
-    problem_slug: problem,
-    problem_title: "Two Sum",
-    current_stage: "brute",
-    stages: [
-      {
-        stage: "brute",
-        title: "Stage 1: Brute Force",
-        time_complexity: "O(n²)",
-        space_complexity: "O(1)",
-        hint: "Check every possible pair (i, j) with nested loops.",
-        unlocked: true,
-        completed: false,
-      },
-      {
-        stage: "better",
-        title: "Stage 2: Sort and Two Pointers",
-        time_complexity: "O(n log n)",
-        space_complexity: "O(n)",
-        hint: "Sort array while preserving original indices, then converge two pointers inwards.",
-        unlocked: false,
-        completed: false,
-      },
-      {
-        stage: "optimal",
-        title: "Stage 3: Hash Map Lookup",
-        time_complexity: "O(n)",
-        space_complexity: "O(n)",
-        hint: "Single pass over array checking if complement (target - x) exists in dictionary.",
-        unlocked: false,
-        completed: false,
-      },
-    ],
-  });
-
-  const [activeStage, setActiveStage] = useState<string>("brute");
+  const queryClient = useQueryClient();
   const [stageMessage, setStageMessage] = useState<string | null>(null);
 
-  useEffect(() => {
-    fetch(`/api/ladder/${problem}`)
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data) => {
-        if (data && data.stages) setLadder(data);
-      })
-      .catch(() => {});
-  }, [problem]);
+  const {
+    data: ladder,
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useQuery<LadderDetail>({
+    queryKey: ["ladder", problem],
+    queryFn: () => fetchApi<LadderDetail>(`/ladder/${problem}`),
+  });
 
-  const handleSimulateSubmit = async (stageKey: string) => {
-    try {
-      const res = await fetch("/api/ladder/stage", {
+  const submitMutation = useMutation({
+    mutationFn: async (stageKey: string) => {
+      const runtimeMap: Record<string, number> = {
+        brute: 180,
+        better: 45,
+        optimal: 18,
+      };
+      return fetchApi<StageSubmitResponse>("/ladder/stage", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           problem_slug: problem,
           stage: stageKey,
-          runtime_ms: stageKey === "brute" ? 180 : stageKey === "better" ? 45 : 18,
+          runtime_ms: runtimeMap[stageKey] || 50,
         }),
       });
-
-      if (res.ok) {
-        const data = await res.json();
-        setStageMessage(data.message);
-        if (data.passed) {
-          confetti({ particleCount: 50, spread: 60 });
-          // Unlock next stage locally
-          setLadder((prev: any) => {
-            const stages = prev.stages.map((s: any) => {
-              if (s.stage === stageKey) return { ...s, completed: true };
-              if (stageKey === "brute" && s.stage === "better") return { ...s, unlocked: true };
-              if (stageKey === "better" && s.stage === "optimal") return { ...s, unlocked: true };
-              return s;
-            });
-            return { ...prev, stages };
-          });
-        }
+    },
+    onSuccess: (data) => {
+      setStageMessage(data.message);
+      if (data.passed) {
+        confetti({ particleCount: 50, spread: 60 });
+        queryClient.invalidateQueries({ queryKey: ["ladder", problem] });
       }
-    } catch {}
-  };
+    },
+    onError: (err) => {
+      setStageMessage(err instanceof Error ? err.message : "Stage verification failed.");
+    },
+  });
+
+  if (isLoading) {
+    return (
+      <div className="max-w-6xl mx-auto px-4 lg:px-8 py-10 space-y-6">
+        <LoadingSkeleton variant="title" className="w-48 h-6" />
+        <LoadingSkeleton variant="card" className="h-44" />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <LoadingSkeleton variant="card" className="h-64" />
+          <LoadingSkeleton variant="card" className="h-64" />
+          <LoadingSkeleton variant="card" className="h-64" />
+        </div>
+      </div>
+    );
+  }
+
+  if (isError || !ladder) {
+    return (
+      <div className="max-w-6xl mx-auto px-4 lg:px-8 py-10">
+        <QueryErrorState
+          title="Failed to load ladder"
+          message={error instanceof Error ? error.message : "The optimization ladder for this problem could not be retrieved."}
+          onRetry={() => refetch()}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-6xl mx-auto px-4 lg:px-8 py-10 space-y-8">
@@ -126,15 +140,15 @@ export default function BruteToOptimalLadderPage({ params }: { params: { problem
         </div>
       )}
 
-      {/* 3 Stage Cards (C3.6 requirement) */}
+      {/* 3 Stage Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {ladder.stages.map((st: any, idx: number) => {
+        {ladder.stages.map((st, idx) => {
           return (
             <TiltCard
               key={st.stage}
               className={`h-full flex flex-col justify-between space-y-4 ${
                 !st.unlocked
-                  ? "opacity-50 border-slate-850 cursor-not-allowed"
+                  ? "opacity-50 border-slate-800 cursor-not-allowed"
                   : st.completed
                   ? "border-emerald-500/40 bg-emerald-950/10"
                   : "border-cyan-500/30 hover:border-cyan-400"
@@ -181,11 +195,12 @@ export default function BruteToOptimalLadderPage({ params }: { params: { problem
               <div className="pt-3 border-t border-slate-800">
                 {st.unlocked ? (
                   <button
-                    onClick={() => handleSimulateSubmit(st.stage)}
-                    className="w-full py-2.5 rounded-xl bg-cyan-400 hover:bg-cyan-300 text-slate-950 font-bold text-xs flex items-center justify-center gap-1.5 shadow transition-colors"
+                    onClick={() => submitMutation.mutate(st.stage)}
+                    disabled={submitMutation.isPending}
+                    className="w-full py-2.5 rounded-xl bg-cyan-400 hover:bg-cyan-300 text-slate-950 font-bold text-xs flex items-center justify-center gap-1.5 shadow transition-colors disabled:opacity-50"
                   >
                     <Play className="w-3.5 h-3.5 fill-slate-950" />
-                    <span>Submit & Verify Runtime</span>
+                    <span>{submitMutation.isPending ? "Evaluating..." : "Submit & Verify Runtime"}</span>
                   </button>
                 ) : (
                   <div className="w-full py-2.5 rounded-xl bg-slate-800/50 text-slate-500 text-xs text-center font-mono">

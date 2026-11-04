@@ -206,21 +206,12 @@ export default function ProblemSolvePage({ params }: { params: { slug: string } 
         const data = await res.json();
         setTestResults(data.results || []);
         showToast(data.overall_status === "Accepted" ? "Sample tests passed!" : "Some sample tests failed.");
+      } else {
+        const err = await res.json().catch(() => ({ detail: "Judge is unavailable, please try again." }));
+        showToast(err.detail || "Judge is unavailable, please try again.");
       }
     } catch {
-      setTestResults([
-        {
-          test_index: 1,
-          input: "[2, 7, 11, 15]\n9",
-          expected_output: "[0, 1]",
-          actual_output: "[0, 1]",
-          verdict: "AC",
-          status_description: "Accepted",
-          runtime_ms: 12,
-          passed: true,
-        },
-      ]);
-      showToast("Evaluation complete.");
+      showToast("Judge is unavailable, please try again.");
     } finally {
       setIsRunning(false);
     }
@@ -260,16 +251,12 @@ export default function ProblemSolvePage({ params }: { params: { slug: string } 
           .then((r) => (r.ok ? r.json() : []))
           .then((d) => Array.isArray(d) && setPastSubmissions(d))
           .catch(() => {});
+      } else {
+        const err = await res.json().catch(() => ({ detail: "Judge is unavailable, please try again." }));
+        showToast(err.detail || "Judge is unavailable, please try again.");
       }
     } catch {
-      setSubmissionVerdict({
-        verdict: "AC",
-        runtime_ms: 22,
-        memory_kb: 14200,
-        runtime_percentile: 88.5,
-      });
-      showToast("Accepted! +25 XP awarded.");
-      confetti({ particleCount: 50, spread: 60 });
+      showToast("Judge is unavailable, please try again.");
     } finally {
       setIsSubmitting(false);
     }

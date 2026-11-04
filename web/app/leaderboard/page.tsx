@@ -1,26 +1,40 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Link from "next/link";
+import { useQuery } from "@tanstack/react-query";
 import { Trophy, Zap, Flame, Award, ArrowUpRight } from "lucide-react";
+import { fetchApi } from "../../lib/api";
+import LoadingSkeleton from "../../components/ui/LoadingSkeleton";
+import EmptyState from "../../components/ui/EmptyState";
+import QueryErrorState from "../../components/ui/QueryErrorState";
+
+interface LeaderboardUser {
+  rank: number;
+  username: string;
+  display_name?: string;
+  xp: number;
+  solved: number;
+  streak: number;
+  rating: number;
+}
 
 export default function LeaderboardPage() {
   const [filter, setFilter] = useState<"all" | "weekly">("all");
-  const [leaderboard, setLeaderboard] = useState<any[]>([
-    { rank: 1, username: "algo_ninja", display_name: "Ninja Coder", xp: 1450, solved: 12, streak: 14, rating: 1820 },
-    { rank: 2, username: "byte_master", display_name: "Byte Master", xp: 1120, solved: 9, streak: 8, rating: 1750 },
-    { rank: 3, username: "coder_alex", display_name: "Alex Vance", xp: 185, solved: 7, streak: 3, rating: 1540 },
-    { rank: 4, username: "dev_siddharth", display_name: "Siddharth R", xp: 160, solved: 5, streak: 2, rating: 1510 },
-  ]);
 
-  useEffect(() => {
-    fetch("/api/leaderboard")
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data) => {
-        if (Array.isArray(data) && data.length > 0) setLeaderboard(data);
-      })
-      .catch(() => {});
-  }, []);
+  const {
+    data: leaderboard = [],
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useQuery<LeaderboardUser[]>({
+    queryKey: ["leaderboard", filter],
+    queryFn: () => fetchApi<LeaderboardUser[]>(`/leaderboard?filter=${filter}`),
+  });
+
+  const top3 = leaderboard.slice(0, 3);
+  const remaining = leaderboard.slice(3);
 
   return (
     <div className="max-w-5xl mx-auto px-4 lg:px-8 py-10 space-y-8">
@@ -60,100 +74,126 @@ export default function LeaderboardPage() {
         </div>
       </div>
 
-      {/* Top 3 Podium */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4">
-        {leaderboard.slice(0, 3).map((user, idx) => {
-          const podiumBg = [
-            "border-amber-400/50 bg-gradient-to-b from-amber-500/10 to-[#121C2F]",
-            "border-slate-300/40 bg-gradient-to-b from-slate-300/10 to-[#121C2F]",
-            "border-amber-700/40 bg-gradient-to-b from-amber-700/10 to-[#121C2F]",
-          ][idx];
+      {isError && (
+        <QueryErrorState
+          title="Could not load leaderboard"
+          message={error instanceof Error ? error.message : "Unable to load leaderboard data from backend."}
+          onRetry={() => refetch()}
+        />
+      )}
 
-          const medalIcon = ["🥇", "🥈", "🥉"][idx];
-
-          return (
-            <div
-              key={user.username}
-              className={`p-6 rounded-3xl border ${podiumBg} flex flex-col items-center text-center space-y-3 shadow-2xl relative`}
-            >
-              <div className="text-3xl">{medalIcon}</div>
-              <div>
-                <h3 className="text-lg font-bold text-white">{user.display_name}</h3>
-                <Link
-                  href={`/profile/${user.username}`}
-                  className="text-xs text-cyan-400 hover:underline font-mono"
+      {isLoading ? (
+        <div className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <LoadingSkeleton rows={2} className="h-44" />
+            <LoadingSkeleton rows={2} className="h-44" />
+            <LoadingSkeleton rows={2} className="h-44" />
+          </div>
+          <LoadingSkeleton rows={6} />
+        </div>
+      ) : leaderboard.length === 0 ? (
+        <EmptyState
+          title="No ranked competitors yet"
+          description="Be the first to solve algorithmic challenges and claim the top podium spot on the global leaderboard!"
+        />
+      ) : (
+        <>
+          {/* Top 3 Podium Cards */}
+          {top3.length > 0 && (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {top3.map((user, idx) => (
+                <div
+                  key={user.username}
+                  className={`p-6 rounded-2xl border flex flex-col justify-between shadow-xl relative overflow-hidden ${
+                    idx === 0
+                      ? "bg-gradient-to-br from-amber-500/15 via-[#162033] to-[#121C2F] border-amber-500/40 md:-translate-y-2"
+                      : idx === 1
+                      ? "bg-gradient-to-br from-slate-400/10 via-[#162033] to-[#121C2F] border-slate-400/30"
+                      : "bg-gradient-to-br from-amber-700/15 via-[#162033] to-[#121C2F] border-amber-700/30"
+                  }`}
                 >
-                  @{user.username}
-                </Link>
-              </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-2xl">{idx === 0 ? "🥇" : idx === 1 ? "🥈" : "🥉"}</span>
+                    <span className="text-xs font-mono font-bold px-2 py-0.5 rounded bg-slate-800 text-slate-300">
+                      Rank #{user.rank}
+                    </span>
+                  </div>
 
-              <div className="w-full pt-3 border-t border-slate-800/80 flex items-center justify-around text-xs">
-                <div>
-                  <div className="text-slate-500 text-[10px] uppercase font-mono">Rating</div>
-                  <div className="font-bold text-slate-200">{user.rating}</div>
+                  <div className="my-4 space-y-1">
+                    <Link
+                      href={`/profile/${user.username}`}
+                      className="font-black text-lg text-white hover:text-cyan-300 transition-colors flex items-center gap-1.5"
+                    >
+                      <span>{user.display_name || user.username}</span>
+                      <ArrowUpRight className="w-4 h-4 opacity-70" />
+                    </Link>
+                    <div className="text-xs text-slate-400 font-mono">@{user.username}</div>
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-2 pt-3 border-t border-slate-800 text-center">
+                    <div>
+                      <div className="text-[10px] text-slate-500 uppercase font-mono">XP</div>
+                      <div className="font-mono font-bold text-sm text-cyan-400">{user.xp}</div>
+                    </div>
+                    <div>
+                      <div className="text-[10px] text-slate-500 uppercase font-mono">Solved</div>
+                      <div className="font-mono font-bold text-sm text-white">{user.solved}</div>
+                    </div>
+                    <div>
+                      <div className="text-[10px] text-slate-500 uppercase font-mono">Rating</div>
+                      <div className="font-mono font-bold text-sm text-amber-400">{user.rating}</div>
+                    </div>
+                  </div>
                 </div>
-                <div>
-                  <div className="text-slate-500 text-[10px] uppercase font-mono">Solved</div>
-                  <div className="font-bold text-emerald-400">{user.solved}</div>
-                </div>
-                <div>
-                  <div className="text-slate-500 text-[10px] uppercase font-mono">XP</div>
-                  <div className="font-bold text-violet-400">{user.xp}</div>
-                </div>
-              </div>
+              ))}
             </div>
-          );
-        })}
-      </div>
+          )}
 
-      {/* Full Leaderboard Table */}
-      <div className="bg-[#121C2F] rounded-2xl border border-slate-800 overflow-hidden shadow-2xl">
-        <table className="w-full text-left border-collapse">
-          <thead>
-            <tr className="border-b border-slate-800 text-[11px] uppercase tracking-wider text-slate-400 bg-[#0B1220]/60 font-semibold">
-              <th className="py-3 px-4 w-16 text-center">Rank</th>
-              <th className="py-3 px-4">User</th>
-              <th className="py-3 px-4 w-28 text-center">Streak</th>
-              <th className="py-3 px-4 w-28 text-center">Solved</th>
-              <th className="py-3 px-4 w-32 text-center">Elo Rating</th>
-              <th className="py-3 px-4 w-32 text-right">Total XP</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-800/60 text-sm">
-            {leaderboard.map((u, i) => (
-              <tr key={u.username} className="hover:bg-slate-800/40 transition-colors">
-                <td className="py-3.5 px-4 text-center font-mono font-bold text-slate-400">
-                  #{i + 1}
-                </td>
-                <td className="py-3.5 px-4">
-                  <Link
-                    href={`/profile/${u.username}`}
-                    className="font-semibold text-slate-200 hover:text-cyan-300 flex items-center gap-1.5 transition-colors"
-                  >
-                    <span>{u.display_name}</span>
-                    <span className="text-xs text-slate-500 font-mono">(@{u.username})</span>
-                  </Link>
-                </td>
-                <td className="py-3.5 px-4 text-center">
-                  <span className="inline-flex items-center gap-1 text-amber-400 text-xs font-semibold">
-                    <Flame className="w-3.5 h-3.5 fill-amber-500" />
-                    <span>{u.streak}d</span>
-                  </span>
-                </td>
-                <td className="py-3.5 px-4 text-center font-mono text-emerald-400 font-semibold">
-                  {u.solved}
-                </td>
-                <td className="py-3.5 px-4 text-center font-mono text-slate-300">
-                  {u.rating}
-                </td>
-                <td className="py-3.5 px-4 text-right font-mono font-bold text-violet-400">
-                  {u.xp} XP
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+          {/* Remaining Ranks Table */}
+          {remaining.length > 0 && (
+            <div className="bg-[#121C2F] rounded-2xl border border-slate-800 overflow-hidden shadow-2xl">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="border-b border-slate-800 text-[11px] uppercase tracking-wider text-slate-400 bg-[#0E1726]/60 font-semibold">
+                    <th className="py-3 px-4 w-16 text-center">Rank</th>
+                    <th className="py-3 px-4">Engineer</th>
+                    <th className="py-3 px-4 w-28 text-right">XP</th>
+                    <th className="py-3 px-4 w-24 text-right">Solved</th>
+                    <th className="py-3 px-4 w-24 text-right">Streak</th>
+                    <th className="py-3 px-4 w-28 text-right">Elo Rating</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-800/60 text-sm">
+                  {remaining.map((u) => (
+                    <tr key={u.username} className="hover:bg-slate-800/30 transition-colors">
+                      <td className="py-3 px-4 text-center font-mono text-slate-400 font-semibold">
+                        #{u.rank}
+                      </td>
+                      <td className="py-3 px-4 font-semibold text-slate-200">
+                        <Link
+                          href={`/profile/${u.username}`}
+                          className="hover:text-cyan-300 transition-colors flex items-center gap-2"
+                        >
+                          <span>{u.display_name || u.username}</span>
+                          <span className="text-xs text-slate-500 font-mono">(@{u.username})</span>
+                        </Link>
+                      </td>
+                      <td className="py-3 px-4 text-right font-mono text-cyan-400 font-semibold">
+                        {u.xp}
+                      </td>
+                      <td className="py-3 px-4 text-right font-mono text-slate-300">{u.solved}</td>
+                      <td className="py-3 px-4 text-right font-mono text-amber-400 font-semibold">
+                        {u.streak}d
+                      </td>
+                      <td className="py-3 px-4 text-right font-mono text-white font-bold">{u.rating}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </>
+      )}
     </div>
   );
 }

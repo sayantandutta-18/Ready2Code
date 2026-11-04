@@ -1,55 +1,80 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Link from "next/link";
+import { useQuery } from "@tanstack/react-query";
+import { fetchApi } from "@/lib/api";
+import LoadingSkeleton from "@/components/ui/LoadingSkeleton";
+import QueryErrorState from "@/components/ui/QueryErrorState";
 import DifficultyChip from "../../../components/ui/DifficultyChip";
-import { Calendar, CheckCircle2, Lock, ArrowLeft, ArrowRight, Sparkles, Trophy } from "lucide-react";
+import { Calendar, CheckCircle2, Lock, ArrowLeft, ArrowRight, Sparkles } from "lucide-react";
+
+interface PlanDayProblem {
+  id: string;
+  slug: string;
+  title: string;
+  difficulty: "easy" | "medium" | "hard";
+  topic: string;
+  solved: boolean;
+}
+
+interface PlanDay {
+  day_number: number;
+  problems: PlanDayProblem[];
+  unlocked: boolean;
+  completed: boolean;
+}
+
+interface PlanDetail {
+  id: string;
+  name: string;
+  description: string;
+  duration_days: number;
+  current_day: number;
+  days: PlanDay[];
+}
 
 export default function PlanDetailPage({ params }: { params: { id: string } }) {
   const { id } = params;
-
   const [activeDay, setActiveDay] = useState(1);
-  const [planData, setPlanData] = useState<any>({
-    name: "30-Day Interview Readiness Bootcamp",
-    duration_days: 30,
-    current_day: 1,
-    days: Array.from({ length: 30 }, (_, i) => ({
-      day_number: i + 1,
-      unlocked: i === 0,
-      completed: false,
-      problems: [
-        {
-          id: `${i + 1}`,
-          slug: i === 0 ? "two-sum" : "best-time-to-buy-and-sell-stock",
-          title: i === 0 ? "Two Sum" : "Best Time to Buy and Sell Stock",
-          difficulty: "easy",
-          topic: "Arrays",
-          solved: false,
-        },
-      ],
-    })),
+
+  const {
+    data: planData,
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useQuery<PlanDetail>({
+    queryKey: ["plan", id, activeDay],
+    queryFn: () => fetchApi<PlanDetail>(`/plans/${id}?current_day=${activeDay}`),
   });
 
-  useEffect(() => {
-    fetch(`/api/plans/${id}?current_day=${activeDay}`)
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data) => {
-        if (data && data.days) setPlanData(data);
-      })
-      .catch(() => {});
-  }, [id, activeDay]);
+  if (isLoading) {
+    return (
+      <div className="max-w-6xl mx-auto px-4 lg:px-8 py-10 space-y-6">
+        <LoadingSkeleton variant="title" className="w-56 h-6" />
+        <LoadingSkeleton variant="card" className="h-44" />
+        <LoadingSkeleton variant="card" className="h-64" />
+      </div>
+    );
+  }
 
-  const currentDayData = planData.days.find((d: any) => d.day_number === activeDay) || planData.days[0];
+  if (isError || !planData) {
+    return (
+      <div className="max-w-6xl mx-auto px-4 lg:px-8 py-10">
+        <QueryErrorState
+          title="Failed to load study plan"
+          message={error instanceof Error ? error.message : "The requested plan could not be retrieved."}
+          onRetry={() => refetch()}
+        />
+      </div>
+    );
+  }
+
+  const currentDayData =
+    planData.days.find((d) => d.day_number === activeDay) || planData.days[0];
 
   const handleMarkDayComplete = () => {
-    setPlanData((prev: any) => ({
-      ...prev,
-      days: prev.days.map((d: any) => {
-        if (d.day_number === activeDay) return { ...d, completed: true };
-        if (d.day_number === activeDay + 1) return { ...d, unlocked: true };
-        return d;
-      }),
-    }));
     setActiveDay((prev) => Math.min(planData.duration_days, prev + 1));
   };
 
@@ -68,8 +93,7 @@ export default function PlanDetailPage({ params }: { params: { id: string } }) {
           </span>
           <h1 className="text-2xl sm:text-3xl font-black text-white mt-2">{planData.name}</h1>
           <p className="text-xs sm:text-sm text-slate-400 mt-1 max-w-xl">
-            Complete daily assigned problems to progress systematically. Each completed day unlocks
-            the subsequent session.
+            {planData.description || "Complete daily assigned problems to progress systematically. Each completed day unlocks the subsequent session."}
           </p>
         </div>
 
@@ -88,7 +112,7 @@ export default function PlanDetailPage({ params }: { params: { id: string } }) {
         </h2>
 
         <div className="grid grid-cols-5 sm:grid-cols-6 md:grid-cols-10 gap-2.5">
-          {planData.days.map((d: any) => {
+          {planData.days.map((d) => {
             const isSelected = d.day_number === activeDay;
             return (
               <button
@@ -126,7 +150,7 @@ export default function PlanDetailPage({ params }: { params: { id: string } }) {
         <div className="flex items-center justify-between border-b border-slate-800 pb-4">
           <h2 className="text-base font-bold text-white flex items-center gap-2">
             <span>Day {activeDay} Problem Set</span>
-            {currentDayData.completed && (
+            {currentDayData?.completed && (
               <span className="px-2 py-0.5 rounded text-[10px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
                 Completed
               </span>
@@ -135,34 +159,45 @@ export default function PlanDetailPage({ params }: { params: { id: string } }) {
 
           <button
             onClick={handleMarkDayComplete}
-            className="px-4 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs shadow-md shadow-emerald-500/20 flex items-center gap-1.5 transition-all"
+            disabled={!currentDayData?.unlocked || currentDayData?.completed}
+            className={`px-4 py-1.5 rounded-xl font-bold text-xs shadow-md flex items-center gap-1.5 transition-all ${
+              currentDayData?.completed
+                ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 cursor-default"
+                : "bg-emerald-500 hover:bg-emerald-400 text-slate-950 shadow-emerald-500/20"
+            }`}
           >
             <CheckCircle2 className="w-3.5 h-3.5" />
-            <span>Mark Day Complete & Unlock Next</span>
+            <span>{currentDayData?.completed ? "Day Completed" : "Mark Day Complete & Unlock Next"}</span>
           </button>
         </div>
 
         <div className="space-y-3">
-          {currentDayData.problems.map((p: any) => (
-            <div
-              key={p.slug}
-              className="p-4 rounded-xl bg-[#0B1220] border border-slate-800 flex items-center justify-between"
-            >
-              <div>
-                <div className="text-sm font-semibold text-slate-200">{p.title}</div>
-                <div className="text-xs text-slate-400 mt-0.5">Topic: {p.topic}</div>
-              </div>
-              <div className="flex items-center gap-3">
-                <DifficultyChip difficulty={p.difficulty} />
-                <Link
-                  href={`/problems/${p.slug}`}
-                  className="px-3.5 py-1.5 rounded-lg bg-cyan-400 hover:bg-cyan-300 text-slate-950 font-bold text-xs transition-colors"
-                >
-                  Solve in Editor &rarr;
-                </Link>
-              </div>
+          {(!currentDayData?.problems || currentDayData.problems.length === 0) ? (
+            <div className="p-8 text-center text-xs text-slate-500 font-mono">
+              Rest or review day: No mandatory problems assigned for this milestone.
             </div>
-          ))}
+          ) : (
+            currentDayData.problems.map((p) => (
+              <div
+                key={p.slug}
+                className="p-4 rounded-xl bg-[#0B1220] border border-slate-800 flex items-center justify-between"
+              >
+                <div>
+                  <div className="text-sm font-semibold text-slate-200">{p.title}</div>
+                  <div className="text-xs text-slate-400 mt-0.5">Topic: {p.topic}</div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <DifficultyChip difficulty={p.difficulty} />
+                  <Link
+                    href={`/problems/${p.slug}`}
+                    className="px-3.5 py-1.5 rounded-lg bg-cyan-400 hover:bg-cyan-300 text-slate-950 font-bold text-xs transition-colors"
+                  >
+                    Solve in Editor &rarr;
+                  </Link>
+                </div>
+              </div>
+            ))
+          )}
         </div>
       </div>
     </div>

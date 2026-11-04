@@ -1,202 +1,259 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Link from "next/link";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import TiltCard from "../../components/ui/TiltCard";
+import LoadingSkeleton from "../../components/ui/LoadingSkeleton";
+import EmptyState from "../../components/ui/EmptyState";
+import QueryErrorState from "../../components/ui/QueryErrorState";
+import { fetchApi } from "../../lib/api";
 import { ListTodo, Calendar, Plus, CheckCircle2, ChevronRight, Layers, Sparkles } from "lucide-react";
 
+interface ProblemListItem {
+  id: string;
+  name: string;
+  description: string;
+  total_problems: number;
+  solved_count?: number;
+  is_system: boolean;
+}
+
+interface StudyPlanItem {
+  id: string;
+  name: string;
+  description: string;
+  duration_days: number;
+  total_problems: number;
+}
+
 export default function ListsPage() {
-  const [lists, setLists] = useState<any[]>([
-    {
-      id: "blind-75",
-      name: "Blind 75 High-Frequency Core",
-      description: "Essential foundational algorithmic patterns curated for top tech interviews.",
-      total_problems: 8,
-      solved_count: 5,
-      is_system: true,
-    },
-    {
-      id: "neetcode-150",
-      name: "NeetCode 150 Essentials",
-      description: "Structured curriculum spanning arrays, linked lists, trees, graphs, and dynamic programming.",
-      total_problems: 6,
-      solved_count: 3,
-      is_system: true,
-    },
-  ]);
-
-  const [plans, setPlans] = useState<any[]>([
-    {
-      id: "30-day-bootcamp",
-      name: "30-Day Interview Readiness Bootcamp",
-      description: "Daily assigned algorithmic challenges progressing from arrays to dynamic programming.",
-      duration_days: 30,
-      total_problems: 12,
-    },
-  ]);
-
+  const queryClient = useQueryClient();
   const [newListName, setNewListName] = useState("");
   const [showCreateModal, setShowCreateModal] = useState(false);
 
-  useEffect(() => {
-    fetch("/api/lists")
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data) => {
-        if (Array.isArray(data) && data.length > 0) setLists(data);
-      })
-      .catch(() => {});
+  // Fetch Lists
+  const {
+    data: lists = [],
+    isLoading: isListsLoading,
+    isError: isListsError,
+    error: listsError,
+    refetch: refetchLists,
+  } = useQuery<ProblemListItem[]>({
+    queryKey: ["lists"],
+    queryFn: () => fetchApi<ProblemListItem[]>("/lists"),
+  });
 
-    fetch("/api/plans")
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data) => {
-        if (Array.isArray(data) && data.length > 0) setPlans(data);
-      })
-      .catch(() => {});
-  }, []);
+  // Fetch Study Plans
+  const {
+    data: plans = [],
+    isLoading: isPlansLoading,
+    isError: isPlansError,
+    error: plansError,
+    refetch: refetchPlans,
+  } = useQuery<StudyPlanItem[]>({
+    queryKey: ["plans"],
+    queryFn: () => fetchApi<StudyPlanItem[]>("/plans"),
+  });
 
-  const handleCreateCustomList = async (e: React.FormEvent) => {
+  // Create Custom List Mutation
+  const createListMutation = useMutation({
+    mutationFn: (name: string) =>
+      fetchApi("/lists", {
+        method: "POST",
+        body: JSON.stringify({ name, problem_slugs: ["two-sum"] }),
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["lists"] });
+      setNewListName("");
+      setShowCreateModal(false);
+    },
+  });
+
+  const handleCreateCustomList = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newListName.trim()) return;
-    try {
-      const res = await fetch("/api/lists", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: newListName.trim(), problem_slugs: ["two-sum"] }),
-      });
-      if (res.ok) {
-        const created = await res.json();
-        setLists((prev) => [
-          ...prev,
-          { id: created.id, name: created.name, description: "Custom practice collection", total_problems: 1, is_system: false },
-        ]);
-        setNewListName("");
-        setShowCreateModal(false);
-      }
-    } catch {
-      setShowCreateModal(false);
-    }
+    createListMutation.mutate(newListName.trim());
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 lg:px-8 py-10 space-y-10">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div className="max-w-7xl mx-auto px-4 lg:px-8 py-10 space-y-12">
+      {/* Section 1: Curated & Custom Problem Lists */}
+      <div className="space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-black text-white tracking-tight flex items-center gap-3">
+              <ListTodo className="w-8 h-8 text-cyan-400" />
+              <span>Curated Problem Collections</span>
+            </h1>
+            <p className="text-sm text-slate-400 mt-1">
+              Authoritative syllabi including Blind 75, NeetCode 150, and community sets.
+            </p>
+          </div>
+
+          <button
+            onClick={() => setShowCreateModal(true)}
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 text-xs font-semibold transition-all self-start sm:self-auto active:scale-95"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Create Custom List</span>
+          </button>
+        </div>
+
+        {isListsError && (
+          <QueryErrorState
+            title="Could not load problem lists"
+            message={listsError instanceof Error ? listsError.message : "Error contacting lists API"}
+            onRetry={() => refetchLists()}
+          />
+        )}
+
+        {isListsLoading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <LoadingSkeleton rows={3} className="h-44" />
+            <LoadingSkeleton rows={3} className="h-44" />
+          </div>
+        ) : lists.length === 0 ? (
+          <EmptyState
+            title="No problem collections"
+            description="Create your first practice collection using the button above."
+          />
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {lists.map((l) => (
+              <Link key={l.id} href={`/lists/${l.id}`} className="block">
+                <TiltCard className="h-full flex flex-col justify-between space-y-4 hover:border-cyan-500/50">
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-mono uppercase tracking-wider text-slate-400">
+                        {l.is_system ? "Verified Curriculum" : "Personal Collection"}
+                      </span>
+                      {l.is_system && (
+                        <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
+                          SYSTEM
+                        </span>
+                      )}
+                    </div>
+
+                    <h3 className="text-xl font-bold text-white group-hover:text-cyan-300">
+                      {l.name}
+                    </h3>
+                    <p className="text-xs text-slate-400 leading-relaxed">{l.description}</p>
+                  </div>
+
+                  <div className="pt-3 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400 font-mono">
+                    <div className="flex items-center gap-1.5">
+                      <Layers className="w-3.5 h-3.5 text-cyan-400" />
+                      <span>{l.total_problems} Problems</span>
+                    </div>
+                    <div className="text-cyan-400 font-semibold flex items-center gap-1">
+                      <span>Explore</span>
+                      <ChevronRight className="w-4 h-4" />
+                    </div>
+                  </div>
+                </TiltCard>
+              </Link>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Section 2: Guided Study Plans */}
+      <div className="space-y-6 pt-6 border-t border-slate-800/80">
         <div>
-          <h1 className="text-3xl font-black text-white tracking-tight flex items-center gap-3">
-            <ListTodo className="w-8 h-8 text-cyan-400" />
-            <span>Curated Lists & Study Plans</span>
-          </h1>
+          <h2 className="text-2xl font-black text-white tracking-tight flex items-center gap-3">
+            <Calendar className="w-7 h-7 text-violet-400" />
+            <span>Structured 30/60/90-Day Plans</span>
+          </h2>
           <p className="text-sm text-slate-400 mt-1">
-            Industry-standard problem sets and calendar-based study plans to structure your prep.
+            Day-by-day assigned algorithmic milestones to build deep muscle memory.
           </p>
         </div>
 
-        <button
-          onClick={() => setShowCreateModal(true)}
-          className="px-4 py-2.5 rounded-xl bg-cyan-400 hover:bg-cyan-300 text-slate-950 font-bold text-xs shadow-lg shadow-cyan-500/20 flex items-center gap-2 self-start sm:self-auto transition-all"
-        >
-          <Plus className="w-4 h-4" />
-          <span>Create Custom List</span>
-        </button>
-      </div>
+        {isPlansError && (
+          <QueryErrorState
+            title="Could not load study plans"
+            message={plansError instanceof Error ? plansError.message : "Error contacting plans API"}
+            onRetry={() => refetchPlans()}
+          />
+        )}
 
-      {/* Curated Lists Section */}
-      <div className="space-y-4">
-        <h2 className="text-lg font-bold text-white flex items-center gap-2">
-          <Layers className="w-5 h-5 text-violet-400" />
-          <span>Curated Problem Collections</span>
-        </h2>
+        {isPlansLoading ? (
+          <LoadingSkeleton rows={4} className="h-36" />
+        ) : plans.length === 0 ? (
+          <EmptyState
+            title="No active study plans"
+            description="Check back soon for new guided study bootcamps."
+          />
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {plans.map((p) => (
+              <Link key={p.id} href={`/plans/${p.id}`} className="block">
+                <TiltCard className="h-full flex flex-col justify-between space-y-4 hover:border-violet-500/50">
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-mono uppercase tracking-wider text-slate-400">
+                        {p.duration_days}-Day Intensive
+                      </span>
+                      <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-violet-500/10 text-violet-300 border border-violet-500/20">
+                        BOOTCAMP
+                      </span>
+                    </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {lists.map((l) => (
-            <Link key={l.id} href={`/lists/${l.id}`} className="block">
-              <TiltCard className="h-full flex flex-col justify-between hover:border-cyan-500/50">
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-cyan-400 px-2 py-0.5 rounded bg-cyan-950/60 border border-cyan-500/30">
-                      {l.is_system ? "System Curated" : "Custom List"}
-                    </span>
-                    <span className="text-xs text-slate-400 font-mono">
-                      {l.total_problems} Problems
-                    </span>
+                    <h3 className="text-xl font-bold text-white group-hover:text-violet-300">
+                      {p.name}
+                    </h3>
+                    <p className="text-xs text-slate-400 leading-relaxed">{p.description}</p>
                   </div>
-                  <h3 className="text-lg font-bold text-white group-hover:text-cyan-300">
-                    {l.name}
-                  </h3>
-                  <p className="text-xs text-slate-400 leading-relaxed">{l.description}</p>
-                </div>
 
-                <div className="pt-4 mt-4 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
-                  <span className="text-cyan-400 font-semibold flex items-center gap-1">
-                    Open Collection <ChevronRight className="w-3.5 h-3.5" />
-                  </span>
-                </div>
-              </TiltCard>
-            </Link>
-          ))}
-        </div>
+                  <div className="pt-3 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400 font-mono">
+                    <span>{p.total_problems} Assigned Solves</span>
+                    <div className="text-violet-400 font-semibold flex items-center gap-1">
+                      <span>Start Plan</span>
+                      <ChevronRight className="w-4 h-4" />
+                    </div>
+                  </div>
+                </TiltCard>
+              </Link>
+            ))}
+          </div>
+        )}
       </div>
 
-      {/* 30/60/90-Day Study Plans Section (C2.1) */}
-      <div className="space-y-4">
-        <h2 className="text-lg font-bold text-white flex items-center gap-2">
-          <Calendar className="w-5 h-5 text-amber-400" />
-          <span>Day-by-Day Study Plans (30 / 60 / 90 Days)</span>
-        </h2>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {plans.map((p) => (
-            <Link key={p.id} href={`/plans/${p.id}`} className="block">
-              <TiltCard className="h-full flex flex-col justify-between hover:border-amber-500/50">
-                <div className="space-y-2">
-                  <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-amber-400 px-2 py-0.5 rounded bg-amber-950/60 border border-amber-500/30">
-                    {p.duration_days}-Day Bootcamp
-                  </span>
-                  <h3 className="text-base font-bold text-white">{p.name}</h3>
-                  <p className="text-xs text-slate-400 leading-relaxed">{p.description}</p>
-                </div>
-
-                <div className="pt-4 mt-4 border-t border-slate-800 flex items-center justify-between text-xs text-amber-400 font-semibold">
-                  <span>Start Day 1 &bull; {p.total_problems} Days Active</span>
-                  <ChevronRight className="w-4 h-4" />
-                </div>
-              </TiltCard>
-            </Link>
-          ))}
-        </div>
-      </div>
-
-      {/* Create Custom List Modal */}
+      {/* Modal for creating custom list */}
       {showCreateModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-          <div className="bg-[#121C2F] rounded-2xl border border-slate-700 p-6 max-w-md w-full space-y-4 shadow-2xl">
-            <h3 className="text-lg font-bold text-white">Create New Custom List</h3>
+        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="max-w-md w-full bg-[#121C2F] border border-slate-800 rounded-2xl p-6 space-y-4 shadow-2xl">
+            <h3 className="text-lg font-bold text-white">Create Practice Collection</h3>
             <p className="text-xs text-slate-400">
-              Name your personal problem playlist to organize study topics and track mastery.
+              Curate and order your personal set of problems for interview focus.
             </p>
-            <input
-              type="text"
-              placeholder="e.g. Dynamic Programming Drill, Google Final Round..."
-              value={newListName}
-              onChange={(e) => setNewListName(e.target.value)}
-              className="w-full bg-[#0B1220] border border-slate-700 rounded-xl px-4 py-2 text-sm text-slate-200 focus:outline-none focus:border-cyan-400"
-            />
-            <div className="flex justify-end gap-3 pt-2">
-              <button
-                type="button"
-                onClick={() => setShowCreateModal(false)}
-                className="px-4 py-2 rounded-xl bg-slate-800 text-slate-300 text-xs font-semibold"
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                onClick={handleCreateCustomList}
-                className="px-4 py-2 rounded-xl bg-cyan-400 text-slate-950 text-xs font-bold shadow"
-              >
-                Create List
-              </button>
-            </div>
+            <form onSubmit={handleCreateCustomList} className="space-y-4">
+              <input
+                type="text"
+                placeholder="Collection name (e.g. 'Amazon High Frequency')"
+                value={newListName}
+                onChange={(e) => setNewListName(e.target.value)}
+                autoFocus
+                className="w-full bg-[#0B1220] border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-400"
+              />
+              <div className="flex items-center justify-end gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setShowCreateModal(false)}
+                  className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={!newListName.trim() || createListMutation.isPending}
+                  className="px-4 py-2 rounded-xl bg-cyan-500 hover:bg-cyan-600 text-slate-950 text-xs font-bold transition-all disabled:opacity-50"
+                >
+                  {createListMutation.isPending ? "Creating..." : "Create Collection"}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

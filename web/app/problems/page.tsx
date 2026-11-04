@@ -1,9 +1,14 @@
 "use client";
 
-import React, { useState, useEffect, useMemo, Suspense } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
 import DifficultyChip from "../../components/ui/DifficultyChip";
+import LoadingSkeleton from "../../components/ui/LoadingSkeleton";
+import EmptyState from "../../components/ui/EmptyState";
+import QueryErrorState from "../../components/ui/QueryErrorState";
+import { fetchApi } from "../../lib/api";
 import {
   Search,
   Shuffle,
@@ -13,6 +18,7 @@ import {
   Filter,
   Tag,
   BookOpen,
+  RotateCcw,
 } from "lucide-react";
 
 interface ProblemItem {
@@ -44,9 +50,6 @@ function ProblemsContent() {
   const [search, setSearch] = useState(initialSearch);
   const [debouncedSearch, setDebouncedSearch] = useState(initialSearch);
 
-  const [problems, setProblems] = useState<ProblemItem[]>([]);
-  const [loading, setLoading] = useState(true);
-
   // 300ms search input debounce (C1.3 specification)
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -69,47 +72,35 @@ function ProblemsContent() {
     router.replace(targetUrl, { scroll: false });
   }, [topic, difficulty, status, company, debouncedSearch, router]);
 
-  // Fetch problems from API (with fallback starter data if backend is offline)
-  useEffect(() => {
-    setLoading(true);
-    const query = new URLSearchParams({
-      topic,
-      difficulty,
-      company: company === "all" ? "" : company,
-      status,
-      search: debouncedSearch,
-    });
-
-    fetch(`/api/problems?${query.toString()}`)
-      .then((res) => {
-        if (!res.ok) throw new Error("API request failed");
-        return res.json();
-      })
-      .then((data) => {
-        if (Array.isArray(data)) {
-          setProblems(data);
-        }
-        setLoading(false);
-      })
-      .catch(() => {
-        // Fallback starter problems if API is starting up
-        setProblems([
-          { id: "1", slug: "two-sum", title: "Two Sum", difficulty: "easy", topic: "Arrays", tags: ["Array", "Hash Map", "Google"], status: "todo", acceptance_rate: 68.5 },
-          { id: "2", slug: "valid-parentheses", title: "Valid Parentheses", difficulty: "easy", topic: "Stack and Queue", tags: ["Stack", "String", "Amazon"], status: "todo", acceptance_rate: 61.2 },
-          { id: "3", slug: "best-time-to-buy-and-sell-stock", title: "Best Time to Buy and Sell Stock", difficulty: "easy", topic: "Arrays", tags: ["Array", "Dynamic Programming", "Apple"], status: "todo", acceptance_rate: 54.8 },
-          { id: "4", slug: "binary-search", title: "Binary Search", difficulty: "easy", topic: "Binary Search", tags: ["Binary Search", "Array", "Microsoft"], status: "todo", acceptance_rate: 65.1 },
-          { id: "5", slug: "reverse-linked-list", title: "Reverse Linked List", difficulty: "easy", topic: "Linked List", tags: ["Linked List", "Meta"], status: "todo", acceptance_rate: 73.4 },
-          { id: "6", slug: "maximum-subarray", title: "Maximum Subarray", difficulty: "medium", topic: "Arrays", tags: ["Array", "Dynamic Programming", "Kadane"], status: "todo", acceptance_rate: 50.2 },
-          { id: "7", slug: "climbing-stairs", title: "Climbing Stairs", difficulty: "easy", topic: "DP", tags: ["Dynamic Programming", "Math"], status: "todo", acceptance_rate: 52.3 },
-          { id: "8", slug: "number-of-islands", title: "Number of Islands", difficulty: "medium", topic: "Graphs", tags: ["Graph", "BFS", "DFS", "Bloomberg"], status: "todo", acceptance_rate: 57.8 },
-          { id: "9", slug: "merge-intervals", title: "Merge Intervals", difficulty: "medium", topic: "Arrays", tags: ["Array", "Sorting", "Google"], status: "todo", acceptance_rate: 46.9 },
-          { id: "10", slug: "longest-substring-without-repeating-characters", title: "Longest Substring Without Repeating Characters", difficulty: "medium", topic: "Strings", tags: ["Sliding Window", "Hash Table"], status: "todo", acceptance_rate: 34.6 },
-          { id: "11", slug: "coin-change", title: "Coin Change", difficulty: "medium", topic: "DP", tags: ["Dynamic Programming", "BFS"], status: "todo", acceptance_rate: 42.1 },
-          { id: "12", slug: "binary-tree-inorder-traversal", title: "Binary Tree Inorder Traversal", difficulty: "easy", topic: "Trees", tags: ["Tree", "DFS", "Stack"], status: "todo", acceptance_rate: 74.3 },
-        ]);
-        setLoading(false);
+  // TanStack Query for real server-side data fetching
+  const {
+    data: problems = [],
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useQuery<ProblemItem[]>({
+    queryKey: ["problems", { topic, difficulty, company, status, search: debouncedSearch }],
+    queryFn: () => {
+      const query = new URLSearchParams({
+        topic,
+        difficulty,
+        company: company === "all" ? "" : company,
+        status,
+        search: debouncedSearch,
       });
-  }, [topic, difficulty, status, company, debouncedSearch]);
+      return fetchApi<ProblemItem[]>(`/problems?${query.toString()}`);
+    },
+  });
+
+  const handleClearFilters = () => {
+    setTopic("all");
+    setDifficulty("all");
+    setStatus("all");
+    setCompany("all");
+    setSearch("");
+    setDebouncedSearch("");
+  };
 
   // Random unsolved problem picker (C1.3 specification)
   const handleRandomProblem = () => {
@@ -135,7 +126,7 @@ function ProblemsContent() {
         </span>
       );
     return (
-      <span title="Todo">
+      <span title="To Do">
         <Circle className="w-4 h-4 text-slate-600" />
       </span>
     );
@@ -143,44 +134,49 @@ function ProblemsContent() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 lg:px-8 py-8 space-y-6">
-      {/* Title & Actions Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      {/* Header & Controls */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-black text-white tracking-tight flex items-center gap-3">
             <BookOpen className="w-8 h-8 text-cyan-400" />
             <span>Problem Arena</span>
+            <span className="text-xs px-2.5 py-1 rounded-full bg-cyan-950 border border-cyan-800 text-cyan-300 font-mono font-medium">
+              {isLoading ? "..." : `${problems.length} Available`}
+            </span>
           </h1>
           <p className="text-sm text-slate-400 mt-1">
-            Browse and filter {problems.length} high-frequency algorithmic challenges.
+            Curated algorithmic challenges categorized by pattern, topic, and difficulty.
           </p>
         </div>
 
+        {/* Random Unsolved Picker */}
         <button
           onClick={handleRandomProblem}
-          className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white font-semibold text-sm shadow-lg shadow-violet-600/20 flex items-center gap-2 self-start sm:self-auto transition-all"
+          disabled={isLoading || problems.length === 0}
+          className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-500 hover:from-cyan-600 hover:to-indigo-600 text-slate-950 font-bold text-xs uppercase tracking-wider shadow-lg shadow-cyan-500/20 active:scale-95 transition-all self-start md:self-auto disabled:opacity-50"
         >
           <Shuffle className="w-4 h-4" />
           <span>Pick Random Unsolved</span>
         </button>
       </div>
 
-      {/* Filter Controls Bar */}
-      <div className="bg-[#121C2F] rounded-2xl border border-slate-800 p-4 space-y-4 shadow-xl">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
-          {/* Search Box */}
-          <div className="lg:col-span-2 relative">
-            <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-            <input
-              type="text"
-              placeholder="Search problems by title, tag..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-[#0B1220] border border-slate-700 rounded-xl pl-9 pr-4 py-2 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-400 transition-colors"
-            />
-          </div>
+      {/* Filter and Search Bar */}
+      <div className="p-4 rounded-2xl bg-[#121C2F] border border-slate-800 space-y-3 shadow-xl">
+        <div className="relative">
+          <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+          <input
+            type="text"
+            placeholder="Search problems by name or tag (e.g. 'Two Sum', 'Sliding Window', 'Google')..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full bg-[#0B1220] border border-slate-700 rounded-xl pl-10 pr-4 py-2.5 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-400 transition-colors"
+          />
+        </div>
 
-          {/* Topic Select */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-1">
+          {/* Topic Filter */}
           <div>
+            <label className="text-[10px] font-mono uppercase text-slate-400 block mb-1">Topic</label>
             <select
               value={topic}
               onChange={(e) => setTopic(e.target.value)}
@@ -191,7 +187,7 @@ function ProblemsContent() {
               <option value="arrays">Arrays</option>
               <option value="strings">Strings</option>
               <option value="linked-list">Linked List</option>
-              <option value="stack-and-queue">Stack and Queue</option>
+              <option value="stack-and-queue">Stack & Queue</option>
               <option value="trees">Trees</option>
               <option value="graphs">Graphs</option>
               <option value="dp">Dynamic Programming</option>
@@ -199,8 +195,9 @@ function ProblemsContent() {
             </select>
           </div>
 
-          {/* Difficulty Select */}
+          {/* Difficulty Filter */}
           <div>
+            <label className="text-[10px] font-mono uppercase text-slate-400 block mb-1">Difficulty</label>
             <select
               value={difficulty}
               onChange={(e) => setDifficulty(e.target.value)}
@@ -214,8 +211,28 @@ function ProblemsContent() {
             </select>
           </div>
 
-          {/* Status Select */}
+          {/* Company Filter */}
           <div>
+            <label className="text-[10px] font-mono uppercase text-slate-400 block mb-1">Company</label>
+            <select
+              value={company}
+              onChange={(e) => setCompany(e.target.value)}
+              aria-label="Filter by Company"
+              className="w-full bg-[#0B1220] border border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-cyan-400"
+            >
+              <option value="all">All Companies</option>
+              <option value="Google">Google</option>
+              <option value="Amazon">Amazon</option>
+              <option value="Meta">Meta</option>
+              <option value="Microsoft">Microsoft</option>
+              <option value="Apple">Apple</option>
+              <option value="Uber">Uber</option>
+            </select>
+          </div>
+
+          {/* Status Filter */}
+          <div>
+            <label className="text-[10px] font-mono uppercase text-slate-400 block mb-1">Status</label>
             <select
               value={status}
               onChange={(e) => setStatus(e.target.value)}
@@ -230,6 +247,15 @@ function ProblemsContent() {
           </div>
         </div>
       </div>
+
+      {/* Error State */}
+      {isError && (
+        <QueryErrorState
+          title="Could not load problems"
+          message={error instanceof Error ? error.message : "Unable to reach the backend service."}
+          onRetry={() => refetch()}
+        />
+      )}
 
       {/* Problems Table */}
       <div className="bg-[#121C2F] rounded-2xl border border-slate-800 overflow-hidden shadow-2xl">
@@ -246,16 +272,21 @@ function ProblemsContent() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-800/60 text-sm">
-              {loading ? (
+              {isLoading ? (
                 <tr>
-                  <td colSpan={6} className="py-12 text-center text-slate-400 font-mono text-xs">
-                    Loading problem catalogue...
+                  <td colSpan={6} className="py-8 px-4">
+                    <LoadingSkeleton rows={8} />
                   </td>
                 </tr>
               ) : problems.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="py-12 text-center text-slate-500">
-                    No problems match the selected filters.
+                  <td colSpan={6} className="p-8">
+                    <EmptyState
+                      title="No problems match these filters"
+                      description="Try clearing your search query or broadening the selected topic, difficulty, or company filters."
+                      actionText="Clear all filters"
+                      onAction={handleClearFilters}
+                    />
                   </td>
                 </tr>
               ) : (

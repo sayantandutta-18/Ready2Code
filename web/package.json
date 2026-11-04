@@ -12,6 +12,7 @@
     "@monaco-editor/react": "^4.6.0",
     "@react-three/drei": "^9.99.0",
     "@react-three/fiber": "^8.15.16",
+    "@tanstack/react-query": "^5.105.3",
     "@types/canvas-confetti": "^1.9.0",
     "canvas-confetti": "^1.9.2",
     "clsx": "^2.1.0",

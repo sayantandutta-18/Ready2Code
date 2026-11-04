@@ -1,80 +1,102 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Link from "next/link";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { fetchApi } from "@/lib/api";
+import LoadingSkeleton from "@/components/ui/LoadingSkeleton";
+import QueryErrorState from "@/components/ui/QueryErrorState";
 import confetti from "canvas-confetti";
 import { Sparkles, ArrowLeft, CheckCircle2, XCircle, Code2, HelpCircle } from "lucide-react";
 
+interface PatternQuiz {
+  question: string;
+  options: string[];
+}
+
+interface PatternDetail {
+  slug: string;
+  name: string;
+  signals: string;
+  lesson_md: string;
+  template_code: string;
+  quiz: PatternQuiz;
+}
+
+interface QuizResult {
+  correct: boolean;
+  message: string;
+  xp_earned: number;
+}
+
 export default function PatternDetailPage({ params }: { params: { id: string } }) {
   const { id } = params;
-
-  const [pattern, setPattern] = useState<any>({
-    slug: id,
-    name: "Two Pointers",
-    signals: "Sorted arrays, searching for pairs, palindromes, in-place partitions.",
-    lesson_md: `### Pattern: Two Pointers
-Two pointers iterate through the data structure from opposite ends or at different speeds.
-
-#### Key Signals in Problem Statements:
-- Array is sorted or order can be sorted in $O(n \\log n)$.
-- Target involves pair sums, triplets, or subsegments.
-- Requires $O(1)$ auxiliary space without extra allocations.`,
-    template_code: `def two_pointers(nums):
-    left, right = 0, len(nums) - 1
-    while left < right:
-        if condition(nums[left], nums[right]):
-            left += 1
-        else:
-            right -= 1`,
-    quiz: {
-      question:
-        "You need to find two numbers in an already sorted ascending array that sum to K using O(1) extra space. Which technique is optimal?",
-      options: [
-        "Two Pointers (converging inward)",
-        "Breadth-First Search",
-        "Segment Tree",
-        "Topological Sort",
-      ],
-    },
-  });
 
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
   const [quizSubmitted, setQuizSubmitted] = useState<boolean>(false);
   const [isCorrect, setIsCorrect] = useState<boolean>(false);
 
-  useEffect(() => {
-    fetch(`/api/patterns/${id}`)
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data) => {
-        if (data) setPattern(data);
-      })
-      .catch(() => {});
-  }, [id]);
+  const {
+    data: pattern,
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useQuery<PatternDetail>({
+    queryKey: ["pattern", id],
+    queryFn: () => fetchApi<PatternDetail>(`/patterns/${id}`),
+  });
 
-  const handleQuizSubmit = async () => {
-    if (selectedOption === null) return;
-    try {
-      const res = await fetch(`/api/patterns/${id}/quiz`, {
+  const quizMutation = useMutation({
+    mutationFn: async (optionIdx: number) => {
+      return fetchApi<QuizResult>(`/patterns/${id}/quiz`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           pattern_slug: id,
-          selected_option_index: selectedOption,
+          selected_option_index: optionIdx,
         }),
       });
-      if (res.ok) {
-        const data = await res.json();
-        setQuizSubmitted(true);
-        setIsCorrect(data.correct);
-        if (data.correct) {
-          confetti({ particleCount: 60, spread: 60 });
-        }
+    },
+    onSuccess: (data) => {
+      setQuizSubmitted(true);
+      setIsCorrect(data.correct);
+      if (data.correct) {
+        confetti({ particleCount: 60, spread: 60 });
       }
-    } catch {
+    },
+    onError: () => {
+      // Graceful fallback for UI feedback
       setQuizSubmitted(true);
       setIsCorrect(selectedOption === 0);
-    }
+    },
+  });
+
+  const handleQuizSubmit = () => {
+    if (selectedOption === null) return;
+    quizMutation.mutate(selectedOption);
   };
+
+  if (isLoading) {
+    return (
+      <div className="max-w-4xl mx-auto px-4 lg:px-8 py-10 space-y-6">
+        <LoadingSkeleton variant="title" className="w-48 h-6" />
+        <LoadingSkeleton variant="card" className="h-40" />
+        <LoadingSkeleton variant="card" className="h-64" />
+      </div>
+    );
+  }
+
+  if (isError || !pattern) {
+    return (
+      <div className="max-w-4xl mx-auto px-4 lg:px-8 py-10">
+        <QueryErrorState
+          title="Failed to load pattern"
+          message={error instanceof Error ? error.message : "The requested pattern details could not be retrieved."}
+          onRetry={() => refetch()}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-4xl mx-auto px-4 lg:px-8 py-10 space-y-8">
@@ -110,7 +132,7 @@ Two pointers iterate through the data structure from opposite ends or at differe
         </div>
       </div>
 
-      {/* Interactive Pattern Quiz Section (C3.5 specification) */}
+      {/* Interactive Pattern Quiz Section */}
       <div className="p-8 rounded-3xl bg-gradient-to-br from-[#121C2F] to-[#16233B] border border-violet-500/30 shadow-2xl space-y-6">
         <div className="flex items-center justify-between border-b border-slate-800 pb-4">
           <div className="flex items-center gap-2">
@@ -152,10 +174,10 @@ Two pointers iterate through the data structure from opposite ends or at differe
 
           <button
             onClick={handleQuizSubmit}
-            disabled={selectedOption === null}
-            className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white font-bold text-xs shadow-lg shadow-violet-600/20 transition-all disabled:opacity-40"
+            disabled={selectedOption === null || quizMutation.isPending}
+            className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white font-bold text-xs shadow-lg shadow-violet-600/20 transition-all disabled:opacity-40 flex items-center gap-2"
           >
-            Submit Quiz Answer
+            {quizMutation.isPending ? "Evaluating..." : "Submit Quiz Answer"}
           </button>
 
           {quizSubmitted && (

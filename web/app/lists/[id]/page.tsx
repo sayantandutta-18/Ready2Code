@@ -1,39 +1,71 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React from "react";
 import Link from "next/link";
+import { useQuery } from "@tanstack/react-query";
+import { fetchApi } from "@/lib/api";
+import LoadingSkeleton from "@/components/ui/LoadingSkeleton";
+import QueryErrorState from "@/components/ui/QueryErrorState";
+import EmptyState from "@/components/ui/EmptyState";
 import DifficultyChip from "../../../components/ui/DifficultyChip";
 import { ListTodo, CheckCircle2, Circle, ArrowLeft, ChevronRight, GripVertical } from "lucide-react";
+
+interface ListItemProblem {
+  id: string;
+  slug: string;
+  title: string;
+  difficulty: "easy" | "medium" | "hard";
+  topic: string;
+  position: number;
+  solved: boolean;
+}
+
+interface ListDetail {
+  id: string;
+  name: string;
+  description: string;
+  is_system: boolean;
+  problems: ListItemProblem[];
+  total_problems: number;
+  solved_count: number;
+  progress_pct: number;
+}
 
 export default function ListDetailPage({ params }: { params: { id: string } }) {
   const { id } = params;
 
-  const [listData, setListData] = useState<any>({
-    name: "Blind 75 High-Frequency Core",
-    description: "Essential foundational algorithmic patterns curated for top tech interviews.",
-    total_problems: 8,
-    solved_count: 5,
-    progress_pct: 62.5,
-    problems: [
-      { id: "1", slug: "two-sum", title: "Two Sum", difficulty: "easy", topic: "Arrays", solved: true, position: 0 },
-      { id: "2", slug: "valid-parentheses", title: "Valid Parentheses", difficulty: "easy", topic: "Stack", solved: true, position: 1 },
-      { id: "3", slug: "best-time-to-buy-and-sell-stock", title: "Best Time to Buy and Sell Stock", difficulty: "easy", topic: "Arrays", solved: true, position: 2 },
-      { id: "4", slug: "binary-search", title: "Binary Search", difficulty: "easy", topic: "Binary Search", solved: true, position: 3 },
-      { id: "5", slug: "reverse-linked-list", title: "Reverse Linked List", difficulty: "easy", topic: "Linked List", solved: true, position: 4 },
-      { id: "6", slug: "maximum-subarray", title: "Maximum Subarray", difficulty: "medium", topic: "Arrays", solved: false, position: 5 },
-      { id: "7", slug: "climbing-stairs", title: "Climbing Stairs", difficulty: "easy", topic: "DP", solved: false, position: 6 },
-      { id: "8", slug: "number-of-islands", title: "Number of Islands", difficulty: "medium", topic: "Graphs", solved: false, position: 7 },
-    ],
+  const {
+    data: listData,
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useQuery<ListDetail>({
+    queryKey: ["list", id],
+    queryFn: () => fetchApi<ListDetail>(`/lists/${id}`),
   });
 
-  useEffect(() => {
-    fetch(`/api/lists/${id}`)
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data) => {
-        if (data && data.problems) setListData(data);
-      })
-      .catch(() => {});
-  }, [id]);
+  if (isLoading) {
+    return (
+      <div className="max-w-5xl mx-auto px-4 lg:px-8 py-10 space-y-6">
+        <LoadingSkeleton variant="title" className="w-48 h-6" />
+        <LoadingSkeleton variant="card" className="h-40" />
+        <LoadingSkeleton variant="table" rows={6} />
+      </div>
+    );
+  }
+
+  if (isError || !listData) {
+    return (
+      <div className="max-w-5xl mx-auto px-4 lg:px-8 py-10">
+        <QueryErrorState
+          title="Failed to load problem list"
+          message={error instanceof Error ? error.message : "The requested list could not be retrieved."}
+          onRetry={() => refetch()}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-5xl mx-auto px-4 lg:px-8 py-10 space-y-8">
@@ -67,46 +99,54 @@ export default function ListDetailPage({ params }: { params: { id: string } }) {
       </div>
 
       {/* Problems Checklist Table */}
-      <div className="bg-[#121C2F] rounded-2xl border border-slate-800 overflow-hidden shadow-2xl">
-        <div className="divide-y divide-slate-800/80">
-          {listData.problems.map((p: any, index: number) => (
-            <div
-              key={p.slug}
-              className="p-4 flex items-center justify-between hover:bg-slate-800/30 transition-colors group"
-            >
-              <div className="flex items-center gap-3">
-                <GripVertical className="w-4 h-4 text-slate-600 cursor-grab" />
-                {p.solved ? (
-                  <CheckCircle2 className="w-5 h-5 text-emerald-400" />
-                ) : (
-                  <Circle className="w-5 h-5 text-slate-600" />
-                )}
-                <div>
+      {listData.problems.length === 0 ? (
+        <EmptyState
+          title="No problems in this list"
+          description="This list is currently empty. Add problems to start tracking progress."
+        />
+      ) : (
+        <div className="bg-[#121C2F] rounded-2xl border border-slate-800 overflow-hidden shadow-2xl">
+          <div className="divide-y divide-slate-800/80">
+            {listData.problems.map((p, index) => (
+              <div
+                key={p.slug}
+                className="p-4 flex items-center justify-between hover:bg-slate-800/30 transition-colors group"
+              >
+                <div className="flex items-center gap-3">
+                  <GripVertical className="w-4 h-4 text-slate-600 cursor-grab" />
+                  {p.solved ? (
+                    <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+                  ) : (
+                    <Circle className="w-5 h-5 text-slate-600" />
+                  )}
+                  <div>
+                    <Link
+                      href={`/problems/${p.slug}`}
+                      className="text-sm font-semibold text-slate-100 group-hover:text-cyan-300 transition-colors flex items-center gap-2"
+                    >
+                      <span className="text-slate-500 font-mono text-xs">{index + 1}.</span>
+                      <span>{p.title}</span>
+                    </Link>
+                    <div className="text-[11px] text-slate-400 mt-0.5">Topic: {p.topic}</div>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <DifficultyChip difficulty={p.difficulty} />
                   <Link
                     href={`/problems/${p.slug}`}
-                    className="text-sm font-semibold text-slate-100 group-hover:text-cyan-300 transition-colors flex items-center gap-2"
+                    className="px-3 py-1 rounded-lg bg-slate-800 group-hover:bg-cyan-500/20 text-slate-300 group-hover:text-cyan-300 text-xs font-semibold transition-all flex items-center gap-1 border border-slate-700"
                   >
-                    <span className="text-slate-500 font-mono text-xs">{index + 1}.</span>
-                    <span>{p.title}</span>
+                    <span>Solve</span>
+                    <ChevronRight className="w-3.5 h-3.5" />
                   </Link>
-                  <div className="text-[11px] text-slate-400 mt-0.5">Topic: {p.topic}</div>
                 </div>
               </div>
-
-              <div className="flex items-center gap-3">
-                <DifficultyChip difficulty={p.difficulty} />
-                <Link
-                  href={`/problems/${p.slug}`}
-                  className="px-3 py-1 rounded-lg bg-slate-800 group-hover:bg-cyan-500/20 text-slate-300 group-hover:text-cyan-300 text-xs font-semibold transition-all flex items-center gap-1 border border-slate-700"
-                >
-                  <span>Solve</span>
-                  <ChevronRight className="w-3.5 h-3.5" />
-                </Link>
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
+
