@@ -3,6 +3,7 @@ import Navbar from "../components/ui/Navbar";
 import QueryProvider from "../components/providers/QueryProvider";
 import { AuthProvider } from "../lib/authContext";
 import AuthModal from "../components/ui/AuthModal";
+import OnboardingModal from "../components/ui/OnboardingModal";
 
 export const metadata = {
   title: "Ready2Code | 3D Data Structures & Algorithms Arena",
@@ -21,6 +22,7 @@ export default function RootLayout({
           <QueryProvider>
             <Navbar />
             <AuthModal />
+            <OnboardingModal />
             <main className="min-h-[calc(100vh-65px)]">
               {children}
             </main>

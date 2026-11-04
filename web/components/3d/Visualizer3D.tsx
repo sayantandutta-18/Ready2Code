@@ -260,6 +260,7 @@ export default function Visualizer3D({ trace }: { trace: TraceData }) {
             }}
             className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors"
             title="Reset to beginning"
+            aria-label="Reset to beginning"
           >
             <RotateCcw className="w-4 h-4" />
           </button>
@@ -270,6 +271,7 @@ export default function Visualizer3D({ trace }: { trace: TraceData }) {
             disabled={currentStep === 0}
             className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 disabled:opacity-40 transition-colors"
             title="Previous Step (Left Arrow)"
+            aria-label="Previous Step"
           >
             <SkipBack className="w-4 h-4" />
           </button>
@@ -279,6 +281,7 @@ export default function Visualizer3D({ trace }: { trace: TraceData }) {
             onClick={() => setIsPlaying((p) => !p)}
             className="px-4 py-2 rounded-lg bg-cyan-400 hover:bg-cyan-300 text-slate-950 font-bold flex items-center gap-1.5 shadow-lg shadow-cyan-500/20 transition-all"
             title="Play / Pause (Space)"
+            aria-label={isPlaying ? "Pause animation" : "Play animation"}
           >
             {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4 fill-slate-950" />}
             <span>{isPlaying ? "Pause" : "Play"}</span>
@@ -290,6 +293,7 @@ export default function Visualizer3D({ trace }: { trace: TraceData }) {
             disabled={currentStep === totalSteps - 1}
             className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 disabled:opacity-40 transition-colors"
             title="Next Step (Right Arrow)"
+            aria-label="Next Step"
           >
             <SkipForward className="w-4 h-4" />
           </button>

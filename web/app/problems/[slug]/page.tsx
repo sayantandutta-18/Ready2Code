@@ -62,8 +62,10 @@ export default function ProblemSolvePage({ params }: { params: { slug: string } 
   const [activeTab, setActiveTab] = useState<
     "statement" | "hints" | "editorial" | "notes" | "ai" | "submissions"
   >("statement");
+  const [mobileView, setMobileView] = useState<"statement" | "editor">("statement");
   const [language, setLanguage] = useState<string>("python");
   const [code, setCode] = useState<string>("");
+  const [initialCode, setInitialCode] = useState<string>("");
 
   // Notes state & autosave
   const [noteContent, setNoteContent] = useState<string>("");
@@ -138,16 +140,17 @@ export default function ProblemSolvePage({ params }: { params: { slug: string } 
 
   // Set default starter template based on problem
   useEffect(() => {
+    let defaultCode = STARTER_CODES[language] || STARTER_CODES.python;
     if (slug === "two-sum") {
-      setCode(`def two_sum(nums, target):
+      defaultCode = `def two_sum(nums, target):
     seen = {}
     for i, x in enumerate(nums):
         if target - x in seen:
             return [seen[target - x], i]
         seen[x] = i
-    return []`);
+    return []`;
     } else if (slug === "valid-parentheses") {
-      setCode(`def is_valid(s):
+      defaultCode = `def is_valid(s):
     pairs = {')': '(', ']': '[', '}': '{'}
     stack = []
     for c in s:
@@ -156,11 +159,25 @@ export default function ProblemSolvePage({ params }: { params: { slug: string } 
                 return False
         else:
             stack.append(c)
-    return not stack`);
-    } else {
-      setCode(STARTER_CODES[language] || STARTER_CODES.python);
+    return not stack`;
     }
+    setCode(defaultCode);
+    setInitialCode(defaultCode);
   }, [slug, language]);
+
+  // Unsaved code confirmation before leaving (Phase 4 Requirement 5)
+  const isCodeDirty = code.trim().length > 0 && code !== initialCode;
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (isCodeDirty) {
+        e.preventDefault();
+        e.returnValue = "You have unsaved code changes. Are you sure you want to leave?";
+        return e.returnValue;
+      }
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [isCodeDirty]);
 
   // Autosave notes to server (Phase 3 Requirement 6)
   const handleNoteChange = (text: string) => {
@@ -369,10 +386,36 @@ export default function ProblemSolvePage({ params }: { params: { slug: string } 
         </div>
       </div>
 
+      {/* Mobile Tab Switcher (Phase 4 Requirement 2: Stacks above statement on mobile with tab switch down to 360px) */}
+      <div className="lg:hidden flex bg-[#0B1220] p-1.5 border-b border-slate-800 text-xs shrink-0">
+        <button
+          onClick={() => setMobileView("editor")}
+          className={`flex-1 py-1.5 font-bold text-center rounded-xl transition-all ${
+            mobileView === "editor"
+              ? "bg-gradient-to-r from-cyan-500/20 to-indigo-500/20 text-cyan-300 border border-cyan-500/30 shadow-sm"
+              : "text-slate-400 hover:text-white"
+          }`}
+        >
+          Code Editor
+        </button>
+        <button
+          onClick={() => setMobileView("statement")}
+          className={`flex-1 py-1.5 font-bold text-center rounded-xl transition-all ${
+            mobileView === "statement"
+              ? "bg-gradient-to-r from-cyan-500/20 to-indigo-500/20 text-cyan-300 border border-cyan-500/30 shadow-sm"
+              : "text-slate-400 hover:text-white"
+          }`}
+        >
+          Statement & Notes
+        </button>
+      </div>
+
       {/* Main Split Pane Layout */}
       <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 overflow-hidden">
         {/* Left Pane: Tabs (Description, Hints, Editorial, Notes, AI Review, Submissions) */}
-        <div className="lg:col-span-5 border-r border-slate-800 flex flex-col h-full bg-[#0D1524] overflow-hidden">
+        <div className={`lg:col-span-5 border-r border-slate-800 flex-col h-full bg-[#0D1524] overflow-hidden ${
+          mobileView === "statement" ? "flex" : "hidden lg:flex"
+        }`}>
           {/* Tab buttons */}
           <div className="flex items-center gap-1 p-2 bg-[#121C2F] border-b border-slate-800 text-xs overflow-x-auto">
             <button
@@ -642,7 +685,9 @@ export default function ProblemSolvePage({ params }: { params: { slug: string } 
         </div>
 
         {/* Right Pane: Monaco Code Editor & Execution Results */}
-        <div className="lg:col-span-7 flex flex-col h-full bg-[#0B1220] overflow-hidden">
+        <div className={`lg:col-span-7 flex-col h-full bg-[#0B1220] overflow-hidden ${
+          mobileView === "editor" ? "flex" : "hidden lg:flex"
+        }`}>
           {/* Code Editor */}
           <div className="flex-1 overflow-hidden p-3 pb-0">
             <CodeEditor
