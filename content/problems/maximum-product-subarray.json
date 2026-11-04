@@ -1,0 +1,61 @@
+{
+  "slug": "maximum-product-subarray",
+  "title": "Maximum Product Subarray",
+  "difficulty": "medium",
+  "topic": "Dynamic Programming",
+  "tags": [
+    "Array",
+    "Dynamic Programming"
+  ],
+  "company_tags": [
+    "Amazon",
+    "LinkedIn",
+    "Google",
+    "Microsoft"
+  ],
+  "statement_md": "Given an integer array `nums`, find a subarray that has the largest product, and return the product.\n\nThe test cases are generated so that the answer will fit in a 32-bit integer.",
+  "time_limit_ms": 1000,
+  "memory_limit_mb": 128,
+  "sample_tests": [
+    {
+      "input_text": "[2, 3, -2, 4]",
+      "expected_output": "6"
+    },
+    {
+      "input_text": "[-2, 0, -1]",
+      "expected_output": "0"
+    }
+  ],
+  "hidden_tests": [
+    {
+      "input_text": "[-2, 3, -4]",
+      "expected_output": "24"
+    },
+    {
+      "input_text": "[0, 2]",
+      "expected_output": "2"
+    },
+    {
+      "input_text": "[-2]",
+      "expected_output": "-2"
+    }
+  ],
+  "hints": [
+    {
+      "level": 1,
+      "text": "A negative number multiplied by a minimum (most negative) product becomes a maximum product.",
+      "xp_cost": 2
+    },
+    {
+      "level": 2,
+      "text": "Keep track of both the maximum and minimum product ending at the current position.",
+      "xp_cost": 5
+    },
+    {
+      "level": 3,
+      "text": "When current number is negative, swap max_prod and min_prod before updating.",
+      "xp_cost": 10
+    }
+  ],
+  "editorial_md": "### Dynamic Programming with Sign Flipping\n\n```python\ndef maxProduct(nums: list[int]) -> int:\n    res = nums[0]\n    cur_min, cur_max = 1, 1\n    for n in nums:\n        vals = (n, n * cur_max, n * cur_min)\n        cur_max = max(vals)\n        cur_min = min(vals)\n        res = max(res, cur_max)\n    return res\n```\n\n- **Time Complexity:** $O(n)$\n- **Space Complexity:** $O(1)$"
+}

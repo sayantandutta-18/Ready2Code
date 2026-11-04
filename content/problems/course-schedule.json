@@ -1,0 +1,70 @@
+{
+  "slug": "course-schedule",
+  "title": "Course Schedule",
+  "difficulty": "medium",
+  "topic": "Graphs",
+  "tags": [
+    "Depth-First Search",
+    "Breadth-First Search",
+    "Graph",
+    "Topological Sort"
+  ],
+  "company_tags": [
+    "Google",
+    "Amazon",
+    "Twitter"
+  ],
+  "statement_md": "There are a total of `numCourses` courses you have to take, labeled from `0` to `numCourses - 1`.\n\nYou are given an array `prerequisites` where `prerequisites[i] = [a_i, b_i]` indicates that you **must** take course $b_i$ first if you want to take course $a_i$.\n\nReturn `true` if you can finish all courses. Otherwise, return `false`.",
+  "time_limit_ms": 1500,
+  "memory_limit_mb": 128,
+  "sample_tests": [
+    {
+      "input_text": "2\n[[1, 0]]",
+      "expected_output": "true"
+    },
+    {
+      "input_text": "2\n[[1, 0], [0, 1]]",
+      "expected_output": "false"
+    }
+  ],
+  "hidden_tests": [
+    {
+      "input_text": "1\n[]",
+      "expected_output": "true"
+    },
+    {
+      "input_text": "3\n[[0, 1], [0, 2], [1, 2]]",
+      "expected_output": "true"
+    },
+    {
+      "input_text": "4\n[[2, 0], [1, 0], [3, 1], [3, 2], [1, 3]]",
+      "expected_output": "false"
+    },
+    {
+      "input_text": "5\n[[1, 4], [2, 4], [3, 1], [3, 2]]",
+      "expected_output": "true"
+    },
+    {
+      "input_text": "3\n[[1, 0], [2, 1], [0, 2]]",
+      "expected_output": "false"
+    }
+  ],
+  "hints": [
+    {
+      "level": 1,
+      "text": "This problem boils down to detecting whether a directed cycle exists in a graph.",
+      "xp_cost": 2
+    },
+    {
+      "level": 2,
+      "text": "Use Kahn's algorithm (Topological sort using in-degree array and queue) or 3-color DFS.",
+      "xp_cost": 5
+    },
+    {
+      "level": 3,
+      "text": "Count nodes with in-degree 0; enqueue them; decrement in-degrees of neighbors. If processed count == numCourses, return True.",
+      "xp_cost": 10
+    }
+  ],
+  "editorial_md": "### Optimal Approach: Kahn's Algorithm (Topological Sort)\nCycle detection in directed graphs via in-degree tracking and BFS.\n- **Time Complexity:** $O(V + E)$\n- **Space Complexity:** $O(V + E)$"
+}

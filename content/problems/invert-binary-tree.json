@@ -1,0 +1,63 @@
+{
+  "slug": "invert-binary-tree",
+  "title": "Invert Binary Tree",
+  "difficulty": "easy",
+  "topic": "Trees",
+  "tags": [
+    "Tree",
+    "DFS",
+    "BFS",
+    "Binary Tree"
+  ],
+  "company_tags": [
+    "Google",
+    "Amazon",
+    "Meta",
+    "Twitter"
+  ],
+  "statement_md": "Given the `root` of a binary tree represented as an array in level-order, invert the tree, and return its root representation.\n\nInverting a tree swaps every left child with its right child.",
+  "time_limit_ms": 1000,
+  "memory_limit_mb": 128,
+  "sample_tests": [
+    {
+      "input_text": "[4, 2, 7, 1, 3, 6, 9]",
+      "expected_output": "[4, 7, 2, 9, 6, 3, 1]"
+    },
+    {
+      "input_text": "[2, 1, 3]",
+      "expected_output": "[2, 3, 1]"
+    },
+    {
+      "input_text": "[]",
+      "expected_output": "[]"
+    }
+  ],
+  "hidden_tests": [
+    {
+      "input_text": "[1, 2]",
+      "expected_output": "[1, null, 2]"
+    },
+    {
+      "input_text": "[1]",
+      "expected_output": "[1]"
+    }
+  ],
+  "hints": [
+    {
+      "level": 1,
+      "text": "What does inverting a node mean? Swapping its left and right pointers.",
+      "xp_cost": 2
+    },
+    {
+      "level": 2,
+      "text": "Recursively invert the left subtree, recursively invert the right subtree, and swap them.",
+      "xp_cost": 5
+    },
+    {
+      "level": 3,
+      "text": "Base case: if node is None/null, return None.",
+      "xp_cost": 10
+    }
+  ],
+  "editorial_md": "### Recursive Depth-First Search\n\nFor each node:\n1. Base case: if node is null, return null.\n2. Swap left and right child pointers.\n3. Recursively call invert on left and right children.\n\n```python\ndef invertTree(root):\n    if not root:\n        return None\n    root.left, root.right = invertTree(root.right), invertTree(root.left)\n    return root\n```\n\n- **Time Complexity:** $O(n)$ visiting each node once.\n- **Space Complexity:** $O(h)$ recursion stack where $h$ is tree height."
+}

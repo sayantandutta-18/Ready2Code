@@ -1,0 +1,71 @@
+{
+  "slug": "kth-largest-element-in-an-array",
+  "title": "Kth Largest Element in an Array",
+  "difficulty": "medium",
+  "topic": "Arrays",
+  "tags": [
+    "Array",
+    "Divide and Conquer",
+    "Sorting",
+    "Heap",
+    "Quickselect"
+  ],
+  "company_tags": [
+    "Meta",
+    "Amazon",
+    "LinkedIn"
+  ],
+  "statement_md": "Given an integer array `nums` and an integer `k`, return the $k^{\\text{th}}$ largest element in the array.\n\nNote that it is the $k^{\\text{th}}$ largest element in the sorted order, not the $k^{\\text{th}}$ distinct element.\n\nCan you solve it without sorting in $O(n)$ average time?",
+  "time_limit_ms": 1000,
+  "memory_limit_mb": 128,
+  "sample_tests": [
+    {
+      "input_text": "[3, 2, 1, 5, 6, 4]\n2",
+      "expected_output": "5"
+    },
+    {
+      "input_text": "[3, 2, 3, 1, 2, 4, 5, 5, 6]\n4",
+      "expected_output": "4"
+    }
+  ],
+  "hidden_tests": [
+    {
+      "input_text": "[1]\n1",
+      "expected_output": "1"
+    },
+    {
+      "input_text": "[7, 6, 5, 4, 3, 2, 1]\n5",
+      "expected_output": "3"
+    },
+    {
+      "input_text": "[-1, -2, -3, -4, -5]\n2",
+      "expected_output": "-2"
+    },
+    {
+      "input_text": "[10, 10, 10, 10]\n1",
+      "expected_output": "10"
+    },
+    {
+      "input_text": "[100, 200, 300, 400, 500]\n3",
+      "expected_output": "300"
+    }
+  ],
+  "hints": [
+    {
+      "level": 1,
+      "text": "A Min-Heap of size K maintains the K largest elements seen so far.",
+      "xp_cost": 2
+    },
+    {
+      "level": 2,
+      "text": "Push into min-heap; when size exceeds K, pop the smallest element.",
+      "xp_cost": 5
+    },
+    {
+      "level": 3,
+      "text": "At the end, top of min-heap is the kth largest element. Or use QuickSelect for O(n) average.",
+      "xp_cost": 10
+    }
+  ],
+  "editorial_md": "### Optimal Approach: Min-Heap or QuickSelect\nA min-heap of capacity $k$ keeps the $k$ greatest items in $O(n \\log k)$ time and $O(k)$ space.\n- **Time Complexity:** $O(n \\log k)$ heap or $O(n)$ average QuickSelect\n- **Space Complexity:** $O(k)$"
+}

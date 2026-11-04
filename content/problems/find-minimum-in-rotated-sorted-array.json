@@ -1,0 +1,72 @@
+{
+  "slug": "find-minimum-in-rotated-sorted-array",
+  "title": "Find Minimum in Rotated Sorted Array",
+  "difficulty": "medium",
+  "topic": "Binary Search",
+  "tags": [
+    "Array",
+    "Binary Search"
+  ],
+  "company_tags": [
+    "Microsoft",
+    "Amazon",
+    "Google"
+  ],
+  "statement_md": "Suppose an array of length `n` sorted in ascending order is **rotated** between 1 and `n` times.\n\nGiven the sorted rotated array `nums` of **unique** elements, return the minimum element of this array.\n\nYou must write an algorithm that runs in $O(\\log n)$ time.",
+  "time_limit_ms": 1000,
+  "memory_limit_mb": 128,
+  "sample_tests": [
+    {
+      "input_text": "[3, 4, 5, 1, 2]",
+      "expected_output": "1"
+    },
+    {
+      "input_text": "[4, 5, 6, 7, 0, 1, 2]",
+      "expected_output": "0"
+    },
+    {
+      "input_text": "[11, 13, 15, 17]",
+      "expected_output": "11"
+    }
+  ],
+  "hidden_tests": [
+    {
+      "input_text": "[2, 1]",
+      "expected_output": "1"
+    },
+    {
+      "input_text": "[1]",
+      "expected_output": "1"
+    },
+    {
+      "input_text": "[5, 1, 2, 3, 4]",
+      "expected_output": "1"
+    },
+    {
+      "input_text": "[10, 20, 30, 40, 50, 1, 2]",
+      "expected_output": "1"
+    },
+    {
+      "input_text": "[7, 8, 9, 10, 2, 3, 4, 5, 6]",
+      "expected_output": "2"
+    }
+  ],
+  "hints": [
+    {
+      "level": 1,
+      "text": "Compare nums[mid] with nums[right].",
+      "xp_cost": 2
+    },
+    {
+      "level": 2,
+      "text": "If nums[mid] > nums[right], the inflection point (minimum) must lie strictly to the right: left = mid + 1.",
+      "xp_cost": 5
+    },
+    {
+      "level": 3,
+      "text": "Otherwise, nums[mid] <= nums[right], so minimum is at mid or to the left: right = mid.",
+      "xp_cost": 10
+    }
+  ],
+  "editorial_md": "### Optimal Approach: Binary Search on Inflection Point\nComparing mid with the rightmost element reliably identifies which half contains the rotation pivot.\n- **Time Complexity:** $O(\\log n)$\n- **Space Complexity:** $O(1)$"
+}

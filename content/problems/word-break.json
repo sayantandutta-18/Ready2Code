@@ -1,0 +1,74 @@
+{
+  "slug": "word-break",
+  "title": "Word Break",
+  "difficulty": "medium",
+  "topic": "DP",
+  "tags": [
+    "Hash Table",
+    "String",
+    "Dynamic Programming",
+    "Trie"
+  ],
+  "company_tags": [
+    "Amazon",
+    "Meta",
+    "Bloomberg"
+  ],
+  "statement_md": "Given a string `s` and a dictionary of strings `wordDict`, return `true` if `s` can be segmented into a space-separated sequence of one or more dictionary words.\n\nNote that the same word in the dictionary may be reused multiple times in the segmentation.",
+  "time_limit_ms": 1000,
+  "memory_limit_mb": 128,
+  "sample_tests": [
+    {
+      "input_text": "\"leetcode\"\n[\"leet\", \"code\"]",
+      "expected_output": "true"
+    },
+    {
+      "input_text": "\"applepenapple\"\n[\"apple\", \"pen\"]",
+      "expected_output": "true"
+    },
+    {
+      "input_text": "\"catsandog\"\n[\"cats\", \"dog\", \"sand\", \"and\", \"cat\"]",
+      "expected_output": "false"
+    }
+  ],
+  "hidden_tests": [
+    {
+      "input_text": "\"a\"\n[\"a\"]",
+      "expected_output": "true"
+    },
+    {
+      "input_text": "\"a\"\n[\"b\"]",
+      "expected_output": "false"
+    },
+    {
+      "input_text": "\"bb\"\n[\"a\", \"b\", \"bbb\", \"bbbb\"]",
+      "expected_output": "true"
+    },
+    {
+      "input_text": "\"goalspecial\"\n[\"go\", \"goal\", \"goals\", \"special\"]",
+      "expected_output": "true"
+    },
+    {
+      "input_text": "\"cars\"\n[\"car\", \"ca\", \"rs\"]",
+      "expected_output": "true"
+    }
+  ],
+  "hints": [
+    {
+      "level": 1,
+      "text": "Let dp[i] be True if prefix s[:i] can be segmented.",
+      "xp_cost": 2
+    },
+    {
+      "level": 2,
+      "text": "Base case: dp[0] = True (empty string).",
+      "xp_cost": 5
+    },
+    {
+      "level": 3,
+      "text": "For i from 1 to len(s): for word in wordDict: if i >= len(word) and s[i-len(word):i] == word and dp[i-len(word)]: dp[i] = True.",
+      "xp_cost": 10
+    }
+  ],
+  "editorial_md": "### Optimal Approach: Dynamic Programming\nBottom-up bool array `dp` where `dp[i]` records whether prefix of length $i$ is segmentable.\n- **Time Complexity:** $O(n^2 \\cdot k)$ or $O(n \\cdot m)$ where $m$ is number of words\n- **Space Complexity:** $O(n)$"
+}

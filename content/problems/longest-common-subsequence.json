@@ -1,0 +1,61 @@
+{
+  "slug": "longest-common-subsequence",
+  "title": "Longest Common Subsequence",
+  "difficulty": "medium",
+  "topic": "Dynamic Programming",
+  "tags": [
+    "String",
+    "Dynamic Programming"
+  ],
+  "company_tags": [
+    "Amazon",
+    "Microsoft",
+    "Google",
+    "Apple"
+  ],
+  "statement_md": "Given two strings `text1` and `text2`, return the length of their longest common subsequence. If there is no common subsequence, return `0`.\n\nA **subsequence** of a string is a new string generated from the original string with some characters (can be none) deleted without changing the relative order of the remaining characters.",
+  "time_limit_ms": 1000,
+  "memory_limit_mb": 128,
+  "sample_tests": [
+    {
+      "input_text": "\"abcde\"\n\"ace\"",
+      "expected_output": "3"
+    },
+    {
+      "input_text": "\"abc\"\n\"abc\"",
+      "expected_output": "3"
+    },
+    {
+      "input_text": "\"abc\"\n\"def\"",
+      "expected_output": "0"
+    }
+  ],
+  "hidden_tests": [
+    {
+      "input_text": "\"oxcp\"\n\"pxo\"",
+      "expected_output": "1"
+    },
+    {
+      "input_text": "\"ezupkr\"\n\"ubmrapg\"",
+      "expected_output": "2"
+    }
+  ],
+  "hints": [
+    {
+      "level": 1,
+      "text": "If text1[i] == text2[j], LCS increases by 1.",
+      "xp_cost": 2
+    },
+    {
+      "level": 2,
+      "text": "Otherwise, take max(LCS(i-1, j), LCS(i, j-1)).",
+      "xp_cost": 5
+    },
+    {
+      "level": 3,
+      "text": "Build a 2D DP table of size (len(text1)+1) x (len(text2)+1).",
+      "xp_cost": 10
+    }
+  ],
+  "editorial_md": "### 2D Dynamic Programming\n\nLet $dp[i][j]$ be LCS length for prefixes $text1[:i]$ and $text2[:j]$.\n- If $text1[i-1] == text2[j-1]$: $dp[i][j] = 1 + dp[i-1][j-1]$\n- Else: $dp[i][j] = \\max(dp[i-1][j], dp[i][j-1])$\n\n```python\ndef longestCommonSubsequence(text1: str, text2: str) -> int:\n    m, n = len(text1), len(text2)\n    dp = [[0] * (n + 1) for _ in range(m + 1)]\n    for i in range(1, m + 1):\n        for j in range(1, n + 1):\n            if text1[i - 1] == text2[j - 1]:\n                dp[i][j] = 1 + dp[i - 1][j - 1]\n            else:\n                dp[i][j] = max(dp[i - 1][j], dp[i][j - 1])\n    return dp[m][n]\n```\n\n- **Time Complexity:** $O(m \\times n)$\n- **Space Complexity:** $O(m \\times n)$"
+}

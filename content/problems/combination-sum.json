@@ -1,0 +1,61 @@
+{
+  "slug": "combination-sum",
+  "title": "Combination Sum",
+  "difficulty": "medium",
+  "topic": "Arrays",
+  "tags": [
+    "Array",
+    "Backtracking"
+  ],
+  "company_tags": [
+    "Airbnb",
+    "Meta",
+    "Amazon",
+    "Microsoft"
+  ],
+  "statement_md": "Given an array of **distinct** integers `candidates` and a target integer `target`, return a list of all **unique combinations** of `candidates` where the chosen numbers sum to `target`. You may return the combinations in any order.\n\nThe **same** number may be chosen from `candidates` an unlimited number of times.",
+  "time_limit_ms": 1000,
+  "memory_limit_mb": 128,
+  "sample_tests": [
+    {
+      "input_text": "[2, 3, 6, 7]\n7",
+      "expected_output": "[[2, 2, 3], [7]]"
+    },
+    {
+      "input_text": "[2, 3, 5]\n8",
+      "expected_output": "[[2, 2, 2, 2], [2, 3, 3], [3, 5]]"
+    },
+    {
+      "input_text": "[2]\n1",
+      "expected_output": "[]"
+    }
+  ],
+  "hidden_tests": [
+    {
+      "input_text": "[1]\n2",
+      "expected_output": "[[1, 1]]"
+    },
+    {
+      "input_text": "[3, 5, 8]\n11",
+      "expected_output": "[[3, 3, 5], [3, 8]]"
+    }
+  ],
+  "hints": [
+    {
+      "level": 1,
+      "text": "At each step, you can either pick the current number again or move to the next candidate.",
+      "xp_cost": 2
+    },
+    {
+      "level": 2,
+      "text": "Backtrack by pushing the candidate, exploring, and popping it off.",
+      "xp_cost": 5
+    },
+    {
+      "level": 3,
+      "text": "Prune branches where running total exceeds target.",
+      "xp_cost": 10
+    }
+  ],
+  "editorial_md": "### Backtracking Search\n\n```python\ndef combinationSum(candidates: list[int], target: int) -> list[list[int]]:\n    res = []\n    def backtrack(idx, current, remaining):\n        if remaining == 0:\n            res.append(list(current))\n            return\n        if remaining < 0 or idx >= len(candidates):\n            return\n        \n        # Include current candidate\n        current.append(candidates[idx])\n        backtrack(idx, current, remaining - candidates[idx])\n        current.pop()\n        \n        # Skip current candidate\n        backtrack(idx + 1, current, remaining)\n        \n    backtrack(0, [], target)\n    return res\n```\n\n- **Time Complexity:** $O(2^t)$ where $t = target / \\min(candidates)$.\n- **Space Complexity:** $O(t)$ recursion depth."
+}

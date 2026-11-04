@@ -1,0 +1,69 @@
+{
+  "slug": "decode-ways",
+  "title": "Decode Ways",
+  "difficulty": "medium",
+  "topic": "Dynamic Programming",
+  "tags": [
+    "String",
+    "Dynamic Programming"
+  ],
+  "company_tags": [
+    "Meta",
+    "Amazon",
+    "Uber",
+    "Google"
+  ],
+  "statement_md": "A message containing letters from A-Z can be encoded into numbers using the following mapping:\n'A' -> \"1\", 'B' -> \"2\", ... 'Z' -> \"26\".\n\nTo decode an encoded message, all the digits must be grouped and mapped back into letters.\n\nGiven a string `s` containing only digits, return the **number of ways** to decode it.",
+  "time_limit_ms": 1000,
+  "memory_limit_mb": 128,
+  "sample_tests": [
+    {
+      "input_text": "\"12\"",
+      "expected_output": "2"
+    },
+    {
+      "input_text": "\"226\"",
+      "expected_output": "3"
+    },
+    {
+      "input_text": "\"06\"",
+      "expected_output": "0"
+    }
+  ],
+  "hidden_tests": [
+    {
+      "input_text": "\"0\"",
+      "expected_output": "0"
+    },
+    {
+      "input_text": "\"10\"",
+      "expected_output": "1"
+    },
+    {
+      "input_text": "\"27\"",
+      "expected_output": "1"
+    },
+    {
+      "input_text": "\"1111111111\"",
+      "expected_output": "89"
+    }
+  ],
+  "hints": [
+    {
+      "level": 1,
+      "text": "A leading zero can never be decoded.",
+      "xp_cost": 2
+    },
+    {
+      "level": 2,
+      "text": "At index i, consider decoding 1 digit s[i-1] (valid if != '0') and 2 digits s[i-2:i] (valid if between 10 and 26).",
+      "xp_cost": 5
+    },
+    {
+      "level": 3,
+      "text": "Similar to Fibonacci sequence with conditional additions.",
+      "xp_cost": 10
+    }
+  ],
+  "editorial_md": "### Constant-Space Dynamic Programming\n\n```python\ndef numDecodings(s: str) -> int:\n    if not s or s[0] == '0':\n        return 0\n    prev2, prev1 = 1, 1\n    for i in range(1, len(s)):\n        cur = 0\n        if s[i] != '0':\n            cur += prev1\n        two_digit = int(s[i - 1:i + 1])\n        if 10 <= two_digit <= 26:\n            cur += prev2\n        prev2, prev1 = prev1, cur\n    return prev1\n```\n\n- **Time Complexity:** $O(n)$\n- **Space Complexity:** $O(1)$"
+}

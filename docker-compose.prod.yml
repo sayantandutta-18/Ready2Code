@@ -1,0 +1,111 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: ready2code-postgres-prod
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-ready2code}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-ready2code_secure_pass_2026}
+      POSTGRES_DB: ${POSTGRES_DB:-ready2code_prod}
+    volumes:
+      - pgdata_prod:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ready2code -d ready2code_prod"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - ready2code-internal
+
+  redis:
+    image: redis:7-alpine
+    container_name: ready2code-redis-prod
+    restart: always
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-ready2code_redis_secret}
+    volumes:
+      - redisdata_prod:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD:-ready2code_redis_secret}", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - ready2code-internal
+
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: ready2code-api-prod
+    restart: always
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-ready2code}:${POSTGRES_PASSWORD:-ready2code_secure_pass_2026}@postgres:5432/${POSTGRES_DB:-ready2code_prod}
+      REDIS_URL: redis://:${REDIS_PASSWORD:-ready2code_redis_secret}@redis:6379/0
+      JUDGE0_URL: http://judge0:2358
+      ENVIRONMENT: production
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - ready2code-internal
+
+  web:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+    container_name: ready2code-web-prod
+    restart: always
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+    depends_on:
+      - api
+    networks:
+      - ready2code-internal
+
+  judge0:
+    image: judge0/judge0:latest
+    container_name: ready2code-judge0-prod
+    restart: always
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-ready2code_redis_secret}
+      - POSTGRES_HOST=postgres
+      - POSTGRES_USER=${POSTGRES_USER:-ready2code}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-ready2code_secure_pass_2026}
+      - POSTGRES_DB=${POSTGRES_DB:-ready2code_prod}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - ready2code-internal
+
+  nginx:
+    image: nginx:alpine
+    container_name: ready2code-nginx-prod
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - web
+      - api
+    networks:
+      - ready2code-internal
+
+networks:
+  ready2code-internal:
+    driver: bridge
+
+volumes:
+  pgdata_prod:
+  redisdata_prod:

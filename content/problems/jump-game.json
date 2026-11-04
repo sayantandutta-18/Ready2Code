@@ -1,0 +1,62 @@
+{
+  "slug": "jump-game",
+  "title": "Jump Game",
+  "difficulty": "medium",
+  "topic": "Dynamic Programming",
+  "tags": [
+    "Array",
+    "Dynamic Programming",
+    "Greedy"
+  ],
+  "company_tags": [
+    "Amazon",
+    "Apple",
+    "Google",
+    "Microsoft"
+  ],
+  "statement_md": "You are given an integer array `nums`. You are initially positioned at the array's **first index**, and each element in the array represents your maximum jump length at that position.\n\nReturn `true` if you can reach the last index, or `false` otherwise.",
+  "time_limit_ms": 1000,
+  "memory_limit_mb": 128,
+  "sample_tests": [
+    {
+      "input_text": "[2, 3, 1, 1, 4]",
+      "expected_output": "true"
+    },
+    {
+      "input_text": "[3, 2, 1, 0, 4]",
+      "expected_output": "false"
+    }
+  ],
+  "hidden_tests": [
+    {
+      "input_text": "[0]",
+      "expected_output": "true"
+    },
+    {
+      "input_text": "[2, 0, 0]",
+      "expected_output": "true"
+    },
+    {
+      "input_text": "[1, 0, 1, 0]",
+      "expected_output": "false"
+    }
+  ],
+  "hints": [
+    {
+      "level": 1,
+      "text": "Track the furthest index reachable so far.",
+      "xp_cost": 2
+    },
+    {
+      "level": 2,
+      "text": "If the current index i exceeds the max reachable index, you are stuck.",
+      "xp_cost": 5
+    },
+    {
+      "level": 3,
+      "text": "At each step: max_reach = max(max_reach, i + nums[i]). If max_reach >= n - 1, return true.",
+      "xp_cost": 10
+    }
+  ],
+  "editorial_md": "### Greedy Reachability\n\nMaintain variable `max_reach = 0`. Iterate through array:\n1. If $i > max\\_reach$, index $i$ cannot be reached -> return `False`.\n2. Update $max\\_reach = \\max(max\\_reach, i + nums[i])$.\n3. If $max\\_reach \\ge n - 1$, return `True`.\n\n```python\ndef canJump(nums: list[int]) -> bool:\n    max_reach = 0\n    for i, jump in enumerate(nums):\n        if i > max_reach:\n            return False\n        max_reach = max(max_reach, i + jump)\n    return True\n```\n\n- **Time Complexity:** $O(n)$\n- **Space Complexity:** $O(1)$"
+}

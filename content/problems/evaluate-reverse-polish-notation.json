@@ -1,0 +1,57 @@
+{
+  "slug": "evaluate-reverse-polish-notation",
+  "title": "Evaluate Reverse Polish Notation",
+  "difficulty": "medium",
+  "topic": "Stack and Queue",
+  "tags": [
+    "Array",
+    "Math",
+    "Stack"
+  ],
+  "company_tags": [
+    "LinkedIn",
+    "Amazon",
+    "Microsoft"
+  ],
+  "statement_md": "You are given an array of strings `tokens` that represents an arithmetic expression in a Reverse Polish Notation.\n\nEvaluate the expression. Return an integer that represents the value of the expression.\n\nNote that division between two integers always **truncates toward zero**.",
+  "time_limit_ms": 1000,
+  "memory_limit_mb": 128,
+  "sample_tests": [
+    {
+      "input_text": "[\"2\", \"1\", \"+\", \"3\", \"*\"]",
+      "expected_output": "9"
+    },
+    {
+      "input_text": "[\"4\", \"13\", \"5\", \"/\", \"+\"]",
+      "expected_output": "6"
+    }
+  ],
+  "hidden_tests": [
+    {
+      "input_text": "[\"10\", \"6\", \"9\", \"3\", \"+\", \"-11\", \"*\", \"/\", \"*\", \"17\", \"+\", \"5\", \"+\"]",
+      "expected_output": "22"
+    },
+    {
+      "input_text": "[\"3\"]",
+      "expected_output": "3"
+    }
+  ],
+  "hints": [
+    {
+      "level": 1,
+      "text": "Use a stack. Push numbers onto the stack.",
+      "xp_cost": 2
+    },
+    {
+      "level": 2,
+      "text": "When encountering an operator, pop two operands, apply operator, and push result back.",
+      "xp_cost": 5
+    },
+    {
+      "level": 3,
+      "text": "Be careful with operand order for subtraction and division: b = pop(), a = pop(), calculate a op b.",
+      "xp_cost": 10
+    }
+  ],
+  "editorial_md": "### Stack Evaluation\n\n```python\ndef evalRPN(tokens: list[str]) -> int:\n    stack = []\n    for token in tokens:\n        if token in \"+-*/\":\n            b = stack.pop()\n            a = stack.pop()\n            if token == '+': stack.append(a + b)\n            elif token == '-': stack.append(a - b)\n            elif token == '*': stack.append(a * b)\n            elif token == '/': stack.append(int(a / b))\n        else:\n            stack.append(int(token))\n    return stack[0]\n```\n\n- **Time Complexity:** $O(n)$\n- **Space Complexity:** $O(n)$"
+}

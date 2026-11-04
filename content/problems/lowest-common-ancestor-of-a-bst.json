@@ -1,0 +1,69 @@
+{
+  "slug": "lowest-common-ancestor-of-a-bst",
+  "title": "Lowest Common Ancestor of a BST",
+  "difficulty": "easy",
+  "topic": "Trees",
+  "tags": [
+    "Tree",
+    "Design",
+    "Binary Search Tree"
+  ],
+  "company_tags": [
+    "Amazon",
+    "Microsoft",
+    "Meta"
+  ],
+  "statement_md": "Given a binary search tree (BST), find the lowest common ancestor (LCA) node of two given nodes `p` and `q`.\n\nThe lowest common ancestor is defined between two nodes `p` and `q` as the lowest node in `T` that has both `p` and `q` as descendants.",
+  "time_limit_ms": 1000,
+  "memory_limit_mb": 128,
+  "sample_tests": [
+    {
+      "input_text": "[6, 2, 8, 0, 4, 7, 9, null, null, 3, 5]\n2\n8",
+      "expected_output": "6"
+    },
+    {
+      "input_text": "[6, 2, 8, 0, 4, 7, 9, null, null, 3, 5]\n2\n4",
+      "expected_output": "2"
+    }
+  ],
+  "hidden_tests": [
+    {
+      "input_text": "[2, 1]\n2\n1",
+      "expected_output": "2"
+    },
+    {
+      "input_text": "[5, 3, 6, 2, 4, null, null, 1]\n1\n4",
+      "expected_output": "3"
+    },
+    {
+      "input_text": "[10, 5, 15, 3, 7, 12, 18]\n12\n18",
+      "expected_output": "15"
+    },
+    {
+      "input_text": "[10, 5, 15, 3, 7, 12, 18]\n3\n18",
+      "expected_output": "10"
+    },
+    {
+      "input_text": "[8, 4, 12, 2, 6, 10, 14]\n2\n6",
+      "expected_output": "4"
+    }
+  ],
+  "hints": [
+    {
+      "level": 1,
+      "text": "Use the BST property: left subtree < root < right subtree.",
+      "xp_cost": 2
+    },
+    {
+      "level": 2,
+      "text": "If both p and q are greater than root, LCA must be in right subtree.",
+      "xp_cost": 5
+    },
+    {
+      "level": 3,
+      "text": "If both are smaller than root, LCA is in left subtree. Otherwise, current root is the split point (LCA).",
+      "xp_cost": 10
+    }
+  ],
+  "editorial_md": "### Optimal Approach: BST Path Split\nTraverse down the tree: as soon as `p` and `q` diverge to opposite sides of `root`, the current node is the LCA.\n- **Time Complexity:** $O(h)$ where $h$ is tree height\n- **Space Complexity:** $O(1)$"
+}

@@ -1,0 +1,62 @@
+{
+  "slug": "letter-combinations-of-a-phone-number",
+  "title": "Letter Combinations of a Phone Number",
+  "difficulty": "medium",
+  "topic": "Strings",
+  "tags": [
+    "Hash Table",
+    "String",
+    "Backtracking"
+  ],
+  "company_tags": [
+    "Amazon",
+    "Meta",
+    "Google",
+    "Microsoft"
+  ],
+  "statement_md": "Given a string containing digits from `2-9` inclusive, return all possible letter combinations that the number could represent. Return the answer in **any order**.\n\nA mapping of digits to letters (just like on telephone buttons) is given:\n2: 'abc', 3: 'def', 4: 'ghi', 5: 'jkl', 6: 'mno', 7: 'pqrs', 8: 'tuv', 9: 'wxyz'.",
+  "time_limit_ms": 1000,
+  "memory_limit_mb": 128,
+  "sample_tests": [
+    {
+      "input_text": "\"23\"",
+      "expected_output": "[\"ad\", \"ae\", \"af\", \"bd\", \"be\", \"bf\", \"cd\", \"ce\", \"cf\"]"
+    },
+    {
+      "input_text": "\"\"",
+      "expected_output": "[]"
+    },
+    {
+      "input_text": "\"2\"",
+      "expected_output": "[\"a\", \"b\", \"c\"]"
+    }
+  ],
+  "hidden_tests": [
+    {
+      "input_text": "\"7\"",
+      "expected_output": "[\"p\", \"q\", \"r\", \"s\"]"
+    },
+    {
+      "input_text": "\"234\"",
+      "expected_output": "[\"adg\", \"adh\", \"adi\", \"aeg\", \"aeh\", \"aei\", \"afg\", \"afh\", \"afi\", \"bdg\", \"bdh\", \"bdi\", \"beg\", \"beh\", \"bei\", \"bfg\", \"bfh\", \"bfi\", \"cdg\", \"cdh\", \"cdi\", \"ceg\", \"ceh\", \"cei\", \"cfg\", \"cfh\", \"cfi\"]"
+    }
+  ],
+  "hints": [
+    {
+      "level": 1,
+      "text": "Map digits to characters using a dictionary.",
+      "xp_cost": 2
+    },
+    {
+      "level": 2,
+      "text": "Use depth-first search where each digit level branches out to its mapped characters.",
+      "xp_cost": 5
+    },
+    {
+      "level": 3,
+      "text": "Base case: when current combination length equals digits length, add to results.",
+      "xp_cost": 10
+    }
+  ],
+  "editorial_md": "### Backtracking Search\n\n```python\ndef letterCombinations(digits: str) -> list[str]:\n    if not digits:\n        return []\n    mapping = {\n        '2': \"abc\", '3': \"def\", '4': \"ghi\", '5': \"jkl\",\n        '6': \"mno\", '7': \"pqrs\", '8': \"tuv\", '9': \"wxyz\"\n    }\n    res = []\n    def backtrack(idx, current):\n        if idx == len(digits):\n            res.append(current)\n            return\n        for char in mapping[digits[idx]]:\n            backtrack(idx + 1, current + char)\n    backtrack(0, \"\")\n    return res\n```\n\n- **Time Complexity:** $O(4^n)$\n- **Space Complexity:** $O(n)$"
+}

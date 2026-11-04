@@ -1,0 +1,58 @@
+{
+  "slug": "longest-repeating-character-replacement",
+  "title": "Longest Repeating Character Replacement",
+  "difficulty": "medium",
+  "topic": "Strings",
+  "tags": [
+    "Hash Table",
+    "String",
+    "Sliding Window"
+  ],
+  "company_tags": [
+    "Amazon",
+    "Google",
+    "Meta",
+    "Uber"
+  ],
+  "statement_md": "You are given a string `s` and an integer `k`. You can choose any character of the string and change it to any other uppercase English character. You can perform this operation at most `k` times.\n\nReturn the length of the longest substring containing the same letter you can get after performing the above operations.",
+  "time_limit_ms": 1000,
+  "memory_limit_mb": 128,
+  "sample_tests": [
+    {
+      "input_text": "\"ABAB\"\n2",
+      "expected_output": "4"
+    },
+    {
+      "input_text": "\"AABABBA\"\n1",
+      "expected_output": "4"
+    }
+  ],
+  "hidden_tests": [
+    {
+      "input_text": "\"AAAA\"\n2",
+      "expected_output": "4"
+    },
+    {
+      "input_text": "\"ABCDE\"\n1",
+      "expected_output": "2"
+    }
+  ],
+  "hints": [
+    {
+      "level": 1,
+      "text": "Use a sliding window [l, r]. Window length is (r - l + 1).",
+      "xp_cost": 2
+    },
+    {
+      "level": 2,
+      "text": "The number of replacements needed in the window is window_length - max_frequency.",
+      "xp_cost": 5
+    },
+    {
+      "level": 3,
+      "text": "If (r - l + 1) - max_freq > k, shrink window from left.",
+      "xp_cost": 10
+    }
+  ],
+  "editorial_md": "### Sliding Window with Character Frequency\n\nMaintain a counts map of characters in the window and track `max_freq`.\nCondition for valid window: `(r - l + 1) - max_freq <= k`.\nWhen invalid, decrement count of `s[l]` and increment `l`.\n\n```python\ndef characterReplacement(s: str, k: int) -> int:\n    counts = {}\n    l = 0\n    max_f = 0\n    max_len = 0\n    for r in range(len(s)):\n        counts[s[r]] = counts.get(s[r], 0) + 1\n        max_f = max(max_f, counts[s[r]])\n        while (r - l + 1) - max_f > k:\n            counts[s[l]] -= 1\n            l += 1\n        max_len = max(max_len, r - l + 1)\n    return max_len\n```\n\n- **Time Complexity:** $O(n)$\n- **Space Complexity:** $O(1)$ (26 letters)."
+}

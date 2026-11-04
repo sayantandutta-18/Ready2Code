@@ -1,0 +1,66 @@
+{
+  "slug": "linked-list-cycle",
+  "title": "Linked List Cycle",
+  "difficulty": "easy",
+  "topic": "Linked List",
+  "tags": [
+    "Linked List",
+    "Two Pointers",
+    "Floyd's Cycle"
+  ],
+  "company_tags": [
+    "Microsoft",
+    "Amazon",
+    "Apple",
+    "Spotify"
+  ],
+  "statement_md": "Given the `head` of a linked list represented as an array of values and a cycle index `pos` (-1 if no cycle), determine if the linked list has a cycle in it.\n\nReturn `true` if there is a cycle in the linked list. Otherwise, return `false`.",
+  "time_limit_ms": 1000,
+  "memory_limit_mb": 128,
+  "sample_tests": [
+    {
+      "input_text": "[3, 2, 0, -4]\n1",
+      "expected_output": "true"
+    },
+    {
+      "input_text": "[1, 2]\n0",
+      "expected_output": "true"
+    },
+    {
+      "input_text": "[1]\n-1",
+      "expected_output": "false"
+    }
+  ],
+  "hidden_tests": [
+    {
+      "input_text": "[]\n-1",
+      "expected_output": "false"
+    },
+    {
+      "input_text": "[1, 2, 3, 4, 5]\n-1",
+      "expected_output": "false"
+    },
+    {
+      "input_text": "[1, 2, 3, 4, 5]\n4",
+      "expected_output": "true"
+    }
+  ],
+  "hints": [
+    {
+      "level": 1,
+      "text": "Can two runners on a circular track at different speeds ever meet?",
+      "xp_cost": 2
+    },
+    {
+      "level": 2,
+      "text": "Use Floyd's Tortoise and Hare algorithm with a slow pointer moving 1 step and a fast pointer moving 2 steps.",
+      "xp_cost": 5
+    },
+    {
+      "level": 3,
+      "text": "If fast reaches None/null, no cycle exists. If fast meets slow, a cycle is guaranteed.",
+      "xp_cost": 10
+    }
+  ],
+  "editorial_md": "### Floyd's Tortoise and Hare Algorithm\n\n1. Initialize `slow = head` and `fast = head`.\n2. In each iteration, advance `slow` by 1 node and `fast` by 2 nodes.\n3. If `fast` or `fast.next` is null, list terminates, return `False`.\n4. If `slow == fast`, the pointers met within a loop, return `True`.\n\n- **Time Complexity:** $O(n)$ where $n$ is node count.\n- **Space Complexity:** $O(1)$ in-place detection."
+}

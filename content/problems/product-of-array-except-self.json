@@ -1,0 +1,61 @@
+{
+  "slug": "product-of-array-except-self",
+  "title": "Product of Array Except Self",
+  "difficulty": "medium",
+  "topic": "Arrays",
+  "tags": [
+    "Array",
+    "Prefix Sum"
+  ],
+  "company_tags": [
+    "Amazon",
+    "Apple",
+    "Meta",
+    "Microsoft"
+  ],
+  "statement_md": "Given an integer array `nums`, return an array `answer` such that `answer[i]` is equal to the product of all the elements of `nums` except `nums[i]`.\n\nThe product of any prefix or suffix of `nums` is guaranteed to fit in a 32-bit integer.\n\nYou must write an algorithm that runs in $O(n)$ time and without using the division operation.",
+  "time_limit_ms": 1000,
+  "memory_limit_mb": 128,
+  "sample_tests": [
+    {
+      "input_text": "[1, 2, 3, 4]",
+      "expected_output": "[24, 12, 8, 6]"
+    },
+    {
+      "input_text": "[-1, 1, 0, -3, 3]",
+      "expected_output": "[0, 0, 9, 0, 0]"
+    }
+  ],
+  "hidden_tests": [
+    {
+      "input_text": "[2, 3]",
+      "expected_output": "[3, 2]"
+    },
+    {
+      "input_text": "[0, 0]",
+      "expected_output": "[0, 0]"
+    },
+    {
+      "input_text": "[4, 5, 1, 8, 2]",
+      "expected_output": "[80, 64, 320, 40, 160]"
+    }
+  ],
+  "hints": [
+    {
+      "level": 1,
+      "text": "The answer for index i is (product of elements before i) * (product of elements after i).",
+      "xp_cost": 2
+    },
+    {
+      "level": 2,
+      "text": "Can you compute prefix products in a forward pass and suffix products in a backward pass?",
+      "xp_cost": 5
+    },
+    {
+      "level": 3,
+      "text": "Construct the output array with prefix products first, then maintain a running suffix variable from the right.",
+      "xp_cost": 10
+    }
+  ],
+  "editorial_md": "### Prefix and Suffix Running Products\n\n1. Create output array `ans` of length $n$.\n2. Traverse left to right: set `ans[i]` to prefix product of all elements to the left of $i$.\n3. Traverse right to left: maintain a running scalar `suffix` and multiply `ans[i] *= suffix`, then update `suffix *= nums[i]`.\n\n```python\ndef productExceptSelf(nums: list[int]) -> list[int]:\n    n = len(nums)\n    res = [1] * n\n    prefix = 1\n    for i in range(n):\n        res[i] = prefix\n        prefix *= nums[i]\n    suffix = 1\n    for i in range(n - 1, -1, -1):\n        res[i] *= suffix\n        suffix *= nums[i]\n    return res\n```\n\n- **Time Complexity:** $O(n)$\n- **Space Complexity:** $O(1)$ auxiliary space excluding output array."
+}

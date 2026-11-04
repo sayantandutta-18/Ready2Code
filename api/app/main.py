@@ -4,7 +4,7 @@ from .database import engine, Base
 from .routers import (
     health, problems, submissions, users, daily, notes, ai,
     lists, plans, contests, discussions, analytics,
-    patterns, ladder, placement, certificates
+    patterns, ladder, placement, certificates, battles
 )
 
 # Ensure database tables exist
@@ -40,6 +40,7 @@ app.include_router(patterns.router)
 app.include_router(ladder.router)
 app.include_router(placement.router)
 app.include_router(certificates.router)
+app.include_router(battles.router)
 
 @app.get("/")
 def root():

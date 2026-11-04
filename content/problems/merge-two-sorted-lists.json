@@ -1,0 +1,73 @@
+{
+  "slug": "merge-two-sorted-lists",
+  "title": "Merge Two Sorted Lists",
+  "difficulty": "easy",
+  "topic": "Linked List",
+  "tags": [
+    "Linked List",
+    "Recursion",
+    "Two Pointers"
+  ],
+  "company_tags": [
+    "Amazon",
+    "Microsoft",
+    "Apple"
+  ],
+  "statement_md": "You are given the heads of two sorted linked lists `list1` and `list2`.\n\nMerge the two lists into one **sorted** list. The list should be made by splicing together the nodes of the first two lists.\n\nReturn the head of the merged linked list (represented as an array of values).",
+  "time_limit_ms": 1000,
+  "memory_limit_mb": 128,
+  "sample_tests": [
+    {
+      "input_text": "[1, 2, 4]\n[1, 3, 4]",
+      "expected_output": "[1, 1, 2, 3, 4, 4]"
+    },
+    {
+      "input_text": "[]\n[]",
+      "expected_output": "[]"
+    },
+    {
+      "input_text": "[]\n[0]",
+      "expected_output": "[0]"
+    }
+  ],
+  "hidden_tests": [
+    {
+      "input_text": "[5]\n[1, 2, 3, 4]",
+      "expected_output": "[1, 2, 3, 4, 5]"
+    },
+    {
+      "input_text": "[1, 3, 5, 7]\n[2, 4, 6, 8]",
+      "expected_output": "[1, 2, 3, 4, 5, 6, 7, 8]"
+    },
+    {
+      "input_text": "[-10, -5, 0]\n[-7, -3, 2, 5]",
+      "expected_output": "[-10, -7, -5, -3, 0, 2, 5]"
+    },
+    {
+      "input_text": "[1, 1, 1]\n[1, 1, 1]",
+      "expected_output": "[1, 1, 1, 1, 1, 1]"
+    },
+    {
+      "input_text": "[100]\n[200]",
+      "expected_output": "[100, 200]"
+    }
+  ],
+  "hints": [
+    {
+      "level": 1,
+      "text": "Compare the head nodes of both lists at each step.",
+      "xp_cost": 2
+    },
+    {
+      "level": 2,
+      "text": "Use a dummy head pointer to simplify appending to the merged list.",
+      "xp_cost": 5
+    },
+    {
+      "level": 3,
+      "text": "Iterate while both lists exist: attach smaller node, advance pointer. Then attach any remaining nodes from the non-empty list.",
+      "xp_cost": 10
+    }
+  ],
+  "editorial_md": "### Optimal Approach: Iterative Two Pointers with Dummy Head\nMaintain a pointer to the tail of the merged chain. Pick the lesser value from either list head and advance.\n- **Time Complexity:** $O(n + m)$\n- **Space Complexity:** $O(1)$"
+}

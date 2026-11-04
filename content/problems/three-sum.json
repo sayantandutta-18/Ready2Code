@@ -1,0 +1,66 @@
+{
+  "slug": "three-sum",
+  "title": "3Sum",
+  "difficulty": "medium",
+  "topic": "Arrays",
+  "tags": [
+    "Array",
+    "Two Pointers",
+    "Sorting"
+  ],
+  "company_tags": [
+    "Google",
+    "Amazon",
+    "Meta",
+    "Microsoft"
+  ],
+  "statement_md": "Given an integer array `nums`, return all the triplets `[nums[i], nums[j], nums[k]]` such that `i != j`, `i != k`, and `j != k`, and `nums[i] + nums[j] + nums[k] == 0`.\n\nNotice that the solution set must not contain duplicate triplets.",
+  "time_limit_ms": 1000,
+  "memory_limit_mb": 128,
+  "sample_tests": [
+    {
+      "input_text": "[-1, 0, 1, 2, -1, -4]",
+      "expected_output": "[[-1, -1, 2], [-1, 0, 1]]"
+    },
+    {
+      "input_text": "[0, 1, 1]",
+      "expected_output": "[]"
+    },
+    {
+      "input_text": "[0, 0, 0]",
+      "expected_output": "[[0, 0, 0]]"
+    }
+  ],
+  "hidden_tests": [
+    {
+      "input_text": "[-2, 0, 1, 1, 2]",
+      "expected_output": "[[-2, 0, 2], [-2, 1, 1]]"
+    },
+    {
+      "input_text": "[-4, -2, -2, -2, 0, 1, 2, 2, 2, 3, 3, 4, 4, 6, 6]",
+      "expected_output": "[[-4, -2, 6], [-4, 0, 4], [-4, 1, 3], [-4, 2, 2], [-2, -2, 4], [-2, 0, 2]]"
+    },
+    {
+      "input_text": "[1, 2, -2, -1]",
+      "expected_output": "[]"
+    }
+  ],
+  "hints": [
+    {
+      "level": 1,
+      "text": "Can sorting the array simplify finding triplets?",
+      "xp_cost": 2
+    },
+    {
+      "level": 2,
+      "text": "Fix the first element at index i, then use two pointers (left and right) to find pairs that sum to -nums[i].",
+      "xp_cost": 5
+    },
+    {
+      "level": 3,
+      "text": "To prevent duplicates, skip consecutive identical elements for both the outer loop i and the inner pointers left and right.",
+      "xp_cost": 10
+    }
+  ],
+  "editorial_md": "### Two Pointers with Sorting\n\n1. Sort the input array `nums`.\n2. Iterate `i` from $0$ to $n - 3$. If $nums[i] > 0$, break early because three positive numbers cannot sum to 0.\n3. If $i > 0$ and $nums[i] == nums[i - 1]$, skip to avoid duplicates.\n4. Set $left = i + 1$ and $right = n - 1$.\n5. While $left < right$:\n   - Calculate $total = nums[i] + nums[left] + nums[right]$.\n   - If $total == 0$, add $[nums[i], nums[left], nums[right]]$ to results, then advance $left$ past duplicate values and decrement $right$ past duplicate values.\n   - If $total < 0$, increment $left$.\n   - If $total > 0$, decrement $right$.\n\n#### Complexity\n- **Time Complexity:** $O(n^2)$ due to sorting $O(n \\log n)$ and the two-pointer pass $O(n^2)$.\n- **Space Complexity:** $O(1)$ auxiliary (or $O(n)$ depending on sorting implementation).\n\n```python\ndef threeSum(nums: list[int]) -> list[list[int]]:\n    nums.sort()\n    res = []\n    n = len(nums)\n    for i in range(n - 2):\n        if nums[i] > 0:\n            break\n        if i > 0 and nums[i] == nums[i - 1]:\n            continue\n        l, r = i + 1, n - 1\n        while l < r:\n            s = nums[i] + nums[l] + nums[r]\n            if s < 0:\n                l += 1\n            elif s > 0:\n                r -= 1\n            else:\n                res.append([nums[i], nums[l], nums[r]])\n                while l < r and nums[l] == nums[l + 1]:\n                    l += 1\n                while l < r and nums[r] == nums[r - 1]:\n                    r -= 1\n                l += 1\n                r -= 1\n    return res\n```"
+}

@@ -16,6 +16,7 @@ from app.routers.analytics import get_analytics, get_review_queue, grade_review,
 from app.routers.patterns import list_patterns, get_pattern, submit_quiz, SubmitQuizRequest
 from app.routers.ladder import get_ladder, submit_stage, StageSubmitRequest
 from app.routers.certificates import issue_certificate, verify_certificate, SubmitSkillTestRequest
+from app.routers.battles import queue_battle, get_battle, submit_battle_code, QueueRequest, BattleSubmitRequest
 from app.judge.client import run_code
 from scripts.seed import validate_problem_dict
 
@@ -37,7 +38,7 @@ def test_problems_list_and_detail():
     db = SessionLocal()
     try:
         problems = list_problems(db=db)
-        assert len(problems) == 12
+        assert len(problems) >= 12
         first = problems[0]
         assert "slug" in first
         assert "tags" in first
@@ -198,3 +199,18 @@ def test_certificates_issue_and_verify():
         assert verified["skill"] == "Data Structures"
     finally:
         db.close()
+
+def test_battles_system():
+    b = queue_battle(QueueRequest(user_id="usr_battle_1", username="SpeedCoder", elo=1620))
+    assert b["id"] is not None
+    assert b["status"] == "ongoing"
+    assert b["player1"]["username"] == "SpeedCoder"
+    assert b["player2"]["username"] is not None
+
+    b_info = get_battle(b["id"])
+    assert b_info["status"] == "ongoing"
+
+    submit_res = submit_battle_code(b["id"], BattleSubmitRequest(user_id="usr_battle_1", passed_tests=5, total_tests=5, runtime_ms=45))
+    assert submit_res["status"] == "finished"
+    assert submit_res["winner"] == "SpeedCoder"
+
