@@ -1,0 +1,108 @@
+{
+  "slug": "repeated-dna-sequence-signatures",
+  "title": "Repeated DNA 10-mer Sequence Signatures",
+  "difficulty": "medium",
+  "topic": "Strings",
+  "tags": [
+    "Hash Table",
+    "String",
+    "Bit Manipulation",
+    "Rolling Hash"
+  ],
+  "company_tags": [
+    "LinkedIn",
+    "Amazon",
+    "Google"
+  ],
+  "statement_md": "The DNA sequence is composed of a series of nucleotides abbreviated as `'A'`, `'C'`, `'G'`, and `'T'`.\n\nWhen studying DNA, it is useful to identify repeated sequences within the DNA.\n\nGiven a string `s` that represents a DNA sequence, return all the 10-letter-long sequences (substrings) that occur more than once in a DNA molecule. You may return the answer in sorted order.\n\n### Input Format\n- A string `s`\n\n### Output Format\n- A JSON-encoded list of sorted 10-character strings",
+  "examples": [
+    {
+      "input": "\"AAAAACCCCCAAAAACCCCCCAAAAAGGGTTT\"",
+      "output": "[\"AAAAACCCCC\", \"CCCCCAAAAA\"]",
+      "explanation": "\"AAAAACCCCC\" and \"CCCCCAAAAA\" both appear multiple times."
+    },
+    {
+      "input": "\"AAAAAAAAAAAAA\"",
+      "output": "[\"AAAAAAAAAA\"]",
+      "explanation": "\"AAAAAAAAAA\" appears 4 times at different offsets."
+    }
+  ],
+  "sample_tests": [
+    {
+      "input_text": "\"AAAAACCCCCAAAAACCCCCCAAAAAGGGTTT\"",
+      "expected_output": "[\"AAAAACCCCC\", \"CCCCCAAAAA\"]"
+    },
+    {
+      "input_text": "\"AAAAAAAAAAAAA\"",
+      "expected_output": "[\"AAAAAAAAAA\"]"
+    },
+    {
+      "input_text": "\"ACGTACGTAC\"",
+      "expected_output": "[]"
+    }
+  ],
+  "hidden_tests": [
+    {
+      "input_text": "\"\"",
+      "expected_output": "[]"
+    },
+    {
+      "input_text": "\"AAAAAAAAAA\"",
+      "expected_output": "[]"
+    },
+    {
+      "input_text": "\"AAAAAAAAAAA\"",
+      "expected_output": "[\"AAAAAAAAAA\"]"
+    },
+    {
+      "input_text": "\"ACGTACGTACACGTACGTAC\"",
+      "expected_output": "[\"ACGTACGTAC\"]"
+    },
+    {
+      "input_text": "\"CCCCCCCCCCCCCCCCCCCC\"",
+      "expected_output": "[\"CCCCCCCCCC\"]"
+    },
+    {
+      "input_text": "\"AGCTAGCTAGAGCTAGCTAG\"",
+      "expected_output": "[\"AGCTAGCTAG\"]"
+    },
+    {
+      "input_text": "\"TATATATATATATATATATATATA\"",
+      "expected_output": "[\"ATATATATAT\", \"TATATATATA\"]"
+    },
+    {
+      "input_text": "\"GCATGCATGCGCATGCATGC\"",
+      "expected_output": "[\"GCATGCATGC\"]"
+    },
+    {
+      "input_text": "\"GATCGATCGATCGATCGATCGATC\"",
+      "expected_output": "[\"ATCGATCGAT\", \"CGATCGATCG\", \"GATCGATCGA\", \"TCGATCGATC\"]"
+    }
+  ],
+  "time_limit_ms": 1000,
+  "memory_limit_mb": 128,
+  "hints": [
+    {
+      "level": 1,
+      "text": "Extract all windows of length 10 as you traverse s from left to right.",
+      "xp_cost": 2
+    },
+    {
+      "level": 2,
+      "text": "Maintain two sets: 'seen' for patterns observed once, and 'repeated' for patterns observed >= 2 times.",
+      "xp_cost": 5
+    },
+    {
+      "level": 3,
+      "text": "Use a Hash Set or 2-bit Rolling Hash for O(1) sequence signatures.",
+      "xp_cost": 10
+    }
+  ],
+  "editorial_md": "### Optimal Approach: Rolling Hash Set\n\nIterate through all substrings of length 10. Track seen sequences in `seen`. If a sequence is already in `seen`, add it to `repeated`. Return sorted list.\n\n#### Complexity\n- **Time Complexity:** $O((n - 10) \\cdot 10) = O(n)$ time.\n- **Space Complexity:** $O(n)$ space for hash set.\n\n#### Common Pitfalls\n- Returning duplicates in the output list (avoided by using a set for repeated entries).",
+  "reference_solutions": {
+    "brute_python": "def findRepeatedDnaSequences(s):\n    seen = set()\n    repeated = set()\n    for i in range(len(s) - 9):\n        sub = s[i:i+10]\n        if sub in seen:\n            repeated.add(sub)\n        seen.add(sub)\n    return sorted(list(repeated))",
+    "optimal_python": "def findRepeatedDnaSequences(s):\n    seen = set()\n    repeated = set()\n    for i in range(len(s) - 9):\n        sub = s[i:i+10]\n        if sub in seen:\n            repeated.add(sub)\n        else:\n            seen.add(sub)\n    return sorted(list(repeated))",
+    "optimal_java": "import java.util.*;\npublic class Solution {\n    public List<String> findRepeatedDnaSequences(String s) {\n        Set<String> seen = new HashSet<>(), repeated = new HashSet<>();\n        for (int i = 0; i + 9 < s.length(); i++) {\n            String sub = s.substring(i, i + 10);\n            if (seen.contains(sub)) repeated.add(sub);\n            else seen.add(sub);\n        }\n        List<String> res = new ArrayList<>(repeated);\n        Collections.sort(res);\n        return res;\n    }\n}",
+    "optimal_cpp": "#include <vector>\n#include <string>\n#include <unordered_set>\n#include <algorithm>\nusing namespace std;\nclass Solution {\npublic:\n    vector<string> findRepeatedDnaSequences(string s) {\n        unordered_set<string> seen, repeated;\n        for (int i = 0; i + 9 < (int)s.size(); i++) {\n            string sub = s.substr(i, 10);\n            if (seen.count(sub)) repeated.insert(sub);\n            else seen.insert(sub);\n        }\n        vector<string> res(repeated.begin(), repeated.end());\n        sort(res.begin(), res.end());\n        return res;\n    }\n};"
+  }
+}

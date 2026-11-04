@@ -1,0 +1,107 @@
+{
+  "slug": "minimum-consecutive-cards-for-match",
+  "title": "Minimum Consecutive Cards for Duplicate Match",
+  "difficulty": "medium",
+  "topic": "Two Pointers and Sliding Window",
+  "tags": [
+    "Sliding Window",
+    "Hash Table",
+    "Array"
+  ],
+  "company_tags": [
+    "Amazon",
+    "Google",
+    "Microsoft"
+  ],
+  "statement_md": "You are given an integer array `cards` where `cards[i]` represents the value of the `i-th` card. A pair of cards are matching if they have the same value.\n\nReturn the minimum number of consecutive cards you have to pick up to have at least one pair of matching cards among the picked cards. If it is impossible, return `-1`.\n\n### Input Format\n- A JSON-encoded list of integers `cards`\n\n### Output Format\n- An integer representing the minimum window size",
+  "examples": [
+    {
+      "input": "[3, 4, 2, 3, 4, 7]",
+      "output": "4",
+      "explanation": "We can pick cards from index 0 to 3 ([3, 4, 2, 3]) which gives a pair of 3s, length 4."
+    },
+    {
+      "input": "[1, 0, 5, 3]",
+      "output": "-1",
+      "explanation": "There are no matching cards in the entire array."
+    }
+  ],
+  "sample_tests": [
+    {
+      "input_text": "[3, 4, 2, 3, 4, 7]",
+      "expected_output": "4"
+    },
+    {
+      "input_text": "[1, 0, 5, 3]",
+      "expected_output": "-1"
+    },
+    {
+      "input_text": "[1, 1]",
+      "expected_output": "2"
+    }
+  ],
+  "hidden_tests": [
+    {
+      "input_text": "[]",
+      "expected_output": "-1"
+    },
+    {
+      "input_text": "[10]",
+      "expected_output": "-1"
+    },
+    {
+      "input_text": "[1, 2, 3, 1, 2, 3]",
+      "expected_output": "4"
+    },
+    {
+      "input_text": "[7, 7, 7, 7]",
+      "expected_output": "2"
+    },
+    {
+      "input_text": "[5, 6, 7, 8, 9, 5]",
+      "expected_output": "6"
+    },
+    {
+      "input_text": "[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]",
+      "expected_output": "-1"
+    },
+    {
+      "input_text": "[9, 5, 3, 5, 9]",
+      "expected_output": "3"
+    },
+    {
+      "input_text": "[-1, -2, -1, -2]",
+      "expected_output": "3"
+    },
+    {
+      "input_text": "[100, 200, 300, 400, 200]",
+      "expected_output": "4"
+    }
+  ],
+  "time_limit_ms": 1000,
+  "memory_limit_mb": 128,
+  "hints": [
+    {
+      "level": 1,
+      "text": "Notice that the minimum distance between matching cards is the minimum distance between any two adjacent occurrences of the same card.",
+      "xp_cost": 2
+    },
+    {
+      "level": 2,
+      "text": "Track the last seen index for each card value.",
+      "xp_cost": 5
+    },
+    {
+      "level": 3,
+      "text": "Use a Hash Map recording last_index[card] to find min(i - last_index[card] + 1).",
+      "xp_cost": 10
+    }
+  ],
+  "editorial_md": "### Optimal Approach: Last Seen Index Tracking\n\nStore the most recent index where each card was seen. When a duplicate `card` is encountered at index `i`, the window length is `i - last_seen[card] + 1`. Minimize this across all cards.\n\n#### Complexity\n- **Time Complexity:** $O(n)$ single pass.\n- **Space Complexity:** $O(n)$ hash table storage.\n\n#### Common Pitfalls\n- Returning length - 1 instead of length (inclusive of both matching endpoints).",
+  "reference_solutions": {
+    "brute_python": "def minimumCardPickup(cards):\n    min_len = float('inf')\n    n = len(cards)\n    for i in range(n):\n        for j in range(i + 1, n):\n            if cards[i] == cards[j]:\n                min_len = min(min_len, j - i + 1)\n                break\n    return min_len if min_len != float('inf') else -1",
+    "optimal_python": "def minimumCardPickup(cards):\n    last_seen = {}\n    min_dist = float('inf')\n    for i, card in enumerate(cards):\n        if card in last_seen:\n            min_dist = min(min_dist, i - last_seen[card] + 1)\n        last_seen[card] = i\n    return min_dist if min_dist != float('inf') else -1",
+    "optimal_java": "import java.util.*;\npublic class Solution {\n    public int minimumCardPickup(int[] cards) {\n        Map<Integer, Integer> lastSeen = new HashMap<>();\n        int minDist = Integer.MAX_VALUE;\n        for (int i = 0; i < cards.length; i++) {\n            if (lastSeen.containsKey(cards[i])) {\n                minDist = Math.min(minDist, i - lastSeen.get(cards[i]) + 1);\n            }\n            lastSeen.put(cards[i], i);\n        }\n        return minDist == Integer.MAX_VALUE ? -1 : minDist;\n    }\n}",
+    "optimal_cpp": "#include <vector>\n#include <unordered_map>\n#include <algorithm>\nusing namespace std;\nclass Solution {\npublic:\n    int minimumCardPickup(vector<int>& cards) {\n        unordered_map<int, int> lastSeen;\n        int minDist = 1e9;\n        for (int i = 0; i < (int)cards.size(); i++) {\n            if (lastSeen.count(cards[i])) {\n                minDist = min(minDist, i - lastSeen[cards[i]] + 1);\n            }\n            lastSeen[cards[i]] = i;\n        }\n        return minDist == 1e9 ? -1 : minDist;\n    }\n};"
+  }
+}

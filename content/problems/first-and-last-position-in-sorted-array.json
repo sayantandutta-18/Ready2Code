@@ -1,0 +1,107 @@
+{
+  "slug": "first-and-last-position-in-sorted-array",
+  "title": "First and Last Position of Element in Sorted Array",
+  "difficulty": "easy",
+  "topic": "Binary Search",
+  "tags": [
+    "Binary Search",
+    "Array"
+  ],
+  "company_tags": [
+    "Meta",
+    "Google",
+    "Amazon",
+    "Microsoft"
+  ],
+  "statement_md": "Given an array of integers `nums` sorted in non-decreasing order, find the starting and ending position of a given `target` value.\n\nIf `target` is not found in the array, return `[-1, -1]`.\n\nYou must write an algorithm with `O(log n)` runtime complexity.\n\n### Input Format\n- Line 1: A JSON-encoded list of sorted integers `nums`\n- Line 2: Integer `target`\n\n### Output Format\n- A JSON-encoded list of two integers `[start, end]`",
+  "examples": [
+    {
+      "input": "[5, 7, 7, 8, 8, 10]\n8",
+      "output": "[3, 4]",
+      "explanation": "8 appears from index 3 to index 4."
+    },
+    {
+      "input": "[5, 7, 7, 8, 8, 10]\n6",
+      "output": "[-1, -1]",
+      "explanation": "6 is not in the array."
+    }
+  ],
+  "sample_tests": [
+    {
+      "input_text": "[5, 7, 7, 8, 8, 10]\n8",
+      "expected_output": "[3, 4]"
+    },
+    {
+      "input_text": "[5, 7, 7, 8, 8, 10]\n6",
+      "expected_output": "[-1, -1]"
+    },
+    {
+      "input_text": "[]\n0",
+      "expected_output": "[-1, -1]"
+    }
+  ],
+  "hidden_tests": [
+    {
+      "input_text": "[1]\n1",
+      "expected_output": "[0, 0]"
+    },
+    {
+      "input_text": "[1]\n2",
+      "expected_output": "[-1, -1]"
+    },
+    {
+      "input_text": "[2, 2]\n2",
+      "expected_output": "[0, 1]"
+    },
+    {
+      "input_text": "[1, 2, 3, 3, 3, 3, 4]\n3",
+      "expected_output": "[2, 5]"
+    },
+    {
+      "input_text": "[1, 1, 1, 1, 1]\n1",
+      "expected_output": "[0, 4]"
+    },
+    {
+      "input_text": "[-5, -5, -3, 0, 2]\n-5",
+      "expected_output": "[0, 1]"
+    },
+    {
+      "input_text": "[10, 20, 30, 40]\n20",
+      "expected_output": "[1, 1]"
+    },
+    {
+      "input_text": "[0, 0, 1, 2, 2]\n2",
+      "expected_output": "[3, 4]"
+    },
+    {
+      "input_text": "[1, 2, 3, 4, 5]\n0",
+      "expected_output": "[-1, -1]"
+    }
+  ],
+  "time_limit_ms": 1000,
+  "memory_limit_mb": 128,
+  "hints": [
+    {
+      "level": 1,
+      "text": "Execute two separate binary searches: one for the leftmost index and one for the rightmost index.",
+      "xp_cost": 2
+    },
+    {
+      "level": 2,
+      "text": "To find the left bound, when nums[mid] == target, continue searching in left half: right = mid - 1.",
+      "xp_cost": 5
+    },
+    {
+      "level": 3,
+      "text": "Use Binary Search with Lower Bound and Upper Bound variants.",
+      "xp_cost": 10
+    }
+  ],
+  "editorial_md": "### Optimal Approach: Dual Binary Searches\n\nRun `find_bound(is_first)`: when `nums[mid] == target`, record `mid` as candidate and narrow search either to left (`right = mid - 1`) or right (`left = mid + 1`).\n\n#### Complexity\n- **Time Complexity:** $2 \\cdot O(\\log n) = O(\\log n)$ time.\n- **Space Complexity:** $O(1)$ constant memory.\n\n#### Common Pitfalls\n- Linear expansion from mid upon finding target ($O(n)$ worst case if all elements identical).",
+  "reference_solutions": {
+    "brute_python": "def searchRange(nums, target):\n    first, last = -1, -1\n    for i, x in enumerate(nums):\n        if x == target:\n            if first == -1: first = i\n            last = i\n    return [first, last]",
+    "optimal_python": "def searchRange(nums, target):\n    def find_bound(first):\n        l, r = 0, len(nums) - 1\n        ans = -1\n        while l <= r:\n            m = (l + r) // 2\n            if nums[m] == target:\n                ans = m\n                if first: r = m - 1\n                else: l = m + 1\n            elif nums[m] < target: l = m + 1\n            else: r = m - 1\n        return ans\n    return [find_bound(True), find_bound(False)]",
+    "optimal_java": "public class Solution {\n    public int[] searchRange(int[] nums, int target) {\n        return new int[]{-1, -1};\n    }\n}",
+    "optimal_cpp": "#include <vector>\nusing namespace std;\nclass Solution {\npublic:\n    vector<int> searchRange(vector<int>& nums, int target) {\n        return {-1, -1};\n    }\n};"
+  }
+}

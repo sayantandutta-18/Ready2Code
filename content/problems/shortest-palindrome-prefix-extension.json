@@ -1,0 +1,107 @@
+{
+  "slug": "shortest-palindrome-prefix-extension",
+  "title": "Shortest Palindrome via Minimum Prefix Extension",
+  "difficulty": "hard",
+  "topic": "Strings",
+  "tags": [
+    "String",
+    "KMP",
+    "Rolling Hash"
+  ],
+  "company_tags": [
+    "Google",
+    "Amazon",
+    "Apple"
+  ],
+  "statement_md": "You are given a string `s`. You can convert `s` to a palindrome by adding characters in front of it.\n\nReturn the shortest palindrome you can find by performing this transformation.\n\n### Input Format\n- A string `s`\n\n### Output Format\n- A string representing the shortest palindrome",
+  "examples": [
+    {
+      "input": "\"aacecaaa\"",
+      "output": "\"aaacecaaa\"",
+      "explanation": "Adding 'a' to the front produces the shortest palindrome."
+    },
+    {
+      "input": "\"abcd\"",
+      "output": "\"dcbabcd\"",
+      "explanation": "Adding \"dcb\" to the front produces the palindrome."
+    }
+  ],
+  "sample_tests": [
+    {
+      "input_text": "\"aacecaaa\"",
+      "expected_output": "\"aaacecaaa\""
+    },
+    {
+      "input_text": "\"abcd\"",
+      "expected_output": "\"dcbabcd\""
+    },
+    {
+      "input_text": "\"\"",
+      "expected_output": "\"\""
+    }
+  ],
+  "hidden_tests": [
+    {
+      "input_text": "\"a\"",
+      "expected_output": "\"a\""
+    },
+    {
+      "input_text": "\"ab\"",
+      "expected_output": "\"bab\""
+    },
+    {
+      "input_text": "\"aba\"",
+      "expected_output": "\"aba\""
+    },
+    {
+      "input_text": "\"abacaba\"",
+      "expected_output": "\"abacaba\""
+    },
+    {
+      "input_text": "\"racecar\"",
+      "expected_output": "\"racecar\""
+    },
+    {
+      "input_text": "\"abcde\"",
+      "expected_output": "\"edcbabcde\""
+    },
+    {
+      "input_text": "\"ba\"",
+      "expected_output": "\"aba\""
+    },
+    {
+      "input_text": "\"abbacd\"",
+      "expected_output": "\"dcabbacd\""
+    },
+    {
+      "input_text": "\"babbbabbaba\"",
+      "expected_output": "\"ababbabbbabbaba\""
+    }
+  ],
+  "time_limit_ms": 1000,
+  "memory_limit_mb": 128,
+  "hints": [
+    {
+      "level": 1,
+      "text": "The problem is equivalent to finding the longest palindromic prefix of s.",
+      "xp_cost": 2
+    },
+    {
+      "level": 2,
+      "text": "Consider constructing combined string s + '#' + reverse(s).",
+      "xp_cost": 5
+    },
+    {
+      "level": 3,
+      "text": "Use the KMP Prefix Table (pi table) on s + '#' + reverse(s) to find the longest palindromic prefix in O(n) time.",
+      "xp_cost": 10
+    }
+  ],
+  "editorial_md": "### Optimal Approach: KMP Prefix Function\n\nForm `combined = s + '#' + s[::-1]`. Compute the KMP failure array ($\\pi$ table). The last entry `pi[-1]` corresponds to the length of the longest prefix of `s` that is also a suffix of `s[::-1]`, which is precisely the longest palindromic prefix. Prepend the reversed remaining suffix of `s`.\n\n#### Complexity\n- **Time Complexity:** $O(n)$ linear KMP preprocessing.\n- **Space Complexity:** $O(n)$ prefix table storage.\n\n#### Common Pitfalls\n- Not using a delimiter character like `'#'` between `s` and `reverse(s)`.",
+  "reference_solutions": {
+    "brute_python": "def shortestPalindrome(s):\n    n = len(s)\n    for i in range(n, -1, -1):\n        if s[:i] == s[:i][::-1]:\n            return s[i:][::-1] + s\n    return \"\"",
+    "optimal_python": "def shortestPalindrome(s):\n    if not s: return \"\"\n    rev = s[::-1]\n    combined = s + '#' + rev\n    pi = [0] * len(combined)\n    j = 0\n    for i in range(1, len(combined)):\n        while j > 0 and combined[i] != combined[j]:\n            j = pi[j - 1]\n        if combined[i] == combined[j]:\n            j += 1\n        pi[i] = j\n    longest_pal = pi[-1]\n    return rev[:len(s) - longest_pal] + s",
+    "optimal_java": "public class Solution {\n    public String shortestPalindrome(String s) {\n        if (s == null || s.length() == 0) return \"\";\n        String rev = new StringBuilder(s).reverse().toString();\n        String combined = s + \"#\" + rev;\n        int[] pi = new int[combined.length()];\n        int j = 0;\n        for (int i = 1; i < combined.length(); i++) {\n            while (j > 0 && combined.charAt(i) != combined.charAt(j)) j = pi[j - 1];\n            if (combined.charAt(i) == combined.charAt(j)) j++;\n            pi[i] = j;\n        }\n        int palLen = pi[combined.length() - 1];\n        return rev.substring(0, s.length() - palLen) + s;\n    }\n}",
+    "optimal_cpp": "#include <string>\n#include <vector>\n#include <algorithm>\nusing namespace std;\nclass Solution {\npublic:\n    string shortestPalindrome(string s) {\n        if (s.empty()) return \"\";\n        string rev = s;\n        reverse(rev.begin(), rev.end());\n        string combined = s + \"#\" + rev;\n        vector<int> pi(combined.size(), 0);\n        int j = 0;\n        for (int i = 1; i < (int)combined.size(); i++) {\n            while (j > 0 && combined[i] != combined[j]) j = pi[j - 1];\n            if (combined[i] == combined[j]) j++;\n            pi[i] = j;\n        }\n        int palLen = pi.back();\n        return rev.substr(0, s.size() - palLen) + s;\n    }\n};"
+  }
+}

@@ -1,0 +1,107 @@
+{
+  "slug": "longest-substring-k-distinct-chars",
+  "title": "Longest Substring with At Most K Distinct Characters",
+  "difficulty": "medium",
+  "topic": "Two Pointers and Sliding Window",
+  "tags": [
+    "Sliding Window",
+    "Hash Table",
+    "String"
+  ],
+  "company_tags": [
+    "Google",
+    "Amazon",
+    "Microsoft"
+  ],
+  "statement_md": "Given a string `s` and an integer `k`, return the length of the longest substring of `s` that contains at most `k` distinct characters.\n\n### Input Format\n- Line 1: A string `s`\n- Line 2: An integer `k` (`k >= 0`)\n\n### Output Format\n- An integer representing the maximum substring length",
+  "examples": [
+    {
+      "input": "\"eceba\"\n2",
+      "output": "3",
+      "explanation": "The substring is \"ece\" with length 3."
+    },
+    {
+      "input": "\"aa\"\n1",
+      "output": "2",
+      "explanation": "The substring is \"aa\" with length 2."
+    }
+  ],
+  "sample_tests": [
+    {
+      "input_text": "\"eceba\"\n2",
+      "expected_output": "3"
+    },
+    {
+      "input_text": "\"aa\"\n1",
+      "expected_output": "2"
+    },
+    {
+      "input_text": "\"a\"\n0",
+      "expected_output": "0"
+    }
+  ],
+  "hidden_tests": [
+    {
+      "input_text": "\"\"\n2",
+      "expected_output": "0"
+    },
+    {
+      "input_text": "\"a\"\n1",
+      "expected_output": "1"
+    },
+    {
+      "input_text": "\"abcadcacacaca\"\n3",
+      "expected_output": "11"
+    },
+    {
+      "input_text": "\"abcdefg\"\n1",
+      "expected_output": "1"
+    },
+    {
+      "input_text": "\"abcdefg\"\n7",
+      "expected_output": "7"
+    },
+    {
+      "input_text": "\"abaccc\"\n2",
+      "expected_output": "4"
+    },
+    {
+      "input_text": "\"araaci\"\n2",
+      "expected_output": "4"
+    },
+    {
+      "input_text": "\"cbbebi\"\n3",
+      "expected_output": "5"
+    },
+    {
+      "input_text": "\"aabbccddeeff\"\n2",
+      "expected_output": "4"
+    }
+  ],
+  "time_limit_ms": 1000,
+  "memory_limit_mb": 128,
+  "hints": [
+    {
+      "level": 1,
+      "text": "If k == 0 or the string is empty, the result is immediately 0.",
+      "xp_cost": 2
+    },
+    {
+      "level": 2,
+      "text": "Expand the right boundary while maintaining character frequencies in the window.",
+      "xp_cost": 5
+    },
+    {
+      "level": 3,
+      "text": "Use a Sliding Window with a Hash Map storing character counts, shrinking from left when distinct count > k.",
+      "xp_cost": 10
+    }
+  ],
+  "editorial_md": "### Optimal Approach: Sliding Window Frequency Map\n\nExpand `right` and record character count in a map. When `len(map) > k`, increment `left` and decrement frequency until a character count hits 0 and is removed from the map. Update `max_len = max(max_len, right - left + 1)`.\n\n#### Complexity\n- **Time Complexity:** $O(n)$ each character added and removed from window once.\n- **Space Complexity:** $O(k)$ for frequency map.\n\n#### Common Pitfalls\n- Not deleting key from map when count drops to 0.",
+  "reference_solutions": {
+    "brute_python": "def lengthOfLongestSubstringKDistinct(s, k):\n    if k == 0 or not s: return 0\n    max_len = 0\n    n = len(s)\n    for i in range(n):\n        seen = set()\n        for j in range(i, n):\n            seen.add(s[j])\n            if len(seen) <= k:\n                max_len = max(max_len, j - i + 1)\n            else:\n                break\n    return max_len",
+    "optimal_python": "def lengthOfLongestSubstringKDistinct(s, k):\n    if k == 0 or not s:\n        return 0\n    counts = {}\n    left = 0\n    max_len = 0\n    for right, ch in enumerate(s):\n        counts[ch] = counts.get(ch, 0) + 1\n        while len(counts) > k:\n            counts[s[left]] -= 1\n            if counts[s[left]] == 0:\n                del counts[s[left]]\n            left += 1\n        max_len = max(max_len, right - left + 1)\n    return max_len",
+    "optimal_java": "import java.util.*;\npublic class Solution {\n    public int lengthOfLongestSubstringKDistinct(String s, int k) {\n        if (k == 0 || s == null || s.length() == 0) return 0;\n        Map<Character, Integer> counts = new HashMap<>();\n        int left = 0, maxLen = 0;\n        for (int right = 0; right < s.length(); right++) {\n            char c = s.charAt(right);\n            counts.put(c, counts.getOrDefault(c, 0) + 1);\n            while (counts.size() > k) {\n                char lc = s.charAt(left);\n                counts.put(lc, counts.get(lc) - 1);\n                if (counts.get(lc) == 0) counts.remove(lc);\n                left++;\n            }\n            maxLen = Math.max(maxLen, right - left + 1);\n        }\n        return maxLen;\n    }\n}",
+    "optimal_cpp": "#include <string>\n#include <unordered_map>\n#include <algorithm>\nusing namespace std;\nclass Solution {\npublic:\n    int lengthOfLongestSubstringKDistinct(string s, int k) {\n        if (k == 0 || s.empty()) return 0;\n        unordered_map<char, int> counts;\n        int left = 0, maxLen = 0;\n        for (int right = 0; right < (int)s.size(); right++) {\n            counts[s[right]]++;\n            while ((int)counts.size() > k) {\n                counts[s[left]]--;\n                if (counts[s[left]] == 0) counts.erase(s[left]);\n                left++;\n            }\n            maxLen = max(maxLen, right - left + 1);\n        }\n        return maxLen;\n    }\n};"
+  }
+}

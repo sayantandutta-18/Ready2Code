@@ -1,0 +1,106 @@
+{
+  "slug": "canonical-unix-path-normalizer",
+  "title": "Canonical Unix Filepath Normalizer",
+  "difficulty": "easy",
+  "topic": "Stack and Queue",
+  "tags": [
+    "Stack",
+    "String"
+  ],
+  "company_tags": [
+    "Meta",
+    "Google",
+    "Amazon"
+  ],
+  "statement_md": "Given an absolute path for a Unix-style file system, which begins with a slash `'/'`, transform this path into its simplified canonical path.\n\nIn a Unix-style file system:\n- A single period `'.'` refers to the current directory.\n- A double period `'..'` refers to the directory up a level.\n- Multiple consecutive slashes are treated as a single slash `'/'`.\n\nThe canonical path must start with a single `'/'`, directories must be separated by exactly one `'/'`, and it must not end with a trailing `'/'` unless it is the root.\n\n### Input Format\n- A string `path`\n\n### Output Format\n- A string representing the canonical path",
+  "examples": [
+    {
+      "input": "\"/home/\"",
+      "output": "\"/home\"",
+      "explanation": "Trailing slash is removed."
+    },
+    {
+      "input": "\"/home//foo/\"",
+      "output": "\"/home/foo\"",
+      "explanation": "Multiple slashes are replaced by single slash."
+    }
+  ],
+  "sample_tests": [
+    {
+      "input_text": "\"/home/\"",
+      "expected_output": "\"/home\""
+    },
+    {
+      "input_text": "\"/home//foo/\"",
+      "expected_output": "\"/home/foo\""
+    },
+    {
+      "input_text": "\"/home/user/Documents/../Pictures\"",
+      "expected_output": "\"/home/user/Pictures\""
+    }
+  ],
+  "hidden_tests": [
+    {
+      "input_text": "\"/../\"",
+      "expected_output": "\"/\""
+    },
+    {
+      "input_text": "\"/.../a/../b/c/../d/./\"",
+      "expected_output": "\"/.../b/d\""
+    },
+    {
+      "input_text": "\"/a/./b/../../c/\"",
+      "expected_output": "\"/c\""
+    },
+    {
+      "input_text": "\"/a/../../b/../c//.//\"",
+      "expected_output": "\"/c\""
+    },
+    {
+      "input_text": "\"/a//b////c/d//././/..\"",
+      "expected_output": "\"/a/b/c\""
+    },
+    {
+      "input_text": "\"/.\"",
+      "expected_output": "\"/\""
+    },
+    {
+      "input_text": "\"/..\"",
+      "expected_output": "\"/\""
+    },
+    {
+      "input_text": "\"/ready/2/code/../../arena\"",
+      "expected_output": "\"/ready/arena\""
+    },
+    {
+      "input_text": "\"/a/b/c/d/e/f/g\"",
+      "expected_output": "\"/a/b/c/d/e/f/g\""
+    }
+  ],
+  "time_limit_ms": 1000,
+  "memory_limit_mb": 128,
+  "hints": [
+    {
+      "level": 1,
+      "text": "Split the path by '/' delimiter to examine individual path tokens.",
+      "xp_cost": 2
+    },
+    {
+      "level": 2,
+      "text": "Ignore empty strings and '.', pop from directory history on '..', otherwise push folder name.",
+      "xp_cost": 5
+    },
+    {
+      "level": 3,
+      "text": "Use a LIFO Stack to track the current directory directory hierarchy.",
+      "xp_cost": 10
+    }
+  ],
+  "editorial_md": "### Optimal Approach: Directory Token Stack\n\nSplit `path` by `/`. Iterate through tokens:\n- Ignore empty tokens and `.`\n- On `..`, pop from stack if stack is non-empty\n- For valid folder names, push to stack\nJoin stack elements with `/` prefixed by `/`.\n\n#### Complexity\n- **Time Complexity:** $O(n)$ tokenization and single scan.\n- **Space Complexity:** $O(n)$ stack storage.\n\n#### Common Pitfalls\n- Calling `..` at root directory should keep the path at `/` without popping into an error.",
+  "reference_solutions": {
+    "brute_python": "def simplifyPath(path):\n    parts = path.split('/')\n    stack = []\n    for p in parts:\n        if p == '' or p == '.': continue\n        if p == '..':\n            if stack: stack.pop()\n        else:\n            stack.append(p)\n    return '/' + '/'.join(stack)",
+    "optimal_python": "def simplifyPath(path):\n    parts = path.split('/')\n    stack = []\n    for p in parts:\n        if p == '' or p == '.':\n            continue\n        elif p == '..':\n            if stack:\n                stack.pop()\n        else:\n            stack.append(p)\n    return '/' + '/'.join(stack)",
+    "optimal_java": "import java.util.*;\npublic class Solution {\n    public String simplifyPath(String path) {\n        Deque<String> stack = new LinkedList<>();\n        for (String p : path.split(\"/\")) {\n            if (p.equals(\"\") || p.equals(\".\")) continue;\n            if (p.equals(\"..\")) {\n                if (!stack.isEmpty()) stack.pop();\n            } else {\n                stack.push(p);\n            }\n        }\n        List<String> list = new ArrayList<>(stack);\n        Collections.reverse(list);\n        return \"/\" + String.join(\"/\", list);\n    }\n}",
+    "optimal_cpp": "#include <string>\n#include <vector>\n#include <sstream>\nusing namespace std;\nclass Solution {\npublic:\n    string simplifyPath(string path) {\n        stringstream ss(path);\n        string token;\n        vector<string> stack;\n        while (getline(ss, token, '/')) {\n            if (token == \"\" || token == \".\") continue;\n            if (token == \"..\") {\n                if (!stack.empty()) stack.pop_back();\n            } else {\n                stack.push_back(token);\n            }\n        }\n        string res = \"\";\n        for (const string& dir : stack) res += \"/\" + dir;\n        return res.empty() ? \"/\" : res;\n    }\n};"
+  }
+}

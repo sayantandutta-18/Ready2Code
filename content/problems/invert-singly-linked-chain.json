@@ -1,0 +1,107 @@
+{
+  "slug": "invert-singly-linked-chain",
+  "title": "Invert Singly Linked Chain Pointer Directions",
+  "difficulty": "easy",
+  "topic": "Linked List",
+  "tags": [
+    "Linked List",
+    "Recursion"
+  ],
+  "company_tags": [
+    "Amazon",
+    "Google",
+    "Apple",
+    "Microsoft"
+  ],
+  "statement_md": "Given the `head` of a singly linked list represented as an array of values, reverse the list by inverting its pointers, and return the reversed list.\n\n### Input Format\n- A JSON-encoded list of integers `head`\n\n### Output Format\n- A JSON-encoded list of integers representing the reversed list",
+  "examples": [
+    {
+      "input": "[1, 2, 3, 4, 5]",
+      "output": "[5, 4, 3, 2, 1]",
+      "explanation": "The pointers 1 -> 2 -> 3 -> 4 -> 5 are inverted to 5 -> 4 -> 3 -> 2 -> 1."
+    },
+    {
+      "input": "[1, 2]",
+      "output": "[2, 1]",
+      "explanation": "1 -> 2 becomes 2 -> 1."
+    }
+  ],
+  "sample_tests": [
+    {
+      "input_text": "[1, 2, 3, 4, 5]",
+      "expected_output": "[5, 4, 3, 2, 1]"
+    },
+    {
+      "input_text": "[1, 2]",
+      "expected_output": "[2, 1]"
+    },
+    {
+      "input_text": "[]",
+      "expected_output": "[]"
+    }
+  ],
+  "hidden_tests": [
+    {
+      "input_text": "[10]",
+      "expected_output": "[10]"
+    },
+    {
+      "input_text": "[1, 1, 1]",
+      "expected_output": "[1, 1, 1]"
+    },
+    {
+      "input_text": "[-1, -2, -3]",
+      "expected_output": "[-3, -2, -1]"
+    },
+    {
+      "input_text": "[0, 10, 20, 30]",
+      "expected_output": "[30, 20, 10, 0]"
+    },
+    {
+      "input_text": "[7, 8, 9, 10, 11, 12]",
+      "expected_output": "[12, 11, 10, 9, 8, 7]"
+    },
+    {
+      "input_text": "[100, 200]",
+      "expected_output": "[200, 100]"
+    },
+    {
+      "input_text": "[5, 4, 3, 2, 1, 0]",
+      "expected_output": "[0, 1, 2, 3, 4, 5]"
+    },
+    {
+      "input_text": "[1, 2, 1, 2, 1]",
+      "expected_output": "[1, 2, 1, 2, 1]"
+    },
+    {
+      "input_text": "[-5, 0, 5]",
+      "expected_output": "[5, 0, -5]"
+    }
+  ],
+  "time_limit_ms": 1000,
+  "memory_limit_mb": 128,
+  "hints": [
+    {
+      "level": 1,
+      "text": "To reverse a link curr.next = prev, you must remember the next node before modifying the link.",
+      "xp_cost": 2
+    },
+    {
+      "level": 2,
+      "text": "Maintain prev, curr, and nxt pointers iteratively.",
+      "xp_cost": 5
+    },
+    {
+      "level": 3,
+      "text": "Use Pointer Inversion with three pointers in a single pass.",
+      "xp_cost": 10
+    }
+  ],
+  "editorial_md": "### Optimal Approach: Iterative Pointer Inversion\n\nMaintain `prev = None` and `curr = head`. In each step, store `nxt = curr.next`, point `curr.next = prev`, then advance `prev = curr` and `curr = nxt`.\n\n#### Complexity\n- **Time Complexity:** $O(n)$ single pass over nodes.\n- **Space Complexity:** $O(1)$ constant pointer manipulation.\n\n#### Common Pitfalls\n- Losing the reference to `curr.next` before redirecting the pointer.",
+  "reference_solutions": {
+    "brute_python": "def reverseList(head):\n    return head[::-1]",
+    "optimal_python": "def reverseList(head):\n    if not head: return []\n    # Simulate linked node pointer reversal\n    class Node:\n        def __init__(self, val, next=None):\n            self.val = val\n            self.next = next\n    dummy = Node(0)\n    cur = dummy\n    for x in head:\n        cur.next = Node(x)\n        cur = cur.next\n    prev = None\n    node = dummy.next\n    while node:\n        nxt = node.next\n        node.next = prev\n        prev = node\n        node = nxt\n    res = []\n    while prev:\n        res.append(prev.val)\n        prev = prev.next\n    return res",
+    "optimal_java": "import java.util.*;\npublic class Solution {\n    public List<Integer> reverseList(List<Integer> head) {\n        Collections.reverse(head);\n        return head;\n    }\n}",
+    "optimal_cpp": "#include <vector>\n#include <algorithm>\nusing namespace std;\nclass Solution {\npublic:\n    vector<int> reverseList(vector<int>& head) {\n        reverse(head.begin(), head.end());\n        return head;\n    }\n};"
+  }
+}

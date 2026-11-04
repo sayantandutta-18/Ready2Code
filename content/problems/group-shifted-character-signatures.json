@@ -1,0 +1,107 @@
+{
+  "slug": "group-shifted-character-signatures",
+  "title": "Group Shifted String Signatures",
+  "difficulty": "medium",
+  "topic": "Arrays and Hashing",
+  "tags": [
+    "Array",
+    "Hash Table",
+    "String"
+  ],
+  "company_tags": [
+    "Google",
+    "Meta",
+    "Amazon"
+  ],
+  "statement_md": "Given an array of strings `strings`, group all strings that belong to the same shifting sequence.\n\nTwo strings `s` and `t` belong to the same shifting sequence if we can shift every character of `s` by the same distance modulo 26 to obtain `t` (e.g. `\"abc\"` -> `\"bcd\"` -> `\"xyz\"`).\n\nReturn the grouped strings sorted lexicographically within each group, and return the groups ordered by their first element.\n\n### Input Format\n- A JSON-encoded list of strings `strings`\n\n### Output Format\n- A JSON-encoded list of grouped string lists",
+  "examples": [
+    {
+      "input": "[\"abc\", \"bcd\", \"acef\", \"xyz\", \"az\", \"ba\", \"a\", \"z\"]",
+      "output": "[[\"a\", \"z\"], [\"abc\", \"bcd\", \"xyz\"], [\"acef\"], [\"az\", \"ba\"]]",
+      "explanation": "\"abc\", \"bcd\", \"xyz\" all have consecutive +1 shifts. \"az\" and \"ba\" both wrap around with distance 25."
+    },
+    {
+      "input": "[\"a\"]",
+      "output": "[[\"a\"]]",
+      "explanation": "A single character forms its own shift group."
+    }
+  ],
+  "sample_tests": [
+    {
+      "input_text": "[\"abc\", \"bcd\", \"acef\", \"xyz\", \"az\", \"ba\", \"a\", \"z\"]",
+      "expected_output": "[[\"a\", \"z\"], [\"abc\", \"bcd\", \"xyz\"], [\"acef\"], [\"az\", \"ba\"]]"
+    },
+    {
+      "input_text": "[\"a\"]",
+      "expected_output": "[[\"a\"]]"
+    },
+    {
+      "input_text": "[\"ab\", \"cd\", \"ef\"]",
+      "expected_output": "[[\"ab\", \"cd\", \"ef\"]]"
+    }
+  ],
+  "hidden_tests": [
+    {
+      "input_text": "[]",
+      "expected_output": "[]"
+    },
+    {
+      "input_text": "[\"z\", \"a\"]",
+      "expected_output": "[[\"a\", \"z\"]]"
+    },
+    {
+      "input_text": "[\"ab\", \"ba\"]",
+      "expected_output": "[[\"ab\"], [\"ba\"]]"
+    },
+    {
+      "input_text": "[\"eqdf\", \"qcpr\"]",
+      "expected_output": "[[\"eqdf\", \"qcpr\"]]"
+    },
+    {
+      "input_text": "[\"ay\", \"bz\"]",
+      "expected_output": "[[\"ay\", \"bz\"]]"
+    },
+    {
+      "input_text": "[\"hello\", \"world\"]",
+      "expected_output": "[[\"hello\"], [\"world\"]]"
+    },
+    {
+      "input_text": "[\"mno\", \"pqr\", \"stu\"]",
+      "expected_output": "[[\"mno\", \"pqr\", \"stu\"]]"
+    },
+    {
+      "input_text": "[\"aaa\", \"bbb\", \"zzz\"]",
+      "expected_output": "[[\"aaa\", \"bbb\", \"zzz\"]]"
+    },
+    {
+      "input_text": "[\"za\", \"ab\"]",
+      "expected_output": "[[\"ab\", \"za\"]]"
+    }
+  ],
+  "time_limit_ms": 1000,
+  "memory_limit_mb": 128,
+  "hints": [
+    {
+      "level": 1,
+      "text": "Notice that the difference between adjacent characters modulo 26 is identical for all strings in the same shift group.",
+      "xp_cost": 2
+    },
+    {
+      "level": 2,
+      "text": "Compute a canonical key tuple: ( (ord(s[i]) - ord(s[i-1])) % 26 for i in 1..len(s) ).",
+      "xp_cost": 5
+    },
+    {
+      "level": 3,
+      "text": "Use a Hash Map with this canonical difference tuple as key to cluster strings.",
+      "xp_cost": 10
+    }
+  ],
+  "editorial_md": "### Optimal Approach: Normalized Difference Signature\n\nFor each string, compute the sequence of differences between consecutive characters modulo 26: `(ord(s[i]) - ord(s[i-1])) % 26`. Use this tuple as the hash map key.\n\n#### Complexity\n- **Time Complexity:** $O(N \\cdot L)$ where $N$ is word count and $L$ is string length.\n- **Space Complexity:** $O(N \\cdot L)$ hash table storage.\n\n#### Common Pitfalls\n- Handling negative differences with Python's `% 26` vs C++/Java where `(diff % 26 + 26) % 26` is needed.",
+  "reference_solutions": {
+    "brute_python": "def groupShiftedStrings(strings):\n    def is_shift(s1, s2):\n        if len(s1) != len(s2):\n            return False\n        shift = (ord(s2[0]) - ord(s1[0])) % 26\n        return all((ord(s2[i]) - ord(s1[i])) % 26 == shift for i in range(len(s1)))\n    groups = []\n    for s in sorted(strings):\n        placed = False\n        for g in groups:\n            if is_shift(g[0], s):\n                g.append(s)\n                placed = True\n                break\n        if not placed:\n            groups.append([s])\n    for g in groups: g.sort()\n    groups.sort(key=lambda x: x[0])\n    return groups",
+    "optimal_python": "def groupShiftedStrings(strings):\n    from collections import defaultdict\n    groups = defaultdict(list)\n    for s in strings:\n        key = tuple((ord(s[i]) - ord(s[i-1])) % 26 for i in range(1, len(s)))\n        groups[key].append(s)\n    res = [sorted(v) for v in groups.values()]\n    res.sort(key=lambda x: x[0])\n    return res",
+    "optimal_java": "import java.util.*;\npublic class Solution {\n    public List<List<String>> groupShiftedStrings(String[] strings) {\n        Map<String, List<String>> map = new HashMap<>();\n        for (String s : strings) {\n            StringBuilder sb = new StringBuilder();\n            for (int i = 1; i < s.length(); i++) {\n                int diff = (s.charAt(i) - s.charAt(i - 1) + 26) % 26;\n                sb.append(diff).append(\",\");\n            }\n            String key = sb.toString();\n            map.computeIfAbsent(key, k -> new ArrayList<>()).add(s);\n        }\n        List<List<String>> res = new ArrayList<>();\n        for (List<String> list : map.values()) {\n            Collections.sort(list);\n            res.add(list);\n        }\n        res.sort(Comparator.comparing(a -> a.get(0)));\n        return res;\n    }\n}",
+    "optimal_cpp": "#include <vector>\n#include <string>\n#include <unordered_map>\n#include <algorithm>\nusing namespace std;\nclass Solution {\npublic:\n    vector<vector<string>> groupShiftedStrings(vector<string>& strings) {\n        unordered_map<string, vector<string>> groups;\n        for (auto& s : strings) {\n            string key = \"\";\n            for (int i = 1; i < (int)s.size(); i++) {\n                int diff = (s[i] - s[i-1] + 26) % 26;\n                key += to_string(diff) + \",\";\n            }\n            groups[key].push_back(s);\n        }\n        vector<vector<string>> res;\n        for (auto& p : groups) {\n            sort(p.second.begin(), p.second.end());\n            res.push_back(p.second);\n        }\n        sort(res.begin(), res.end(), [](const vector<string>& a, const vector<string>& b) {\n            return a[0] < b[0];\n        });\n        return res;\n    }\n};"
+  }
+}

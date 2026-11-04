@@ -1,0 +1,107 @@
+{
+  "slug": "balanced-bracket-delimiter-validator",
+  "title": "Nested Bracket Delimiter Balancing",
+  "difficulty": "easy",
+  "topic": "Stack and Queue",
+  "tags": [
+    "Stack",
+    "String"
+  ],
+  "company_tags": [
+    "Meta",
+    "Amazon",
+    "Google",
+    "Microsoft"
+  ],
+  "statement_md": "Given a string `s` containing just the characters `'('`, `')'`, `'{'`, `'}'`, `'['` and `']'`, determine if the input string is valid.\n\nAn input string is valid if:\n1. Open brackets must be closed by the same type of brackets.\n2. Open brackets must be closed in the correct order.\n3. Every close bracket has a corresponding open bracket of the same type.\n\n### Input Format\n- A string `s`\n\n### Output Format\n- A boolean value (`true` or `false`)",
+  "examples": [
+    {
+      "input": "\"()[]{}\"",
+      "output": "true",
+      "explanation": "All brackets open and close in matching pairs."
+    },
+    {
+      "input": "\"(]\"",
+      "output": "false",
+      "explanation": "Closing bracket ']' does not match opening '('."
+    }
+  ],
+  "sample_tests": [
+    {
+      "input_text": "\"()[]{}\"",
+      "expected_output": "true"
+    },
+    {
+      "input_text": "\"(]\"",
+      "expected_output": "false"
+    },
+    {
+      "input_text": "\"([])\"",
+      "expected_output": "true"
+    }
+  ],
+  "hidden_tests": [
+    {
+      "input_text": "\"\"",
+      "expected_output": "true"
+    },
+    {
+      "input_text": "\"(\"",
+      "expected_output": "false"
+    },
+    {
+      "input_text": "\")\"",
+      "expected_output": "false"
+    },
+    {
+      "input_text": "\"()\"",
+      "expected_output": "true"
+    },
+    {
+      "input_text": "\"{[]}\"",
+      "expected_output": "true"
+    },
+    {
+      "input_text": "\"([)]\"",
+      "expected_output": "false"
+    },
+    {
+      "input_text": "\"[({})]\"",
+      "expected_output": "true"
+    },
+    {
+      "input_text": "\"((((((()))))))\"",
+      "expected_output": "true"
+    },
+    {
+      "input_text": "\"))((\"",
+      "expected_output": "false"
+    }
+  ],
+  "time_limit_ms": 1000,
+  "memory_limit_mb": 128,
+  "hints": [
+    {
+      "level": 1,
+      "text": "Push opening brackets onto a collection and pop matching pairs when closing brackets arrive.",
+      "xp_cost": 2
+    },
+    {
+      "level": 2,
+      "text": "Check if top of collection matches the closing bracket type; if empty or mismatched, return false.",
+      "xp_cost": 5
+    },
+    {
+      "level": 3,
+      "text": "Use a LIFO Stack to match innermost brackets first.",
+      "xp_cost": 10
+    }
+  ],
+  "editorial_md": "### Optimal Approach: LIFO Stack Matching\n\nIterate through string characters. Push open brackets onto stack. For closing brackets, check if stack is non-empty and top element matches. Finally, ensure stack is empty.\n\n#### Complexity\n- **Time Complexity:** $O(n)$ single pass.\n- **Space Complexity:** $O(n)$ stack storage.\n\n#### Common Pitfalls\n- Returning true when stack still contains unclosed opening brackets.",
+  "reference_solutions": {
+    "brute_python": "def isValid(s):\n    while '()' in s or '[]' in s or '{}' in s:\n        s = s.replace('()', '').replace('[]', '').replace('{}', '')\n    return s == ''",
+    "optimal_python": "def isValid(s):\n    stack = []\n    mapping = {')': '(', '}': '{', ']': '['}\n    for c in s:\n        if c in mapping:\n            top = stack.pop() if stack else '#'\n            if mapping[c] != top:\n                return False\n        else:\n            stack.append(c)\n    return len(stack) == 0",
+    "optimal_java": "import java.util.*;\npublic class Solution {\n    public boolean isValid(String s) {\n        Stack<Character> stack = new Stack<>();\n        for (char c : s.toCharArray()) {\n            if (c == '(') stack.push(')');\n            else if (c == '{') stack.push('}');\n            else if (c == '[') stack.push(']');\n            else if (stack.isEmpty() || stack.pop() != c) return false;\n        }\n        return stack.isEmpty();\n    }\n}",
+    "optimal_cpp": "#include <string>\n#include <stack>\nusing namespace std;\nclass Solution {\npublic:\n    bool isValid(string s) {\n        stack<char> st;\n        for (char c : s) {\n            if (c == '(') st.push(')');\n            else if (c == '{') st.push('}');\n            else if (c == '[') st.push(']');\n            else {\n                if (st.empty() || st.top() != c) return false;\n                st.pop();\n            }\n        }\n        return st.empty();\n    }\n};"
+  }
+}

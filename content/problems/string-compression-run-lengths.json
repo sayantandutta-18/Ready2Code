@@ -1,0 +1,106 @@
+{
+  "slug": "string-compression-run-lengths",
+  "title": "String Compression by Run Lengths",
+  "difficulty": "easy",
+  "topic": "Strings",
+  "tags": [
+    "Two Pointers",
+    "String"
+  ],
+  "company_tags": [
+    "Amazon",
+    "Microsoft",
+    "Bloomberg"
+  ],
+  "statement_md": "Given an array of characters `chars`, compress it in-place using the following algorithm:\n\nBegin with an empty string `s`. For each group of consecutive repeating characters in `chars`:\n- If the group's length is 1, append the character to `s`.\n- Otherwise, append the character followed by the group's length.\n\nThe compressed string `s` should not be returned separately, but instead, be stored in the input character array `chars`.\n\nReturn the new length of the array.\n\n### Input Format\n- A JSON-encoded list of single-character strings `chars`\n\n### Output Format\n- An integer representing the compressed length",
+  "examples": [
+    {
+      "input": "[\"a\", \"a\", \"b\", \"b\", \"c\", \"c\", \"c\"]",
+      "output": "6",
+      "explanation": "The groups are \"aa\", \"bb\", and \"ccc\". This compresses to \"a2b2c3\", which has length 6."
+    },
+    {
+      "input": "[\"a\"]",
+      "output": "1",
+      "explanation": "Single character \"a\" is uncompressed, length 1."
+    }
+  ],
+  "sample_tests": [
+    {
+      "input_text": "[\"a\", \"a\", \"b\", \"b\", \"c\", \"c\", \"c\"]",
+      "expected_output": "6"
+    },
+    {
+      "input_text": "[\"a\"]",
+      "expected_output": "1"
+    },
+    {
+      "input_text": "[\"a\", \"b\", \"b\", \"b\", \"b\", \"b\", \"b\", \"b\", \"b\", \"b\", \"b\", \"b\", \"b\"]",
+      "expected_output": "4"
+    }
+  ],
+  "hidden_tests": [
+    {
+      "input_text": "[\"a\", \"b\", \"c\"]",
+      "expected_output": "3"
+    },
+    {
+      "input_text": "[\"a\", \"a\"]",
+      "expected_output": "2"
+    },
+    {
+      "input_text": "[\"z\", \"z\", \"z\", \"z\", \"z\"]",
+      "expected_output": "2"
+    },
+    {
+      "input_text": "[\"o\", \"o\", \"o\", \"p\", \"q\", \"q\"]",
+      "expected_output": "5"
+    },
+    {
+      "input_text": "[\"a\", \"a\", \"a\", \"a\", \"a\", \"a\", \"a\", \"a\", \"a\", \"a\"]",
+      "expected_output": "3"
+    },
+    {
+      "input_text": "[\"x\", \"y\", \"y\", \"z\", \"z\", \"z\"]",
+      "expected_output": "5"
+    },
+    {
+      "input_text": "[\"m\", \"m\", \"m\", \"m\", \"m\", \"m\", \"m\", \"m\", \"m\", \"m\", \"m\", \"m\"]",
+      "expected_output": "3"
+    },
+    {
+      "input_text": "[\"p\", \"p\", \"p\", \"p\"]",
+      "expected_output": "2"
+    },
+    {
+      "input_text": "[\"k\", \"k\", \"r\", \"r\", \"r\", \"s\"]",
+      "expected_output": "5"
+    }
+  ],
+  "time_limit_ms": 1000,
+  "memory_limit_mb": 128,
+  "hints": [
+    {
+      "level": 1,
+      "text": "Group consecutive identical characters using a read pointer.",
+      "xp_cost": 2
+    },
+    {
+      "level": 2,
+      "text": "Write the character to the write pointer, and if the count is greater than 1, write each digit of the count.",
+      "xp_cost": 5
+    },
+    {
+      "level": 3,
+      "text": "Use Fast and Slow Pointers to achieve in-place constant space rewriting.",
+      "xp_cost": 10
+    }
+  ],
+  "editorial_md": "### Optimal Approach: In-Place Two Pointers\n\nMaintain `write = 0` and `read = 0`. For each run of identical characters starting at `read`, count occurrences until character changes at `read_end`. Write character at `chars[write]`. If count > 1, write string representation of count digit by digit.\n\n#### Complexity\n- **Time Complexity:** $O(n)$ single pass.\n- **Space Complexity:** $O(1)$ in-place modification.\n\n#### Common Pitfalls\n- Multidigit counts (e.g. 12 -> '1', '2') must occupy separate array cells.",
+  "reference_solutions": {
+    "brute_python": "def compress(chars):\n    res = []\n    i = 0\n    while i < len(chars):\n        ch = chars[i]\n        count = 0\n        while i < len(chars) and chars[i] == ch:\n            count += 1\n            i += 1\n        res.append(ch)\n        if count > 1:\n            res.extend(list(str(count)))\n    for j in range(len(res)): chars[j] = res[j]\n    return len(res)",
+    "optimal_python": "def compress(chars):\n    write = 0\n    read = 0\n    n = len(chars)\n    while read < n:\n        ch = chars[read]\n        count = 0\n        while read < n and chars[read] == ch:\n            count += 1\n            read += 1\n        chars[write] = ch\n        write += 1\n        if count > 1:\n            for digit in str(count):\n                chars[write] = digit\n                write += 1\n    return write",
+    "optimal_java": "public class Solution {\n    public int compress(char[] chars) {\n        int write = 0, read = 0, n = chars.length;\n        while (read < n) {\n            char ch = chars[read];\n            int count = 0;\n            while (read < n && chars[read] == ch) {\n                count++;\n                read++;\n            }\n            chars[write++] = ch;\n            if (count > 1) {\n                for (char c : Integer.toString(count).toCharArray()) {\n                    chars[write++] = c;\n                }\n            }\n        }\n        return write;\n    }\n}",
+    "optimal_cpp": "#include <vector>\n#include <string>\nusing namespace std;\nclass Solution {\npublic:\n    int compress(vector<char>& chars) {\n        int write = 0, read = 0, n = chars.size();\n        while (read < n) {\n            char ch = chars[read];\n            int count = 0;\n            while (read < n && chars[read] == ch) {\n                count++;\n                read++;\n            }\n            chars[write++] = ch;\n            if (count > 1) {\n                for (char c : to_string(count)) {\n                    chars[write++] = c;\n                }\n            }\n        }\n        return write;\n    }\n};"
+  }
+}

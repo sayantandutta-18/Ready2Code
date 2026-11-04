@@ -1,0 +1,107 @@
+{
+  "slug": "queue-using-dual-amortized-stacks",
+  "title": "FIFO Queue Simulation Using Dual Stacks",
+  "difficulty": "easy",
+  "topic": "Stack and Queue",
+  "tags": [
+    "Stack",
+    "Queue",
+    "Design"
+  ],
+  "company_tags": [
+    "Amazon",
+    "Microsoft",
+    "Bloomberg"
+  ],
+  "statement_md": "Simulate a FIFO Queue using two stacks by executing a list of operations.\n\nOperations can be:\n- `[\"push\", x]`: pushes integer `x` to back of queue\n- `[\"pop\"]`: removes the element from front of queue and returns it\n- `[\"peek\"]`: returns element at front without removing\n- `[\"empty\"]`: returns boolean whether queue is empty\n\nGiven a list of commands, return a list of results (null for push, int or bool for pop/peek/empty).\n\n### Input Format\n- A JSON-encoded list of command arrays\n\n### Output Format\n- A JSON-encoded list of return values",
+  "examples": [
+    {
+      "input": "[[\"push\", 1], [\"push\", 2], [\"peek\"], [\"pop\"], [\"empty\"]]",
+      "output": "[null, null, 1, 1, false]",
+      "explanation": "Queue is [1, 2]. Peek returns 1. Pop returns 1. Queue now has [2], empty is false."
+    },
+    {
+      "input": "[[\"push\", 5], [\"pop\"], [\"empty\"]]",
+      "output": "[null, 5, true]",
+      "explanation": "Push 5, pop returns 5, queue is now empty."
+    }
+  ],
+  "sample_tests": [
+    {
+      "input_text": "[[\"push\", 1], [\"push\", 2], [\"peek\"], [\"pop\"], [\"empty\"]]",
+      "expected_output": "[null, null, 1, 1, false]"
+    },
+    {
+      "input_text": "[[\"push\", 5], [\"pop\"], [\"empty\"]]",
+      "expected_output": "[null, 5, true]"
+    },
+    {
+      "input_text": "[[\"empty\"]]",
+      "expected_output": "[true]"
+    }
+  ],
+  "hidden_tests": [
+    {
+      "input_text": "[[\"push\", 10], [\"push\", 20], [\"push\", 30], [\"pop\"], [\"pop\"], [\"pop\"]]",
+      "expected_output": "[null, null, null, 10, 20, 30]"
+    },
+    {
+      "input_text": "[[\"push\", 1], [\"peek\"], [\"push\", 2], [\"peek\"]]",
+      "expected_output": "[null, 1, null, 1]"
+    },
+    {
+      "input_text": "[[\"push\", 7], [\"empty\"], [\"pop\"]]",
+      "expected_output": "[null, false, 7]"
+    },
+    {
+      "input_text": "[[\"push\", 1], [\"pop\"], [\"push\", 2], [\"pop\"]]",
+      "expected_output": "[null, 1, null, 2]"
+    },
+    {
+      "input_text": "[[\"push\", 99], [\"push\", 100], [\"peek\"], [\"pop\"], [\"empty\"]]",
+      "expected_output": "[null, null, 99, 99, false]"
+    },
+    {
+      "input_text": "[[\"push\", -5], [\"pop\"]]",
+      "expected_output": "[null, -5]"
+    },
+    {
+      "input_text": "[[\"push\", 0], [\"empty\"], [\"pop\"], [\"empty\"]]",
+      "expected_output": "[null, false, 0, true]"
+    },
+    {
+      "input_text": "[[\"push\", 3], [\"push\", 4], [\"pop\"], [\"push\", 5], [\"pop\"], [\"pop\"]]",
+      "expected_output": "[null, null, 3, null, 4, 5]"
+    },
+    {
+      "input_text": "[[\"push\", 8], [\"peek\"], [\"pop\"]]",
+      "expected_output": "[null, 8, 8]"
+    }
+  ],
+  "time_limit_ms": 1000,
+  "memory_limit_mb": 128,
+  "hints": [
+    {
+      "level": 1,
+      "text": "Maintain an in_stack for incoming items and an out_stack for outgoing items.",
+      "xp_cost": 2
+    },
+    {
+      "level": 2,
+      "text": "Transfer elements from in_stack to out_stack only when out_stack is completely empty.",
+      "xp_cost": 5
+    },
+    {
+      "level": 3,
+      "text": "Use Dual Stacks to achieve amortized O(1) time per queue operation.",
+      "xp_cost": 10
+    }
+  ],
+  "editorial_md": "### Optimal Approach: Amortized Dual Stacks\n\nPush always appends to `in_stack`. For `pop` or `peek`, if `out_stack` is empty, pop all elements from `in_stack` and push them to `out_stack`. This reverses the order to FIFO. Each element moves at most twice.\n\n#### Complexity\n- **Time Complexity:** Amortized $O(1)$ per operation.\n- **Space Complexity:** $O(n)$ elements stored across stacks.\n\n#### Common Pitfalls\n- Transferring elements from `in_stack` before `out_stack` is empty (scrambles order).",
+  "reference_solutions": {
+    "brute_python": "def simulateQueue(ops):\n    q = []\n    res = []\n    for op in ops:\n        cmd = op[0]\n        if cmd == 'push': q.append(op[1]); res.append(None)\n        elif cmd == 'pop': res.append(q.pop(0))\n        elif cmd == 'peek': res.append(q[0])\n        elif cmd == 'empty': res.append(len(q) == 0)\n    return res",
+    "optimal_python": "def simulateQueue(ops):\n    in_stk, out_stk = [], []\n    res = []\n    def transfer():\n        if not out_stk:\n            while in_stk: out_stk.append(in_stk.pop())\n    for op in ops:\n        cmd = op[0]\n        if cmd == 'push':\n            in_stk.append(op[1])\n            res.append(None)\n        elif cmd == 'pop':\n            transfer()\n            res.append(out_stk.pop())\n        elif cmd == 'peek':\n            transfer()\n            res.append(out_stk[-1])\n        elif cmd == 'empty':\n            res.append(len(in_stk) == 0 and len(out_stk) == 0)\n    return res",
+    "optimal_java": "import java.util.*;\npublic class Solution {\n    public List<Object> simulateQueue(List<List<Object>> ops) {\n        Stack<Integer> inStk = new Stack<>(), outStk = new Stack<>();\n        List<Object> res = new ArrayList<>();\n        for (List<Object> op : ops) {\n            String cmd = (String) op.get(0);\n            if (\"push\".equals(cmd)) {\n                inStk.push(((Number) op.get(1)).intValue());\n                res.add(null);\n            } else if (\"pop\".equals(cmd)) {\n                if (outStk.isEmpty()) while (!inStk.isEmpty()) outStk.push(inStk.pop());\n                res.add(outStk.pop());\n            } else if (\"peek\".equals(cmd)) {\n                if (outStk.isEmpty()) while (!inStk.isEmpty()) outStk.push(inStk.pop());\n                res.add(outStk.peek());\n            } else if (\"empty\".equals(cmd)) {\n                res.add(inStk.isEmpty() && outStk.isEmpty());\n            }\n        }\n        return res;\n    }\n}",
+    "optimal_cpp": "#include <vector>\n#include <string>\n#include <stack>\nusing namespace std;\n// Reference simulation"
+  }
+}

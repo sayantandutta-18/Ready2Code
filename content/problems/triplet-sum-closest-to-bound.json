@@ -1,0 +1,107 @@
+{
+  "slug": "triplet-sum-closest-to-bound",
+  "title": "Triplet Sum Closest to Target Bound",
+  "difficulty": "medium",
+  "topic": "Two Pointers and Sliding Window",
+  "tags": [
+    "Two Pointers",
+    "Sorting",
+    "Array"
+  ],
+  "company_tags": [
+    "Bloomberg",
+    "Google",
+    "Amazon"
+  ],
+  "statement_md": "Given an integer array `nums` of length `n` and an integer `target`, find three integers in `nums` such that the sum is closest to `target`.\n\nReturn the sum of the three integers.\n\nYou may assume that each input would have exactly one solution.\n\n### Input Format\n- Line 1: A JSON-encoded list of integers `nums` (length >= 3)\n- Line 2: An integer `target`\n\n### Output Format\n- An integer representing the closest triplet sum",
+  "examples": [
+    {
+      "input": "[-1, 2, 1, -4]\n1",
+      "output": "2",
+      "explanation": "The sum that is closest to target is 2 (-1 + 2 + 1 = 2)."
+    },
+    {
+      "input": "[0, 0, 0]\n1",
+      "output": "0",
+      "explanation": "The sum that is closest to target is 0 (0 + 0 + 0 = 0)."
+    }
+  ],
+  "sample_tests": [
+    {
+      "input_text": "[-1, 2, 1, -4]\n1",
+      "expected_output": "2"
+    },
+    {
+      "input_text": "[0, 0, 0]\n1",
+      "expected_output": "0"
+    },
+    {
+      "input_text": "[1, 1, 1, 1]\n0",
+      "expected_output": "3"
+    }
+  ],
+  "hidden_tests": [
+    {
+      "input_text": "[1, 2, 3]\n6",
+      "expected_output": "6"
+    },
+    {
+      "input_text": "[1, 2, 3]\n100",
+      "expected_output": "6"
+    },
+    {
+      "input_text": "[-5, -4, -3, -2, -1]\n-10",
+      "expected_output": "-10"
+    },
+    {
+      "input_text": "[0, 1, 2]\n3",
+      "expected_output": "3"
+    },
+    {
+      "input_text": "[-10, 0, 10, 20, 30]\n16",
+      "expected_output": "20"
+    },
+    {
+      "input_text": "[4, 0, 5, -5, 3, 3, 0, -4, -5]\n-2",
+      "expected_output": "-2"
+    },
+    {
+      "input_text": "[1, 1, -1, -1, 3]\n-1",
+      "expected_output": "-1"
+    },
+    {
+      "input_text": "[10, 20, 30, 40, 50]\n85",
+      "expected_output": "80"
+    },
+    {
+      "input_text": "[-100, -98, -2, -1]\n-101",
+      "expected_output": "-101"
+    }
+  ],
+  "time_limit_ms": 1000,
+  "memory_limit_mb": 128,
+  "hints": [
+    {
+      "level": 1,
+      "text": "Sort the array first so you can guide the search with two pointers.",
+      "xp_cost": 2
+    },
+    {
+      "level": 2,
+      "text": "For each fixed first element nums[i], use left = i + 1 and right = n - 1.",
+      "xp_cost": 5
+    },
+    {
+      "level": 3,
+      "text": "Use Two Pointers after sorting, tracking the minimum absolute difference |current_sum - target|.",
+      "xp_cost": 10
+    }
+  ],
+  "editorial_md": "### Optimal Approach: Two Pointers with Sorting\n\nSort `nums`. For each index `i`, set `left = i + 1` and `right = len(nums) - 1`. If `abs(sum - target) < abs(best - target)`, update `best`. Adjust pointers according to whether sum is less or greater than target.\n\n#### Complexity\n- **Time Complexity:** $O(n^2)$ outer loop times two-pointer convergence.\n- **Space Complexity:** $O(1)$ auxiliary space.\n\n#### Common Pitfalls\n- Comparing signed differences instead of absolute differences.",
+  "reference_solutions": {
+    "brute_python": "def threeSumClosest(nums, target):\n    n = len(nums)\n    closest = nums[0] + nums[1] + nums[2]\n    for i in range(n):\n        for j in range(i + 1, n):\n            for k in range(j + 1, n):\n                cur = nums[i] + nums[j] + nums[k]\n                if abs(cur - target) < abs(closest - target):\n                    closest = cur\n    return closest",
+    "optimal_python": "def threeSumClosest(nums, target):\n    nums.sort()\n    closest = nums[0] + nums[1] + nums[2]\n    n = len(nums)\n    for i in range(n - 2):\n        left, right = i + 1, n - 1\n        while left < right:\n            cur = nums[i] + nums[left] + nums[right]\n            if cur == target:\n                return cur\n            if abs(cur - target) < abs(closest - target):\n                closest = cur\n            if cur < target:\n                left += 1\n            else:\n                right -= 1\n    return closest",
+    "optimal_java": "import java.util.Arrays;\npublic class Solution {\n    public int threeSumClosest(int[] nums, int target) {\n        Arrays.sort(nums);\n        int closest = nums[0] + nums[1] + nums[2];\n        for (int i = 0; i < nums.length - 2; i++) {\n            int left = i + 1, right = nums.length - 1;\n            while (left < right) {\n                int cur = nums[i] + nums[left] + nums[right];\n                if (cur == target) return cur;\n                if (Math.abs(cur - target) < Math.abs(closest - target)) closest = cur;\n                if (cur < target) left++;\n                else right--;\n            }\n        }\n        return closest;\n    }\n}",
+    "optimal_cpp": "#include <vector>\n#include <algorithm>\n#include <cmath>\nusing namespace std;\nclass Solution {\npublic:\n    int threeSumClosest(vector<int>& nums, int target) {\n        sort(nums.begin(), nums.end());\n        int closest = nums[0] + nums[1] + nums[2];\n        int n = nums.size();\n        for (int i = 0; i < n - 2; i++) {\n            int left = i + 1, right = n - 1;\n            while (left < right) {\n                int cur = nums[i] + nums[left] + nums[right];\n                if (cur == target) return cur;\n                if (abs(cur - target) < abs(closest - target)) closest = cur;\n                if (cur < target) left++;\n                else right--;\n            }\n        }\n        return closest;\n    }\n};"
+  }
+}

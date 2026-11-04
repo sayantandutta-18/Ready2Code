@@ -1,0 +1,108 @@
+{
+  "slug": "minimum-window-subsequence-match",
+  "title": "Minimum Window Subsequence Match",
+  "difficulty": "hard",
+  "topic": "Two Pointers and Sliding Window",
+  "tags": [
+    "Two Pointers",
+    "Dynamic Programming",
+    "Sliding Window"
+  ],
+  "company_tags": [
+    "Google",
+    "Meta",
+    "Amazon",
+    "Uber"
+  ],
+  "statement_md": "Given strings `s1` and `s2`, return the minimum contiguous substring `W` of `s1`, so that `s2` is a subsequence of `W`.\n\nIf there is no such window in `s1` that covers all characters in `s2`, return the empty string `\"\"`. If there are multiple such minimum-length windows, return the one with the smallest starting index.\n\n### Input Format\n- Line 1: String `s1`\n- Line 2: String `s2`\n\n### Output Format\n- A string representing the minimal window substring",
+  "examples": [
+    {
+      "input": "\"abcdebdde\"\n\"bde\"",
+      "output": "\"bcde\"",
+      "explanation": "\"bcde\" is the first substring containing \"bde\" as a subsequence (length 4). \"bdde\" also has length 4, but occurs later."
+    },
+    {
+      "input": "\"jmeqforevndlit\"\n\"u\"",
+      "output": "\"\"",
+      "explanation": "\"u\" does not appear in s1, so no window exists."
+    }
+  ],
+  "sample_tests": [
+    {
+      "input_text": "\"abcdebdde\"\n\"bde\"",
+      "expected_output": "\"bcde\""
+    },
+    {
+      "input_text": "\"jmeqforevndlit\"\n\"u\"",
+      "expected_output": "\"\""
+    },
+    {
+      "input_text": "\"fgrqsqsnodwmxzkzxwqegkndaa\"\n\"k\"",
+      "expected_output": "\"k\""
+    }
+  ],
+  "hidden_tests": [
+    {
+      "input_text": "\"\"\n\"a\"",
+      "expected_output": "\"\""
+    },
+    {
+      "input_text": "\"a\"\n\"a\"",
+      "expected_output": "\"a\""
+    },
+    {
+      "input_text": "\"abc\"\n\"abc\"",
+      "expected_output": "\"abc\""
+    },
+    {
+      "input_text": "\"bbbbdebdde\"\n\"bde\"",
+      "expected_output": "\"bde\""
+    },
+    {
+      "input_text": "\"cnhczmccqouqadqtmjjzl\"\n\"mm\"",
+      "expected_output": "\"mccqouqadqtm\""
+    },
+    {
+      "input_text": "\"abcdefg\"\n\"ace\"",
+      "expected_output": "\"abcde\""
+    },
+    {
+      "input_text": "\"hgh9xabxcdxef\"\n\"abcdef\"",
+      "expected_output": "\"abxcdxef\""
+    },
+    {
+      "input_text": "\"zxyxyz\"\n\"xyz\"",
+      "expected_output": "\"xyz\""
+    },
+    {
+      "input_text": "\"aaaaa\"\n\"aaa\"",
+      "expected_output": "\"aaa\""
+    }
+  ],
+  "time_limit_ms": 1000,
+  "memory_limit_mb": 128,
+  "hints": [
+    {
+      "level": 1,
+      "text": "Scan forward to find any match of s2 as a subsequence.",
+      "xp_cost": 2
+    },
+    {
+      "level": 2,
+      "text": "Once the end of s2 is matched, scan backwards from that end to find the optimal start of this specific window.",
+      "xp_cost": 5
+    },
+    {
+      "level": 3,
+      "text": "Use Two Pointers with forward greedy match and reverse pointer contraction.",
+      "xp_cost": 10
+    }
+  ],
+  "editorial_md": "### Optimal Approach: Forward Scan with Reverse Contraction\n\n1. Iterate pointer `i` through `s1` and pointer `j` through `s2`. Advance `j` when `s1[i] == s2[j]`.\n2. When `j == len(s2)`, we have found an end of a valid window at index `end = i`.\n3. Contract backwards: decrement `j` while decrementing `i` until `j < 0`. The index `start = i + 1` gives the tightest starting point for this window.\n4. Update min window if `end - start + 1 < min_len`.\n5. Reset `i = start + 1` and `j = 0` to search for subsequent occurrences.\n\n#### Complexity\n- **Time Complexity:** $O(N \\cdot M)$ where $N = \\text{len}(s1)$ and $M = \\text{len}(s2)$.\n- **Space Complexity:** $O(1)$ auxiliary storage.\n\n#### Common Pitfalls\n- Restarting search at `end` instead of `start + 1`, potentially skipping overlapping shorter windows.",
+  "reference_solutions": {
+    "brute_python": "def minWindow(s1, s2):\n    def is_subseq(sub, pat):\n        it = iter(sub)\n        return all(c in it for c in pat)\n    n = len(s1)\n    min_str = \"\"\n    min_len = float('inf')\n    for i in range(n):\n        for j in range(i + 1, n + 1):\n            sub = s1[i:j]\n            if is_subseq(sub, s2):\n                if len(sub) < min_len:\n                    min_len = len(sub)\n                    min_str = sub\n                break\n    return min_str",
+    "optimal_python": "def minWindow(s1, s2):\n    n, m = len(s1), len(s2)\n    i, j = 0, 0\n    min_len = float('inf')\n    res = \"\"\n    while i < n:\n        if s1[i] == s2[j]:\n            j += 1\n            if j == m:\n                end = i\n                j -= 1\n                while j >= 0:\n                    if s1[i] == s2[j]:\n                        j -= 1\n                    i -= 1\n                i += 1\n                start = i\n                if end - start + 1 < min_len:\n                    min_len = end - start + 1\n                    res = s1[start:end + 1]\n                j = 0\n        i += 1\n    return res",
+    "optimal_java": "public class Solution {\n    public String minWindow(String s1, String s2) {\n        int n = s1.length(), m = s2.length();\n        int i = 0, j = 0;\n        int minLen = Integer.MAX_VALUE;\n        String res = \"\";\n        while (i < n) {\n            if (s1.charAt(i) == s2.charAt(j)) {\n                j++;\n                if (j == m) {\n                    int end = i;\n                    j--;\n                    while (j >= 0) {\n                        if (s1.charAt(i) == s2.charAt(j)) j--;\n                        i--;\n                    }\n                    i++;\n                    int start = i;\n                    if (end - start + 1 < minLen) {\n                        minLen = end - start + 1;\n                        res = s1.substring(start, end + 1);\n                    }\n                    j = 0;\n                }\n            }\n            i++;\n        }\n        return res;\n    }\n}",
+    "optimal_cpp": "#include <string>\nusing namespace std;\nclass Solution {\npublic:\n    string minWindow(string s1, string s2) {\n        int n = s1.size(), m = s2.size();\n        int i = 0, j = 0;\n        int minLen = 1e9;\n        string res = \"\";\n        while (i < n) {\n            if (s1[i] == s2[j]) {\n                j++;\n                if (j == m) {\n                    int end = i;\n                    j--;\n                    while (j >= 0) {\n                        if (s1[i] == s2[j]) j--;\n                        i--;\n                    }\n                    i++;\n                    int start = i;\n                    if (end - start + 1 < minLen) {\n                        minLen = end - start + 1;\n                        res = s1.substr(start, end - start + 1);\n                    }\n                    j = 0;\n                }\n            }\n            i++;\n        }\n        return res;\n    }\n};"
+  }
+}

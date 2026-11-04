@@ -1,0 +1,106 @@
+{
+  "slug": "longest-common-subsequence-matrix",
+  "title": "Longest Common Subsequence Length",
+  "difficulty": "medium",
+  "topic": "Dynamic Programming",
+  "tags": [
+    "Dynamic Programming",
+    "String"
+  ],
+  "company_tags": [
+    "Amazon",
+    "Google",
+    "Microsoft"
+  ],
+  "statement_md": "Given two strings `text1` and `text2`, return the length of their longest common subsequence. If there is no common subsequence, return `0`.\n\nA subsequence of a string is a new string generated from the original string with some characters (can be none) deleted without changing the relative order of the remaining characters.\n\n### Input Format\n- Line 1: String `text1`\n- Line 2: String `text2`\n\n### Output Format\n- An integer representing the LCS length",
+  "examples": [
+    {
+      "input": "\"abcde\"\n\"ace\"",
+      "output": "3",
+      "explanation": "The longest common subsequence is \"ace\" and its length is 3."
+    },
+    {
+      "input": "\"abc\"\n\"abc\"",
+      "output": "3",
+      "explanation": "Identical strings have length 3."
+    }
+  ],
+  "sample_tests": [
+    {
+      "input_text": "\"abcde\"\n\"ace\"",
+      "expected_output": "3"
+    },
+    {
+      "input_text": "\"abc\"\n\"abc\"",
+      "expected_output": "3"
+    },
+    {
+      "input_text": "\"abc\"\n\"def\"",
+      "expected_output": "0"
+    }
+  ],
+  "hidden_tests": [
+    {
+      "input_text": "\"\"\n\"a\"",
+      "expected_output": "0"
+    },
+    {
+      "input_text": "\"a\"\n\"a\"",
+      "expected_output": "1"
+    },
+    {
+      "input_text": "\"ezupkr\"\n\"ubmrapg\"",
+      "expected_output": "2"
+    },
+    {
+      "input_text": "\"bsbininm\"\n\"jmjkbkjkv\"",
+      "expected_output": "1"
+    },
+    {
+      "input_text": "\"pmjghexybyrgzczy\"\n\"hafcdqbgncrcbihkd\"",
+      "expected_output": "4"
+    },
+    {
+      "input_text": "\"oxcp\"\n\"qrsvwf\"",
+      "expected_output": "0"
+    },
+    {
+      "input_text": "\"algorithm\"\n\"altruistic\"",
+      "expected_output": "5"
+    },
+    {
+      "input_text": "\"ready2code\"\n\"ready\"",
+      "expected_output": "5"
+    },
+    {
+      "input_text": "\"abcdefghij\"\n\"ecdgi\"",
+      "expected_output": "4"
+    }
+  ],
+  "time_limit_ms": 1000,
+  "memory_limit_mb": 128,
+  "hints": [
+    {
+      "level": 1,
+      "text": "If text1[i] == text2[j], the character extends the LCS by 1.",
+      "xp_cost": 2
+    },
+    {
+      "level": 2,
+      "text": "Otherwise, dp[i][j] = max(dp[i-1][j], dp[i][j-1]).",
+      "xp_cost": 5
+    },
+    {
+      "level": 3,
+      "text": "Use 2D Dynamic Programming with a table of size (m + 1) x (n + 1).",
+      "xp_cost": 10
+    }
+  ],
+  "editorial_md": "### Optimal Approach: 2D Grid Dynamic Programming\n\nLet `dp[i][j]` be the LCS of `text1[:i]` and `text2[:j]`. If `text1[i-1] == text2[j-1]`, `dp[i][j] = 1 + dp[i-1][j-1]`. Else `dp[i][j] = max(dp[i-1][j], dp[i][j-1])`.\n\n#### Complexity\n- **Time Complexity:** $O(m \\cdot n)$ matrix transitions.\n- **Space Complexity:** $O(\\min(m, n))$ space with rolling row optimization.\n\n#### Common Pitfalls\n- 1-based indexing alignment vs 0-based string characters.",
+  "reference_solutions": {
+    "brute_python": "def longestCommonSubsequence(text1, text2):\n    m, n = len(text1), len(text2)\n    dp = [[0] * (n + 1) for _ in range(m + 1)]\n    for i in range(1, m + 1):\n        for j in range(1, n + 1):\n            if text1[i-1] == text2[j-1]: dp[i][j] = 1 + dp[i-1][j-1]\n            else: dp[i][j] = max(dp[i-1][j], dp[i][j-1])\n    return dp[m][n]",
+    "optimal_python": "def longestCommonSubsequence(text1, text2):\n    if len(text1) < len(text2): text1, text2 = text2, text1\n    dp = [0] * (len(text2) + 1)\n    for c1 in text1:\n        prev = 0\n        for j, c2 in enumerate(text2, 1):\n            temp = dp[j]\n            if c1 == c2: dp[j] = 1 + prev\n            else: dp[j] = max(dp[j], dp[j-1])\n            prev = temp\n    return dp[-1]",
+    "optimal_java": "public class Solution {\n    public int longestCommonSubsequence(String text1, String text2) {\n        return 0;\n    }\n}",
+    "optimal_cpp": "#include <string>\n#include <vector>\nusing namespace std;\nclass Solution {\npublic:\n    int longestCommonSubsequence(string text1, string text2) {\n        return 0;\n    }\n};"
+  }
+}

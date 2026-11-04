@@ -1,0 +1,108 @@
+{
+  "slug": "climbing-step-variations",
+  "title": "Distinct Ways to Climb Stair Steps",
+  "difficulty": "easy",
+  "topic": "Dynamic Programming",
+  "tags": [
+    "Dynamic Programming",
+    "Math",
+    "Memoization"
+  ],
+  "company_tags": [
+    "Amazon",
+    "Google",
+    "Apple",
+    "Adobe"
+  ],
+  "statement_md": "You are climbing a staircase. It takes `n` steps to reach the top.\n\nEach time you can either climb `1` or `2` steps. In how many distinct ways can you climb to the top?\n\n### Input Format\n- An integer `n` (`1 <= n <= 45`)\n\n### Output Format\n- An integer representing distinct combinations",
+  "examples": [
+    {
+      "input": "2",
+      "output": "2",
+      "explanation": "There are two ways: (1 step + 1 step) or (2 steps)."
+    },
+    {
+      "input": "3",
+      "output": "3",
+      "explanation": "Three ways: (1+1+1), (1+2), (2+1)."
+    }
+  ],
+  "sample_tests": [
+    {
+      "input_text": "2",
+      "expected_output": "2"
+    },
+    {
+      "input_text": "3",
+      "expected_output": "3"
+    },
+    {
+      "input_text": "1",
+      "expected_output": "1"
+    }
+  ],
+  "hidden_tests": [
+    {
+      "input_text": "4",
+      "expected_output": "5"
+    },
+    {
+      "input_text": "5",
+      "expected_output": "8"
+    },
+    {
+      "input_text": "6",
+      "expected_output": "13"
+    },
+    {
+      "input_text": "7",
+      "expected_output": "21"
+    },
+    {
+      "input_text": "10",
+      "expected_output": "89"
+    },
+    {
+      "input_text": "15",
+      "expected_output": "987"
+    },
+    {
+      "input_text": "20",
+      "expected_output": "10946"
+    },
+    {
+      "input_text": "30",
+      "expected_output": "1346269"
+    },
+    {
+      "input_text": "35",
+      "expected_output": "14930352"
+    }
+  ],
+  "time_limit_ms": 1000,
+  "memory_limit_mb": 128,
+  "hints": [
+    {
+      "level": 1,
+      "text": "To reach step n, you can either step from n - 1 or jump from n - 2.",
+      "xp_cost": 2
+    },
+    {
+      "level": 2,
+      "text": "Recurrence relation: ways(n) = ways(n - 1) + ways(n - 2).",
+      "xp_cost": 5
+    },
+    {
+      "level": 3,
+      "text": "Use 1D Dynamic Programming with two variables representing the previous two steps.",
+      "xp_cost": 10
+    }
+  ],
+  "editorial_md": "### Optimal Approach: 1D Fibonacci DP\n\nBase cases `dp[1] = 1, dp[2] = 2`. Transition `dp[i] = dp[i-1] + dp[i-2]`. Maintain two rolling state variables `a` and `b`.\n\n#### Complexity\n- **Time Complexity:** $O(n)$ single linear pass.\n- **Space Complexity:** $O(1)$ constant memory.\n\n#### Common Pitfalls\n- Naive recursion without memoization leading to exponential $O(2^n)$ TLE.",
+  "reference_solutions": {
+    "brute_python": "def climbStairs(n):\n    if n <= 2: return n\n    a, b = 1, 2\n    for _ in range(3, n + 1):\n        a, b = b, a + b\n    return b",
+    "optimal_python": "def climbStairs(n):\n    if n <= 2: return n\n    a, b = 1, 2\n    for _ in range(3, n + 1):\n        a, b = b, a + b\n    return b",
+    "optimal_java": "public class Solution {\n    public int climbStairs(int n) {\n        if (n <= 2) return n;\n        int a = 1, b = 2;\n        for (int i = 3; i <= n; i++) {\n            int c = a + b;\n            a = b;\n            b = c;\n        }\n        return b;\n    }\n}",
+    "optimal_cpp": "class Solution {\npublic:\n    int climbStairs(int n) {\n        if (n <= 2) return n;\n        int a = 1, b = 2;\n        for (int i = 3; i <= n; i++) {\n            int c = a + b;\n            a = b;\n            b = c;\n        }\n        return b;\n    }\n};"
+  }
+}

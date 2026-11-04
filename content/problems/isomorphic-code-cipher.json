@@ -1,0 +1,106 @@
+{
+  "slug": "isomorphic-code-cipher",
+  "title": "Isomorphic Character Cipher Validation",
+  "difficulty": "easy",
+  "topic": "Strings",
+  "tags": [
+    "Hash Table",
+    "String"
+  ],
+  "company_tags": [
+    "LinkedIn",
+    "Amazon",
+    "Google"
+  ],
+  "statement_md": "Given two strings `s` and `t`, determine if they are isomorphic.\n\nTwo strings `s` and `t` are isomorphic if the characters in `s` can be replaced to get `t`.\n\nAll occurrences of a character must be replaced with another character while preserving the order of characters. No two characters may map to the same character, but a character may map to itself.\n\n### Input Format\n- Line 1: String `s`\n- Line 2: String `t`\n\n### Output Format\n- A boolean value (`true` or `false`)",
+  "examples": [
+    {
+      "input": "\"egg\"\n\"add\"",
+      "output": "true",
+      "explanation": "'e' maps to 'a', and 'g' maps to 'd'."
+    },
+    {
+      "input": "\"foo\"\n\"bar\"",
+      "output": "false",
+      "explanation": "'o' maps to both 'a' and 'r', which is invalid."
+    }
+  ],
+  "sample_tests": [
+    {
+      "input_text": "\"egg\"\n\"add\"",
+      "expected_output": "true"
+    },
+    {
+      "input_text": "\"foo\"\n\"bar\"",
+      "expected_output": "false"
+    },
+    {
+      "input_text": "\"paper\"\n\"title\"",
+      "expected_output": "true"
+    }
+  ],
+  "hidden_tests": [
+    {
+      "input_text": "\"\"\n\"\"",
+      "expected_output": "true"
+    },
+    {
+      "input_text": "\"a\"\n\"b\"",
+      "expected_output": "true"
+    },
+    {
+      "input_text": "\"ab\"\n\"aa\"",
+      "expected_output": "false"
+    },
+    {
+      "input_text": "\"badc\"\n\"baba\"",
+      "expected_output": "false"
+    },
+    {
+      "input_text": "\"bbbaaaba\"\n\"aaabbbba\"",
+      "expected_output": "false"
+    },
+    {
+      "input_text": "\"abcdefg\"\n\"1234567\"",
+      "expected_output": "true"
+    },
+    {
+      "input_text": "\"abcde\"\n\"vwxyz\"",
+      "expected_output": "true"
+    },
+    {
+      "input_text": "\"13\"\n\"42\"",
+      "expected_output": "true"
+    },
+    {
+      "input_text": "\"aa\"\n\"ab\"",
+      "expected_output": "false"
+    }
+  ],
+  "time_limit_ms": 1000,
+  "memory_limit_mb": 128,
+  "hints": [
+    {
+      "level": 1,
+      "text": "A valid bijection requires mapping s -> t AND t -> s simultaneously.",
+      "xp_cost": 2
+    },
+    {
+      "level": 2,
+      "text": "Maintain two maps: one from s to t and one from t to s.",
+      "xp_cost": 5
+    },
+    {
+      "level": 3,
+      "text": "Use Dual Hash Maps or Character Arrays to ensure a strict one-to-one correspondence.",
+      "xp_cost": 10
+    }
+  ],
+  "editorial_md": "### Optimal Approach: Dual Hash Maps\n\nTo ensure a bijective mapping, maintain `s_to_t` and `t_to_s`. At each position `i`, check that `s_to_t[s[i]] == t[i]` and `t_to_s[t[i]] == s[i]`.\n\n#### Complexity\n- **Time Complexity:** $O(n)$ single pass.\n- **Space Complexity:** $O(1)$ alphabet size bound (at most 256 characters).\n\n#### Common Pitfalls\n- Checking only one direction (e.g. `\"ab\"` and `\"aa\"` where 'a' maps to 'a' and 'b' maps to 'a').",
+  "reference_solutions": {
+    "brute_python": "def isIsomorphic(s, t):\n    return len(set(zip(s, t))) == len(set(s)) == len(set(t))",
+    "optimal_python": "def isIsomorphic(s, t):\n    if len(s) != len(t): return False\n    s_to_t, t_to_s = {}, {}\n    for c1, c2 in zip(s, t):\n        if (c1 in s_to_t and s_to_t[c1] != c2) or (c2 in t_to_s and t_to_s[c2] != c1):\n            return False\n        s_to_t[c1] = c2\n        t_to_s[c2] = c1\n    return True",
+    "optimal_java": "import java.util.*;\npublic class Solution {\n    public boolean isIsomorphic(String s, String t) {\n        if (s.length() != t.length()) return false;\n        Map<Character, Character> m1 = new HashMap<>(), m2 = new HashMap<>();\n        for (int i = 0; i < s.length(); i++) {\n            char c1 = s.charAt(i), c2 = t.charAt(i);\n            if (m1.containsKey(c1) && m1.get(c1) != c2) return false;\n            if (m2.containsKey(c2) && m2.get(c2) != c1) return false;\n            m1.put(c1, c2);\n            m2.put(c2, c1);\n        }\n        return true;\n    }\n}",
+    "optimal_cpp": "#include <string>\n#include <unordered_map>\nusing namespace std;\nclass Solution {\npublic:\n    bool isIsomorphic(string s, string t) {\n        if (s.size() != t.size()) return false;\n        unordered_map<char, char> m1, m2;\n        for (int i = 0; i < (int)s.size(); i++) {\n            char c1 = s[i], c2 = t[i];\n            if (m1.count(c1) && m1[c1] != c2) return false;\n            if (m2.count(c2) && m2[c2] != c1) return false;\n            m1[c1] = c2;\n            m2[c2] = c1;\n        }\n        return true;\n    }\n};"
+  }
+}

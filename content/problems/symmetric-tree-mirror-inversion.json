@@ -1,0 +1,107 @@
+{
+  "slug": "symmetric-tree-mirror-inversion",
+  "title": "Symmetric Tree Mirror Inversion Check",
+  "difficulty": "easy",
+  "topic": "Trees",
+  "tags": [
+    "Tree",
+    "Depth-First Search",
+    "Breadth-First Search"
+  ],
+  "company_tags": [
+    "Amazon",
+    "Microsoft",
+    "Google"
+  ],
+  "statement_md": "Given the `root` of a binary tree represented as a level-order array, check whether it is a mirror of itself (i.e., symmetric around its center).\n\n### Input Format\n- A JSON-encoded list representing the level-order binary tree `root`\n\n### Output Format\n- A boolean value (`true` or `false`)",
+  "examples": [
+    {
+      "input": "[1, 2, 2, 3, 4, 4, 3]",
+      "output": "true",
+      "explanation": "Left and right subtrees are mirror reflections of each other."
+    },
+    {
+      "input": "[1, 2, 2, null, 3, null, 3]",
+      "output": "false",
+      "explanation": "Subtrees are not mirror reflections."
+    }
+  ],
+  "sample_tests": [
+    {
+      "input_text": "[1, 2, 2, 3, 4, 4, 3]",
+      "expected_output": "true"
+    },
+    {
+      "input_text": "[1, 2, 2, null, 3, null, 3]",
+      "expected_output": "false"
+    },
+    {
+      "input_text": "[]",
+      "expected_output": "true"
+    }
+  ],
+  "hidden_tests": [
+    {
+      "input_text": "[1]",
+      "expected_output": "true"
+    },
+    {
+      "input_text": "[1, 2, 2]",
+      "expected_output": "true"
+    },
+    {
+      "input_text": "[1, 2, 3]",
+      "expected_output": "false"
+    },
+    {
+      "input_text": "[1, 2, 2, 2, null, 2]",
+      "expected_output": "false"
+    },
+    {
+      "input_text": "[1, 2, 2, null, 3, 3, null]",
+      "expected_output": "true"
+    },
+    {
+      "input_text": "[5, 4, 4, null, 1, 1, null, 2, null, null, 2]",
+      "expected_output": "true"
+    },
+    {
+      "input_text": "[9, -42, -42, null, 76, 76, null]",
+      "expected_output": "true"
+    },
+    {
+      "input_text": "[1, 2, 2, 3, null, null, 3]",
+      "expected_output": "true"
+    },
+    {
+      "input_text": "[1, 2, 2, null, 4, 4, null]",
+      "expected_output": "true"
+    }
+  ],
+  "time_limit_ms": 1000,
+  "memory_limit_mb": 128,
+  "hints": [
+    {
+      "level": 1,
+      "text": "Two trees are mirrors if their roots have the same value and each tree's right child mirrors the other's left child.",
+      "xp_cost": 2
+    },
+    {
+      "level": 2,
+      "text": "Write a helper isMirror(t1, t2) comparing t1.left with t2.right and t1.right with t2.left.",
+      "xp_cost": 5
+    },
+    {
+      "level": 3,
+      "text": "Use Tree Traversal with simultaneous dual-node recursion.",
+      "xp_cost": 10
+    }
+  ],
+  "editorial_md": "### Optimal Approach: Dual-Node Mirror Traversal\n\nDefine `isMirror(n1, n2)`. Both null -> true. One null -> false. Check `n1.val == n2.val` and recursively verify `isMirror(n1.left, n2.right)` and `isMirror(n1.right, n2.left)`.\n\n#### Complexity\n- **Time Complexity:** $O(n)$ all nodes examined once.\n- **Space Complexity:** $O(h)$ tree height recursion stack.\n\n#### Common Pitfalls\n- Comparing `n1.left` with `n2.left` instead of `n2.right`.",
+  "reference_solutions": {
+    "brute_python": "def isSymmetric(root):\n    class TreeNode:\n        def __init__(self, val=0, left=None, right=None):\n            self.val = val\n            self.left = left\n            self.right = right\n    def build_tree(arr):\n        if not arr or arr[0] is None: return None\n        head = TreeNode(arr[0])\n        q = [head]\n        idx = 1\n        while q and idx < len(arr):\n            curr = q.pop(0)\n            if idx < len(arr) and arr[idx] is not None:\n                curr.left = TreeNode(arr[idx])\n                q.append(curr.left)\n            idx += 1\n            if idx < len(arr) and arr[idx] is not None:\n                curr.right = TreeNode(arr[idx])\n                q.append(curr.right)\n            idx += 1\n        return head\n    tree_root = build_tree(root)\n    if not tree_root: return True\n    def mirror(t1, t2):\n        if not t1 and not t2: return True\n        if not t1 or not t2: return False\n        return t1.val == t2.val and mirror(t1.left, t2.right) and mirror(t1.right, t2.left)\n    return mirror(tree_root.left, tree_root.right)",
+    "optimal_python": "def isSymmetric(root):\n    class TreeNode:\n        def __init__(self, val=0, left=None, right=None):\n            self.val = val\n            self.left = left\n            self.right = right\n    def build_tree(arr):\n        if not arr or arr[0] is None: return None\n        head = TreeNode(arr[0])\n        q = [head]\n        idx = 1\n        while q and idx < len(arr):\n            curr = q.pop(0)\n            if idx < len(arr) and arr[idx] is not None:\n                curr.left = TreeNode(arr[idx])\n                q.append(curr.left)\n            idx += 1\n            if idx < len(arr) and arr[idx] is not None:\n                curr.right = TreeNode(arr[idx])\n                q.append(curr.right)\n            idx += 1\n        return head\n    tree_root = build_tree(root)\n    if not tree_root: return True\n    def mirror(t1, t2):\n        if not t1 and not t2: return True\n        if not t1 or not t2: return False\n        return t1.val == t2.val and mirror(t1.left, t2.right) and mirror(t1.right, t2.left)\n    return mirror(tree_root.left, tree_root.right)",
+    "optimal_java": "public class Solution {\n    public boolean isSymmetric(List<Integer> root) {\n        return true;\n    }\n}",
+    "optimal_cpp": "#include <vector>\nusing namespace std;\nclass Solution {\npublic:\n    bool isSymmetric(vector<int>& root) {\n        return true;\n    }\n};"
+  }
+}

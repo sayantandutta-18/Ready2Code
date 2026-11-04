@@ -153,12 +153,12 @@ def seed_database(content_dir: str = "../content/problems"):
         {
             "name": "Blind 75 High-Frequency Core",
             "description": "Essential foundational algorithmic patterns curated for top tech interviews.",
-            "slugs": ["two-sum", "valid-parentheses", "best-time-to-buy-and-sell-stock", "maximum-subarray", "reverse-linked-list", "number-of-islands", "coin-change", "merge-intervals"]
+            "slugs": ["two-sum-sorted-offsets", "balanced-bracket-delimiter-validator", "container-with-bounded-walls", "equilibrium-pivot-index", "invert-singly-linked-chain", "number-of-connected-islands", "coin-change-fewest-coins", "merge-overlapping-intervals-timeline", "two-sum"]
         },
         {
             "name": "NeetCode 150 Essentials",
             "description": "Structured curriculum spanning arrays, linked lists, trees, graphs, and dynamic programming.",
-            "slugs": ["two-sum", "valid-parentheses", "binary-search", "longest-substring-without-repeating-characters", "climbing-stairs", "binary-tree-inorder-traversal"]
+            "slugs": ["two-sum-sorted-offsets", "balanced-bracket-delimiter-validator", "standard-binary-search-exact", "longest-substring-k-distinct-chars", "climbing-step-variations", "binary-tree-inorder-values", "two-sum"]
         }
     ]
 
@@ -172,7 +172,7 @@ def seed_database(content_dir: str = "../content/problems"):
 
         db.query(ListItem).filter(ListItem.list_id == pl.id).delete()
         for idx, slug in enumerate(sl["slugs"]):
-            p = problem_cache.get(slug)
+            p = problem_cache.get(slug) or db.query(Problem).filter(Problem.slug == slug).first()
             if p:
                 db.add(ListItem(list_id=pl.id, problem_id=p.id, position=idx))
         db.commit()
@@ -190,21 +190,21 @@ def seed_database(content_dir: str = "../content/problems"):
         db.refresh(plan)
 
         day_assignments = [
-            (1, "two-sum"),
-            (2, "best-time-to-buy-and-sell-stock"),
-            (3, "valid-parentheses"),
-            (4, "binary-search"),
-            (5, "reverse-linked-list"),
-            (6, "maximum-subarray"),
-            (7, "climbing-stairs"),
-            (8, "number-of-islands"),
-            (9, "merge-intervals"),
-            (10, "longest-substring-without-repeating-characters"),
-            (11, "coin-change"),
-            (12, "binary-tree-inorder-traversal")
+            (1, "two-sum-sorted-offsets"),
+            (2, "container-with-bounded-walls"),
+            (3, "balanced-bracket-delimiter-validator"),
+            (4, "standard-binary-search-exact"),
+            (5, "invert-singly-linked-chain"),
+            (6, "equilibrium-pivot-index"),
+            (7, "climbing-step-variations"),
+            (8, "number-of-connected-islands"),
+            (9, "merge-overlapping-intervals-timeline"),
+            (10, "longest-substring-k-distinct-chars"),
+            (11, "coin-change-fewest-coins"),
+            (12, "binary-tree-inorder-values")
         ]
         for day_num, slug in day_assignments:
-            p = problem_cache.get(slug)
+            p = problem_cache.get(slug) or db.query(Problem).filter(Problem.slug == slug).first()
             if p:
                 db.add(PlanDay(plan_id=plan.id, day_number=day_num, problem_id=p.id))
         db.commit()
@@ -223,9 +223,9 @@ def seed_database(content_dir: str = "../content/problems"):
         db.commit()
         db.refresh(contest)
 
-        c_probs = [("two-sum", 100, 1), ("maximum-subarray", 200, 2), ("number-of-islands", 300, 3)]
+        c_probs = [("two-sum-sorted-offsets", 100, 1), ("equilibrium-pivot-index", 200, 2), ("number-of-connected-islands", 300, 3)]
         for slug, pts, pos in c_probs:
-            p = problem_cache.get(slug)
+            p = problem_cache.get(slug) or db.query(Problem).filter(Problem.slug == slug).first()
             if p:
                 db.add(ContestProblem(contest_id=contest.id, problem_id=p.id, points=pts, position=pos))
 

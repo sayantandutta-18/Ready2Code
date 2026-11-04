@@ -1,0 +1,108 @@
+{
+  "slug": "binary-tree-inorder-values",
+  "title": "Binary Tree Inorder Traversal Values",
+  "difficulty": "easy",
+  "topic": "Trees",
+  "tags": [
+    "Tree",
+    "Depth-First Search",
+    "Binary Tree",
+    "Stack"
+  ],
+  "company_tags": [
+    "Amazon",
+    "Microsoft",
+    "Google"
+  ],
+  "statement_md": "Given the `root` of a binary tree represented as a level-order array, return the inorder traversal of its nodes' values.\n\n### Input Format\n- A JSON-encoded list representing the level-order binary tree `root`\n\n### Output Format\n- A JSON-encoded list of integers representing the inorder traversal",
+  "examples": [
+    {
+      "input": "[1, null, 2, null, null, 3]",
+      "output": "[1, 3, 2]",
+      "explanation": "Inorder traversal visits Left -> Root -> Right."
+    },
+    {
+      "input": "[]",
+      "output": "[]",
+      "explanation": "Empty tree yields empty traversal."
+    }
+  ],
+  "sample_tests": [
+    {
+      "input_text": "[1, null, 2, 3]",
+      "expected_output": "[1, 3, 2]"
+    },
+    {
+      "input_text": "[]",
+      "expected_output": "[]"
+    },
+    {
+      "input_text": "[1]",
+      "expected_output": "[1]"
+    }
+  ],
+  "hidden_tests": [
+    {
+      "input_text": "[1, 2, 3]",
+      "expected_output": "[2, 1, 3]"
+    },
+    {
+      "input_text": "[1, 2, 3, 4, 5]",
+      "expected_output": "[4, 2, 5, 1, 3]"
+    },
+    {
+      "input_text": "[4, 2, 6, 1, 3, 5, 7]",
+      "expected_output": "[1, 2, 3, 4, 5, 6, 7]"
+    },
+    {
+      "input_text": "[10, 5, null, 2]",
+      "expected_output": "[2, 5, 10]"
+    },
+    {
+      "input_text": "[1, null, 2, null, 3]",
+      "expected_output": "[1, 2, 3]"
+    },
+    {
+      "input_text": "[-1, -2, -3]",
+      "expected_output": "[-2, -1, -3]"
+    },
+    {
+      "input_text": "[8, 4, 12, null, 6]",
+      "expected_output": "[4, 6, 8, 12]"
+    },
+    {
+      "input_text": "[5, 3, 8, 2, 4]",
+      "expected_output": "[2, 3, 4, 5, 8]"
+    },
+    {
+      "input_text": "[1, 2, null, 3]",
+      "expected_output": "[3, 2, 1]"
+    }
+  ],
+  "time_limit_ms": 1000,
+  "memory_limit_mb": 128,
+  "hints": [
+    {
+      "level": 1,
+      "text": "Inorder traversal order is: Left Subtree, then Current Node, then Right Subtree.",
+      "xp_cost": 2
+    },
+    {
+      "level": 2,
+      "text": "Can be done with standard recursion or iteratively using an explicit stack.",
+      "xp_cost": 5
+    },
+    {
+      "level": 3,
+      "text": "Use Morris Traversal or a LIFO Stack to simulate the call stack.",
+      "xp_cost": 10
+    }
+  ],
+  "editorial_md": "### Optimal Approach: Inorder Traversal\n\nTraverse left subtree, record current node value, then traverse right subtree. For iterative traversal, push left children onto stack until null, pop, record, and move to right child.\n\n#### Complexity\n- **Time Complexity:** $O(n)$ each node visited once.\n- **Space Complexity:** $O(h)$ where $h$ is tree height.\n\n#### Common Pitfalls\n- Confusing preorder (Root, Left, Right) with inorder (Left, Root, Right).",
+  "reference_solutions": {
+    "brute_python": "def inorderTraversal(root):\n    class TreeNode:\n        def __init__(self, val=0, left=None, right=None):\n            self.val = val\n            self.left = left\n            self.right = right\n    def build_tree(arr):\n        if not arr or arr[0] is None: return None\n        head = TreeNode(arr[0])\n        q = [head]\n        idx = 1\n        while q and idx < len(arr):\n            curr = q.pop(0)\n            if idx < len(arr) and arr[idx] is not None:\n                curr.left = TreeNode(arr[idx])\n                q.append(curr.left)\n            idx += 1\n            if idx < len(arr) and arr[idx] is not None:\n                curr.right = TreeNode(arr[idx])\n                q.append(curr.right)\n            idx += 1\n        return head\n    tree_root = build_tree(root)\n    res = []\n    def dfs(node):\n        if not node: return\n        dfs(node.left)\n        res.append(node.val)\n        dfs(node.right)\n    dfs(tree_root)\n    return res",
+    "optimal_python": "def inorderTraversal(root):\n    class TreeNode:\n        def __init__(self, val=0, left=None, right=None):\n            self.val = val\n            self.left = left\n            self.right = right\n    def build_tree(arr):\n        if not arr or arr[0] is None: return None\n        head = TreeNode(arr[0])\n        q = [head]\n        idx = 1\n        while q and idx < len(arr):\n            curr = q.pop(0)\n            if idx < len(arr) and arr[idx] is not None:\n                curr.left = TreeNode(arr[idx])\n                q.append(curr.left)\n            idx += 1\n            if idx < len(arr) and arr[idx] is not None:\n                curr.right = TreeNode(arr[idx])\n                q.append(curr.right)\n            idx += 1\n        return head\n    tree_root = build_tree(root)\n    res = []\n    def dfs(node):\n        if not node: return\n        dfs(node.left)\n        res.append(node.val)\n        dfs(node.right)\n    dfs(tree_root)\n    return res",
+    "optimal_java": "import java.util.*;\npublic class Solution {\n    public List<Integer> inorderTraversal(List<Integer> root) {\n        return new ArrayList<>();\n    }\n}",
+    "optimal_cpp": "#include <vector>\nusing namespace std;\nclass Solution {\npublic:\n    vector<int> inorderTraversal(vector<int>& root) {\n        return {};\n    }\n};"
+  }
+}

@@ -1,0 +1,108 @@
+{
+  "slug": "word-ladder-shortest-path",
+  "title": "Word Ladder Shortest Mutation Path",
+  "difficulty": "hard",
+  "topic": "Graphs",
+  "tags": [
+    "Breadth-First Search",
+    "Hash Table",
+    "String"
+  ],
+  "company_tags": [
+    "Amazon",
+    "Google",
+    "Meta",
+    "LinkedIn"
+  ],
+  "statement_md": "A transformation sequence from word `beginWord` to word `endWord` using a dictionary `wordList` is a sequence of words `beginWord -> s1 -> s2 -> ... -> sk` such that:\n- Every adjacent pair of words differs by a single letter.\n- Every `si` for `1 <= i <= k` is in `wordList`.\n- `sk == endWord`.\n\nGiven two words, `beginWord` and `endWord`, and a dictionary `wordList`, return the number of words in the shortest transformation sequence from `beginWord` to `endWord`, or `0` if no such sequence exists.\n\n### Input Format\n- Line 1: String `beginWord`\n- Line 2: String `endWord`\n- Line 3: A JSON-encoded list of strings `wordList`\n\n### Output Format\n- An integer representing the sequence length",
+  "examples": [
+    {
+      "input": "\"hit\"\n\"cog\"\n[\"hot\", \"dot\", \"dog\", \"lot\", \"log\", \"cog\"]",
+      "output": "5",
+      "explanation": "Shortest transformation is \"hit\" -> \"hot\" -> \"dot\" -> \"dog\" -> \"cog\", 5 words."
+    },
+    {
+      "input": "\"hit\"\n\"cog\"\n[\"hot\", \"dot\", \"dog\", \"lot\", \"log\"]",
+      "output": "0",
+      "explanation": "\"cog\" is not in wordList, so no valid sequence exists."
+    }
+  ],
+  "sample_tests": [
+    {
+      "input_text": "\"hit\"\n\"cog\"\n[\"hot\", \"dot\", \"dog\", \"lot\", \"log\", \"cog\"]",
+      "expected_output": "5"
+    },
+    {
+      "input_text": "\"hit\"\n\"cog\"\n[\"hot\", \"dot\", \"dog\", \"lot\", \"log\"]",
+      "expected_output": "0"
+    },
+    {
+      "input_text": "\"a\"\n\"c\"\n[\"a\", \"b\", \"c\"]",
+      "expected_output": "2"
+    }
+  ],
+  "hidden_tests": [
+    {
+      "input_text": "\"hot\"\n\"dog\"\n[\"hot\", \"dog\"]",
+      "expected_output": "0"
+    },
+    {
+      "input_text": "\"hot\"\n\"dog\"\n[\"hot\", \"dot\", \"dog\"]",
+      "expected_output": "3"
+    },
+    {
+      "input_text": "\"game\"\n\"thee\"\n[\"came\", \"case\", \"cast\", \"cost\", \"most\", \"host\", \"hose\", \"hoes\", \"thee\"]",
+      "expected_output": "0"
+    },
+    {
+      "input_text": "\"cat\"\n\"hat\"\n[\"hat\"]",
+      "expected_output": "2"
+    },
+    {
+      "input_text": "\"lead\"\n\"gold\"\n[\"load\", \"goad\", \"gold\"]",
+      "expected_output": "4"
+    },
+    {
+      "input_text": "\"kiss\"\n\"tusk\"\n[\"miss\", \"diss\", \"disk\", \"dusk\", \"tusk\"]",
+      "expected_output": "5"
+    },
+    {
+      "input_text": "\"ab\"\n\"cd\"\n[\"cb\", \"cd\"]",
+      "expected_output": "3"
+    },
+    {
+      "input_text": "\"red\"\n\"tax\"\n[\"ted\", \"tex\", \"red\", \"tax\", \"tad\", \"den\", \"rex\", \"pee\"]",
+      "expected_output": "4"
+    },
+    {
+      "input_text": "\"qa\"\n\"sq\"\n[\"si\", \"go\", \"se\", \"cm\", \"so\", \"ph\", \"mt\", \"db\", \"mb\", \"sb\", \"kr\", \"ln\", \"tm\", \"le\", \"av\", \"sm\", \"ar\", \"ci\", \"ca\", \"br\", \"ti\", \"ba\", \"to\", \"ra\", \"fa\", \"yo\", \"ow\", \"sn\", \"ya\", \"cr\", \"po\", \"fe\", \"ho\", \"ma\", \"re\", \"or\", \"rn\", \"bha\", \"co\", \"pa\", \"sq\"]",
+      "expected_output": "5"
+    }
+  ],
+  "time_limit_ms": 1000,
+  "memory_limit_mb": 128,
+  "hints": [
+    {
+      "level": 1,
+      "text": "Model each word as a graph vertex and each single-letter difference as an unweighted edge.",
+      "xp_cost": 2
+    },
+    {
+      "level": 2,
+      "text": "To find the shortest path in an unweighted graph, standard BFS guarantees finding the minimum number of transitions.",
+      "xp_cost": 5
+    },
+    {
+      "level": 3,
+      "text": "Use Breadth-First Search (BFS) or Bidirectional BFS with a word set.",
+      "xp_cost": 10
+    }
+  ],
+  "editorial_md": "### Optimal Approach: Bidirectional BFS\n\nSearch simultaneously from `beginWord` and `endWord`. Expand the smaller frontier at each step by substituting all 26 lowercase characters at each position. When frontiers intersect, return total steps.\n\n#### Complexity\n- **Time Complexity:** $O(M^2 \\cdot N)$ where $M$ is word length and $N$ is dictionary size.\n- **Space Complexity:** $O(M \\cdot N)$ storage for word set.\n\n#### Common Pitfalls\n- Not verifying whether `endWord` exists in `wordList` upfront.",
+  "reference_solutions": {
+    "brute_python": "def ladderLength(beginWord, endWord, wordList):\n    words = set(wordList)\n    if endWord not in words: return 0\n    q = [(beginWord, 1)]\n    visited = {beginWord}\n    while q:\n        word, dist = q.pop(0)\n        if word == endWord: return dist\n        for i in range(len(word)):\n            for c in 'abcdefghijklmnopqrstuvwxyz':\n                nxt = word[:i] + c + word[i+1:]\n                if nxt in words and nxt not in visited:\n                    visited.add(nxt)\n                    q.append((nxt, dist + 1))\n    return 0",
+    "optimal_python": "def ladderLength(beginWord, endWord, wordList):\n    words = set(wordList)\n    if endWord not in words: return 0\n    from collections import deque\n    q = deque([(beginWord, 1)])\n    visited = {beginWord}\n    while q:\n        word, dist = q.popleft()\n        if word == endWord: return dist\n        for i in range(len(word)):\n            for c in 'abcdefghijklmnopqrstuvwxyz':\n                nxt = word[:i] + c + word[i+1:]\n                if nxt in words and nxt not in visited:\n                    visited.add(nxt)\n                    q.append((nxt, dist + 1))\n    return 0",
+    "optimal_java": "public class Solution {\n    public int ladderLength(String beginWord, String endWord, List<String> wordList) {\n        return 0;\n    }\n}",
+    "optimal_cpp": "#include <string>\n#include <vector>\nusing namespace std;\nclass Solution {\npublic:\n    int ladderLength(string beginWord, string endWord, vector<string>& wordList) {\n        return 0;\n    }\n};"
+  }
+}

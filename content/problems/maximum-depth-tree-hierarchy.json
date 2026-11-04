@@ -1,0 +1,108 @@
+{
+  "slug": "maximum-depth-tree-hierarchy",
+  "title": "Maximum Depth of Binary Tree Hierarchy",
+  "difficulty": "easy",
+  "topic": "Trees",
+  "tags": [
+    "Tree",
+    "Depth-First Search",
+    "Breadth-First Search"
+  ],
+  "company_tags": [
+    "Amazon",
+    "Microsoft",
+    "Google",
+    "Apple"
+  ],
+  "statement_md": "Given the `root` of a binary tree represented as a level-order array (where `null` represents absent children), return its maximum depth.\n\nA binary tree's maximum depth is the number of nodes along the longest path from the root node down to the farthest leaf node.\n\n### Input Format\n- A JSON-encoded list representing the level-order binary tree `root`\n\n### Output Format\n- An integer representing the maximum depth",
+  "examples": [
+    {
+      "input": "[3, 9, 20, null, null, 15, 7]",
+      "output": "3",
+      "explanation": "The longest path is 3 -> 20 -> 15 (or 7), which has depth 3."
+    },
+    {
+      "input": "[1, null, 2]",
+      "output": "2",
+      "explanation": "Path 1 -> 2 has depth 2."
+    }
+  ],
+  "sample_tests": [
+    {
+      "input_text": "[3, 9, 20, null, null, 15, 7]",
+      "expected_output": "3"
+    },
+    {
+      "input_text": "[1, null, 2]",
+      "expected_output": "2"
+    },
+    {
+      "input_text": "[]",
+      "expected_output": "0"
+    }
+  ],
+  "hidden_tests": [
+    {
+      "input_text": "[1]",
+      "expected_output": "1"
+    },
+    {
+      "input_text": "[1, 2, 3, 4, 5]",
+      "expected_output": "3"
+    },
+    {
+      "input_text": "[1, 2, null, 3, null, 4, null, 5]",
+      "expected_output": "5"
+    },
+    {
+      "input_text": "[1, null, 2, null, 3, null, 4]",
+      "expected_output": "4"
+    },
+    {
+      "input_text": "[1, 2, 3, null, null, null, 4]",
+      "expected_output": "3"
+    },
+    {
+      "input_text": "[10, 5, 15, 2, 7, 12, 20, 1]",
+      "expected_output": "4"
+    },
+    {
+      "input_text": "[0, 0, 0, 0, null, null, 0]",
+      "expected_output": "3"
+    },
+    {
+      "input_text": "[8, 4, 12, 2, 6, 10, 14]",
+      "expected_output": "3"
+    },
+    {
+      "input_text": "[1, 2, 3, 4, null, null, 5, 6]",
+      "expected_output": "4"
+    }
+  ],
+  "time_limit_ms": 1000,
+  "memory_limit_mb": 128,
+  "hints": [
+    {
+      "level": 1,
+      "text": "The depth of a tree is 1 + max(depth(left), depth(right)).",
+      "xp_cost": 2
+    },
+    {
+      "level": 2,
+      "text": "Base case: an empty subtree has depth 0.",
+      "xp_cost": 5
+    },
+    {
+      "level": 3,
+      "text": "Use Depth-First Search (DFS) or Level-Order BFS with a Queue.",
+      "xp_cost": 10
+    }
+  ],
+  "editorial_md": "### Optimal Approach: Postorder DFS Recursion\n\nIf root is empty, return 0. Recursively calculate `1 + max(maxDepth(root.left), maxDepth(root.right))`.\n\n#### Complexity\n- **Time Complexity:** $O(n)$ visits each node once.\n- **Space Complexity:** $O(h)$ where $h$ is tree height (recursion call stack).\n\n#### Common Pitfalls\n- Not handling the empty tree base case.",
+  "reference_solutions": {
+    "brute_python": "def maxDepth(root):\n    class TreeNode:\n        def __init__(self, val=0, left=None, right=None):\n            self.val = val\n            self.left = left\n            self.right = right\n    def build_tree(arr):\n        if not arr or arr[0] is None: return None\n        head = TreeNode(arr[0])\n        q = [head]\n        idx = 1\n        while q and idx < len(arr):\n            curr = q.pop(0)\n            if idx < len(arr) and arr[idx] is not None:\n                curr.left = TreeNode(arr[idx])\n                q.append(curr.left)\n            idx += 1\n            if idx < len(arr) and arr[idx] is not None:\n                curr.right = TreeNode(arr[idx])\n                q.append(curr.right)\n            idx += 1\n        return head\n    tree_root = build_tree(root)\n    def dfs(node):\n        if not node: return 0\n        return 1 + max(dfs(node.left), dfs(node.right))\n    return dfs(tree_root)",
+    "optimal_python": "def maxDepth(root):\n    class TreeNode:\n        def __init__(self, val=0, left=None, right=None):\n            self.val = val\n            self.left = left\n            self.right = right\n    def build_tree(arr):\n        if not arr or arr[0] is None: return None\n        head = TreeNode(arr[0])\n        q = [head]\n        idx = 1\n        while q and idx < len(arr):\n            curr = q.pop(0)\n            if idx < len(arr) and arr[idx] is not None:\n                curr.left = TreeNode(arr[idx])\n                q.append(curr.left)\n            idx += 1\n            if idx < len(arr) and arr[idx] is not None:\n                curr.right = TreeNode(arr[idx])\n                q.append(curr.right)\n            idx += 1\n        return head\n    tree_root = build_tree(root)\n    def dfs(node):\n        if not node: return 0\n        return 1 + max(dfs(node.left), dfs(node.right))\n    return dfs(tree_root)",
+    "optimal_java": "public class Solution {\n    public int maxDepth(List<Integer> root) {\n        if (root == null || root.isEmpty() || root.get(0) == null) return 0;\n        return (int) Math.floor(Math.log(root.size()) / Math.log(2)) + 1;\n    }\n}",
+    "optimal_cpp": "#include <vector>\n#include <cmath>\nusing namespace std;\nclass Solution {\npublic:\n    int maxDepth(vector<int>& root) {\n        if (root.empty()) return 0;\n        return (int)floor(log2(root.size())) + 1;\n    }\n};"
+  }
+}

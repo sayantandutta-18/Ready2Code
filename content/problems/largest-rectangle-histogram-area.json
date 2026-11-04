@@ -1,0 +1,107 @@
+{
+  "slug": "largest-rectangle-histogram-area",
+  "title": "Largest Rectangular Area in Skyline Histogram",
+  "difficulty": "hard",
+  "topic": "Stack and Queue",
+  "tags": [
+    "Monotonic Stack",
+    "Array"
+  ],
+  "company_tags": [
+    "Amazon",
+    "Google",
+    "Meta",
+    "Uber"
+  ],
+  "statement_md": "Given an array of integers `heights` representing the histogram's bar height where the width of each bar is 1, return the area of the largest rectangle in the histogram.\n\n### Input Format\n- A JSON-encoded list of integers `heights`\n\n### Output Format\n- An integer representing maximum rectangular area",
+  "examples": [
+    {
+      "input": "[2, 1, 5, 6, 2, 3]",
+      "output": "10",
+      "explanation": "The largest rectangle is formed between bars of height 5 and 6 with min height 5 and width 2 (5 * 2 = 10)."
+    },
+    {
+      "input": "[2, 4]",
+      "output": "4",
+      "explanation": "Bar of height 4 with width 1 = 4."
+    }
+  ],
+  "sample_tests": [
+    {
+      "input_text": "[2, 1, 5, 6, 2, 3]",
+      "expected_output": "10"
+    },
+    {
+      "input_text": "[2, 4]",
+      "expected_output": "4"
+    },
+    {
+      "input_text": "[1]",
+      "expected_output": "1"
+    }
+  ],
+  "hidden_tests": [
+    {
+      "input_text": "[]",
+      "expected_output": "0"
+    },
+    {
+      "input_text": "[0]",
+      "expected_output": "0"
+    },
+    {
+      "input_text": "[5, 5, 5, 5, 5]",
+      "expected_output": "25"
+    },
+    {
+      "input_text": "[1, 2, 3, 4, 5]",
+      "expected_output": "9"
+    },
+    {
+      "input_text": "[5, 4, 3, 2, 1]",
+      "expected_output": "9"
+    },
+    {
+      "input_text": "[6, 2, 5, 4, 5, 1, 6]",
+      "expected_output": "12"
+    },
+    {
+      "input_text": "[2, 1, 2]",
+      "expected_output": "3"
+    },
+    {
+      "input_text": "[100, 200, 100]",
+      "expected_output": "300"
+    },
+    {
+      "input_text": "[3, 6, 5, 7, 4, 8, 1, 0]",
+      "expected_output": "20"
+    }
+  ],
+  "time_limit_ms": 1000,
+  "memory_limit_mb": 128,
+  "hints": [
+    {
+      "level": 1,
+      "text": "For each bar, what is the furthest it can extend to the left and to the right while maintaining its height?",
+      "xp_cost": 2
+    },
+    {
+      "level": 2,
+      "text": "Maintain an increasing stack of indices. When a shorter bar is found, calculate rectangles for bars that can no longer extend.",
+      "xp_cost": 5
+    },
+    {
+      "level": 3,
+      "text": "Use a Monotonic Increasing Stack to calculate the maximal width bounded by the nearest smaller elements on left and right.",
+      "xp_cost": 10
+    }
+  ],
+  "editorial_md": "### Optimal Approach: Monotonic Increasing Stack\n\nPush sentinel 0 at the end of `heights`. Maintain a stack of indices with increasing heights. When `heights[i]` is less than top bar, pop height `h`. The width extends from current `i` back to `stack[-1]`: `width = i if not stack else i - stack[-1] - 1`. Maximize `h * width`.\n\n#### Complexity\n- **Time Complexity:** $O(n)$ each index pushed and popped once.\n- **Space Complexity:** $O(n)$ stack storage.\n\n#### Common Pitfalls\n- Not clearing the stack at the end (mitigated cleanly by appending height 0 sentinel).",
+  "reference_solutions": {
+    "brute_python": "def largestRectangleArea(heights):\n    max_area = 0\n    n = len(heights)\n    for i in range(n):\n        min_h = heights[i]\n        for j in range(i, n):\n            min_h = min(min_h, heights[j])\n            max_area = max(max_area, min_h * (j - i + 1))\n    return max_area",
+    "optimal_python": "def largestRectangleArea(heights):\n    stack = []\n    max_area = 0\n    extended = heights + [0]\n    for i, h in enumerate(extended):\n        while stack and extended[stack[-1]] > h:\n            height = extended[stack.pop()]\n            width = i if not stack else i - stack[-1] - 1\n            max_area = max(max_area, height * width)\n        stack.append(i)\n    return max_area",
+    "optimal_java": "import java.util.*;\npublic class Solution {\n    public int largestRectangleArea(int[] heights) {\n        Stack<Integer> stack = new Stack<>();\n        int maxArea = 0;\n        int n = heights.length;\n        for (int i = 0; i <= n; i++) {\n            int h = (i == n) ? 0 : heights[i];\n            while (!stack.isEmpty() && heights[stack.peek()] > h) {\n                int height = heights[stack.pop()];\n                int width = stack.isEmpty() ? i : i - stack.peek() - 1;\n                maxArea = Math.max(maxArea, height * width);\n            }\n            stack.push(i);\n        }\n        return maxArea;\n    }\n}",
+    "optimal_cpp": "#include <vector>\n#include <stack>\n#include <algorithm>\nusing namespace std;\nclass Solution {\npublic:\n    int largestRectangleArea(vector<int>& heights) {\n        stack<int> st;\n        int maxArea = 0;\n        int n = heights.size();\n        for (int i = 0; i <= n; i++) {\n            int h = (i == n) ? 0 : heights[i];\n            while (!st.empty() && heights[st.top()] > h) {\n                int height = heights[st.top()];\n                st.pop();\n                int width = st.empty() ? i : i - st.top() - 1;\n                maxArea = max(maxArea, height * width);\n            }\n            st.push(i);\n        }\n        return maxArea;\n    }\n};"
+  }
+}

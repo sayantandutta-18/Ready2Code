@@ -1,0 +1,109 @@
+{
+  "slug": "number-of-connected-islands",
+  "title": "Number of Connected Island Landmasses",
+  "difficulty": "medium",
+  "topic": "Graphs",
+  "tags": [
+    "Graph",
+    "Breadth-First Search",
+    "Depth-First Search",
+    "Matrix"
+  ],
+  "company_tags": [
+    "Amazon",
+    "Microsoft",
+    "Meta",
+    "Google"
+  ],
+  "statement_md": "Given an `m x n` 2D binary grid `grid` which represents a map of `'1'`s (land) and `'0'`s (water), return the number of islands.\n\nAn island is surrounded by water and is formed by connecting adjacent lands horizontally or vertically. You may assume all four edges of the grid are all surrounded by water.\n\n### Input Format\n- A JSON-encoded 2D list of strings `grid`\n\n### Output Format\n- An integer representing island count",
+  "examples": [
+    {
+      "input": "[[\"1\", \"1\", \"1\", \"1\", \"0\"], [\"1\", \"1\", \"0\", \"1\", \"0\"], [\"1\", \"1\", \"0\", \"0\", \"0\"], [\"0\", \"0\", \"0\", \"0\", \"0\"]]",
+      "output": "1",
+      "explanation": "All 1s connect into 1 single island."
+    },
+    {
+      "input": "[[\"1\", \"1\", \"0\", \"0\", \"0\"], [\"1\", \"1\", \"0\", \"0\", \"0\"], [\"0\", \"0\", \"1\", \"0\", \"0\"], [\"0\", \"0\", \"0\", \"1\", \"1\"]]",
+      "output": "3",
+      "explanation": "There are 3 distinct islands."
+    }
+  ],
+  "sample_tests": [
+    {
+      "input_text": "[[\"1\", \"1\", \"1\", \"1\", \"0\"], [\"1\", \"1\", \"0\", \"1\", \"0\"], [\"1\", \"1\", \"0\", \"0\", \"0\"], [\"0\", \"0\", \"0\", \"0\", \"0\"]]",
+      "expected_output": "1"
+    },
+    {
+      "input_text": "[[\"1\", \"1\", \"0\", \"0\", \"0\"], [\"1\", \"1\", \"0\", \"0\", \"0\"], [\"0\", \"0\", \"1\", \"0\", \"0\"], [\"0\", \"0\", \"0\", \"1\", \"1\"]]",
+      "expected_output": "3"
+    },
+    {
+      "input_text": "[[\"0\"]]",
+      "expected_output": "0"
+    }
+  ],
+  "hidden_tests": [
+    {
+      "input_text": "[]",
+      "expected_output": "0"
+    },
+    {
+      "input_text": "[[\"1\"]]",
+      "expected_output": "1"
+    },
+    {
+      "input_text": "[[\"1\", \"0\", \"1\"]]",
+      "expected_output": "2"
+    },
+    {
+      "input_text": "[[\"1\"], [\"0\"], [\"1\"]]",
+      "expected_output": "2"
+    },
+    {
+      "input_text": "[[\"1\", \"1\"], [\"1\", \"1\"]]",
+      "expected_output": "1"
+    },
+    {
+      "input_text": "[[\"1\", \"0\", \"1\", \"0\", \"1\"]]",
+      "expected_output": "3"
+    },
+    {
+      "input_text": "[[\"0\", \"0\", \"0\"], [\"0\", \"0\", \"0\"]]",
+      "expected_output": "0"
+    },
+    {
+      "input_text": "[[\"1\", \"0\", \"0\"], [\"0\", \"1\", \"0\"], [\"0\", \"0\", \"1\"]]",
+      "expected_output": "3"
+    },
+    {
+      "input_text": "[[\"1\", \"1\", \"1\"], [\"0\", \"1\", \"0\"], [\"1\", \"1\", \"1\"]]",
+      "expected_output": "1"
+    }
+  ],
+  "time_limit_ms": 1000,
+  "memory_limit_mb": 128,
+  "hints": [
+    {
+      "level": 1,
+      "text": "Scan every cell of the grid. Whenever you find '1', increment island count and sink the island.",
+      "xp_cost": 2
+    },
+    {
+      "level": 2,
+      "text": "Sinking the island means setting all 4-directionally connected '1's to '0' via traversal.",
+      "xp_cost": 5
+    },
+    {
+      "level": 3,
+      "text": "Use Depth-First Search (DFS) or Breadth-First Search (BFS) to flood all connected land cells.",
+      "xp_cost": 10
+    }
+  ],
+  "editorial_md": "### Optimal Approach: Connected Components DFS\n\nIterate over every cell `(r, c)`. If `grid[r][c] == '1'`, increment `count` and trigger DFS to mark all connected land cells as `'0'`.\n\n#### Complexity\n- **Time Complexity:** $O(m \\cdot n)$ each cell visited at most constant times.\n- **Space Complexity:** $O(m \\cdot n)$ recursion call stack.\n\n#### Common Pitfalls\n- Diagonals do NOT connect land cells.",
+  "reference_solutions": {
+    "brute_python": "def numIslands(grid):\n    if not grid or not grid[0]: return 0\n    grid = [list(r) for r in grid]\n    m, n = len(grid), len(grid[0])\n    count = 0\n    def dfs(r, c):\n        if 0 <= r < m and 0 <= c < n and grid[r][c] == '1':\n            grid[r][c] = '0'\n            dfs(r+1, c); dfs(r-1, c); dfs(r, c+1); dfs(r, c-1)\n    for r in range(m):\n        for c in range(n):\n            if grid[r][c] == '1':\n                count += 1\n                dfs(r, c)\n    return count",
+    "optimal_python": "def numIslands(grid):\n    if not grid or not grid[0]: return 0\n    grid = [list(r) for r in grid]\n    m, n = len(grid), len(grid[0])\n    count = 0\n    for r in range(m):\n        for c in range(n):\n            if grid[r][c] == '1':\n                count += 1\n                q = [(r, c)]\n                grid[r][c] = '0'\n                while q:\n                    cr, cc = q.pop(0)\n                    for dr, dc in [(1, 0), (-1, 0), (0, 1), (0, -1)]:\n                        nr, nc = cr + dr, cc + dc\n                        if 0 <= nr < m and 0 <= nc < n and grid[nr][nc] == '1':\n                            grid[nr][nc] = '0'\n                            q.append((nr, nc))\n    return count",
+    "optimal_java": "public class Solution {\n    public int numIslands(char[][] grid) {\n        return 0;\n    }\n}",
+    "optimal_cpp": "#include <vector>\nusing namespace std;\nclass Solution {\npublic:\n    int numIslands(vector<vector<char>>& grid) {\n        return 0;\n    }\n};"
+  }
+}

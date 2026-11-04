@@ -1,0 +1,108 @@
+{
+  "slug": "add-two-linked-number-chains",
+  "title": "Add Two Numbers Represented as Reversed Chains",
+  "difficulty": "medium",
+  "topic": "Linked List",
+  "tags": [
+    "Linked List",
+    "Math",
+    "Recursion"
+  ],
+  "company_tags": [
+    "Amazon",
+    "Microsoft",
+    "Meta",
+    "Google"
+  ],
+  "statement_md": "You are given two non-empty linked lists representing two non-negative integers. The digits are stored in reverse order, and each of their nodes contains a single digit.\n\nAdd the two numbers and return the sum as a linked list in reverse order.\n\nYou may assume the two numbers do not contain any leading zero, except the number 0 itself.\n\n### Input Format\n- Line 1: A JSON-encoded list of digits `l1`\n- Line 2: A JSON-encoded list of digits `l2`\n\n### Output Format\n- A JSON-encoded list of digits representing the sum in reverse order",
+  "examples": [
+    {
+      "input": "[2, 4, 3]\n[5, 6, 4]",
+      "output": "[7, 0, 8]",
+      "explanation": "342 + 465 = 807, represented as [7, 0, 8]."
+    },
+    {
+      "input": "[0]\n[0]",
+      "output": "[0]",
+      "explanation": "0 + 0 = 0."
+    }
+  ],
+  "sample_tests": [
+    {
+      "input_text": "[2, 4, 3]\n[5, 6, 4]",
+      "expected_output": "[7, 0, 8]"
+    },
+    {
+      "input_text": "[0]\n[0]",
+      "expected_output": "[0]"
+    },
+    {
+      "input_text": "[9, 9, 9, 9, 9, 9, 9]\n[9, 9, 9, 9]",
+      "expected_output": "[8, 9, 9, 9, 0, 0, 0, 1]"
+    }
+  ],
+  "hidden_tests": [
+    {
+      "input_text": "[1]\n[9, 9]",
+      "expected_output": "[0, 0, 1]"
+    },
+    {
+      "input_text": "[5]\n[5]",
+      "expected_output": "[0, 1]"
+    },
+    {
+      "input_text": "[1, 8]\n[0]",
+      "expected_output": "[1, 8]"
+    },
+    {
+      "input_text": "[9]\n[1]",
+      "expected_output": "[0, 1]"
+    },
+    {
+      "input_text": "[7, 1, 6]\n[5, 9, 2]",
+      "expected_output": "[2, 1, 9]"
+    },
+    {
+      "input_text": "[0, 1]\n[0, 1, 2]",
+      "expected_output": "[0, 2, 2]"
+    },
+    {
+      "input_text": "[9, 9, 9]\n[1]",
+      "expected_output": "[0, 0, 0, 1]"
+    },
+    {
+      "input_text": "[4, 3, 2, 1]\n[6, 7, 8, 9]",
+      "expected_output": "[0, 1, 1, 1, 1]"
+    },
+    {
+      "input_text": "[8, 3, 2]\n[9, 2, 1]",
+      "expected_output": "[7, 6, 3]"
+    }
+  ],
+  "time_limit_ms": 1000,
+  "memory_limit_mb": 128,
+  "hints": [
+    {
+      "level": 1,
+      "text": "Digits are already in reverse order (least significant digit first), perfectly matching elementary addition.",
+      "xp_cost": 2
+    },
+    {
+      "level": 2,
+      "text": "Track a carry variable initialized to 0. Add digit1 + digit2 + carry.",
+      "xp_cost": 5
+    },
+    {
+      "level": 3,
+      "text": "Use Linked List Node Simulation with a carry digit.",
+      "xp_cost": 10
+    }
+  ],
+  "editorial_md": "### Optimal Approach: Digit-by-Digit Carry Propagation\n\nIterate while `p1`, `p2`, or `carry` is non-zero. Compute `total = val1 + val2 + carry`. Append `total % 10` and update `carry = total // 10`.\n\n#### Complexity\n- **Time Complexity:** $O(\\max(N, M))$ single pass over longer list.\n- **Space Complexity:** $O(\\max(N, M))$ for output node list.\n\n#### Common Pitfalls\n- Forgetting the final carry node when the last addition results in carry > 0.",
+  "reference_solutions": {
+    "brute_python": "def addTwoNumbers(l1, l2):\n    n1 = int(''.join(map(str, l1[::-1])))\n    n2 = int(''.join(map(str, l2[::-1])))\n    return [int(c) for c in str(n1 + n2)[::-1]]",
+    "optimal_python": "def addTwoNumbers(l1, l2):\n    res = []\n    carry = 0\n    i, j = 0, 0\n    while i < len(l1) or j < len(l2) or carry:\n        v1 = l1[i] if i < len(l1) else 0\n        v2 = l2[j] if j < len(l2) else 0\n        total = v1 + v2 + carry\n        res.append(total % 10)\n        carry = total // 10\n        i += 1\n        j += 1\n    return res",
+    "optimal_java": "import java.util.*;\npublic class Solution {\n    public List<Integer> addTwoNumbers(List<Integer> l1, List<Integer> l2) {\n        List<Integer> res = new ArrayList<>();\n        int carry = 0, i = 0, j = 0;\n        while (i < l1.size() || j < l2.size() || carry != 0) {\n            int v1 = i < l1.size() ? l1.get(i++) : 0;\n            int v2 = j < l2.size() ? l2.get(j++) : 0;\n            int total = v1 + v2 + carry;\n            res.add(total % 10);\n            carry = total / 10;\n        }\n        return res;\n    }\n}",
+    "optimal_cpp": "#include <vector>\nusing namespace std;\nclass Solution {\npublic:\n    vector<int> addTwoNumbers(vector<int>& l1, vector<int>& l2) {\n        vector<int> res;\n        int carry = 0, i = 0, j = 0;\n        while (i < (int)l1.size() || j < (int)l2.size() || carry) {\n            int v1 = i < (int)l1.size() ? l1[i++] : 0;\n            int v2 = j < (int)l2.size() ? l2[j++] : 0;\n            int total = v1 + v2 + carry;\n            res.push_back(total % 10);\n            carry = total / 10;\n        }\n        return res;\n    }\n};"
+  }
+}
