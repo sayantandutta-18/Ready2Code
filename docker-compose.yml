@@ -1,0 +1,74 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: ready2code-postgres
+    environment:
+      POSTGRES_USER: ready2code
+      POSTGRES_PASSWORD: ready2code_dev_password
+      POSTGRES_DB: ready2code_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ready2code -d ready2code_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: ready2code-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: ready2code-api
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql://ready2code:ready2code_dev_password@postgres:5432/ready2code_db
+      REDIS_URL: redis://redis:6379/0
+      JUDGE0_URL: http://judge0:2358
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./api:/app
+      - ./content:/content
+
+  judge0:
+    image: judge0/judge0:latest
+    container_name: ready2code-judge0
+    ports:
+      - "2358:2358"
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - POSTGRES_HOST=postgres
+      - POSTGRES_USER=ready2code
+      - POSTGRES_PASSWORD=ready2code_dev_password
+      - POSTGRES_DB=ready2code_db
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+volumes:
+  pgdata:
+  redisdata:

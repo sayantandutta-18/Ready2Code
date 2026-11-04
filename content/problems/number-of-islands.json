@@ -1,0 +1,63 @@
+{
+  "slug": "number-of-islands",
+  "title": "Number of Islands",
+  "difficulty": "medium",
+  "topic": "Graphs",
+  "tags": [
+    "Graph",
+    "BFS",
+    "DFS",
+    "Union Find"
+  ],
+  "company_tags": [
+    "Amazon",
+    "Google",
+    "Bloomberg",
+    "DoorDash"
+  ],
+  "statement_md": "Given an `m x n` 2D binary grid `grid` which represents a map of `'1'`s (land) and `'0'`s (water), return the number of islands.\n\nAn island is surrounded by water and is formed by connecting adjacent lands horizontally or vertically. You may assume all four edges of the grid are all surrounded by water.",
+  "time_limit_ms": 1500,
+  "memory_limit_mb": 128,
+  "sample_tests": [
+    {
+      "input_text": "[[\"1\",\"1\",\"1\",\"1\",\"0\"],[\"1\",\"1\",\"0\",\"1\",\"0\"],[\"1\",\"1\",\"0\",\"0\",\"0\"],[\"0\",\"0\",\"0\",\"0\",\"0\"]]",
+      "expected_output": "1"
+    },
+    {
+      "input_text": "[[\"1\",\"1\",\"0\",\"0\",\"0\"],[\"1\",\"1\",\"0\",\"0\",\"0\"],[\"0\",\"0\",\"1\",\"0\",\"0\"],[\"0\",\"0\",\"0\",\"1\",\"1\"]]",
+      "expected_output": "3"
+    }
+  ],
+  "hidden_tests": [
+    {
+      "input_text": "[[\"1\"]]",
+      "expected_output": "1"
+    },
+    {
+      "input_text": "[[\"0\"]]",
+      "expected_output": "0"
+    },
+    {
+      "input_text": "[[\"1\",\"0\",\"1\"],[\"0\",\"1\",\"0\"],[\"1\",\"0\",\"1\"]]",
+      "expected_output": "5"
+    }
+  ],
+  "hints": [
+    {
+      "level": 1,
+      "text": "Iterate over every cell. When you find an unvisited '1', trigger a graph search.",
+      "xp_cost": 2
+    },
+    {
+      "level": 2,
+      "text": "Use BFS with a queue or DFS with recursion to visit all connected 4-directional cells.",
+      "xp_cost": 5
+    },
+    {
+      "level": 3,
+      "text": "Mark visited cells in a set or mutate visited land to '0' to avoid cycles.",
+      "xp_cost": 10
+    }
+  ],
+  "editorial_md": "### Optimal Approach: BFS / DFS Traversal\n\nTraverse the matrix cell by cell. Whenever an unvisited `'1'` is spotted, increment island count and use Breadth-First Search (Queue) to sink or mark all connected land.\n\n- Time Complexity: $O(m \\times n)$\n- Space Complexity: $O(m \\times n)$"
+}

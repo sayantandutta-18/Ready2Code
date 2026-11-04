@@ -1,0 +1,69 @@
+{
+  "slug": "longest-substring-without-repeating-characters",
+  "title": "Longest Substring Without Repeating Characters",
+  "difficulty": "medium",
+  "topic": "Strings",
+  "tags": [
+    "Hash Table",
+    "String",
+    "Sliding Window"
+  ],
+  "company_tags": [
+    "Amazon",
+    "Bloomberg",
+    "Google"
+  ],
+  "statement_md": "Given a string `s`, find the length of the longest substring without duplicate characters.",
+  "time_limit_ms": 1000,
+  "memory_limit_mb": 128,
+  "sample_tests": [
+    {
+      "input_text": "\"abcabcbb\"",
+      "expected_output": "3"
+    },
+    {
+      "input_text": "\"bbbbb\"",
+      "expected_output": "1"
+    },
+    {
+      "input_text": "\"pwwkew\"",
+      "expected_output": "3"
+    }
+  ],
+  "hidden_tests": [
+    {
+      "input_text": "\"\"",
+      "expected_output": "0"
+    },
+    {
+      "input_text": "\" \"",
+      "expected_output": "1"
+    },
+    {
+      "input_text": "\"au\"",
+      "expected_output": "2"
+    },
+    {
+      "input_text": "\"dvdf\"",
+      "expected_output": "3"
+    }
+  ],
+  "hints": [
+    {
+      "level": 1,
+      "text": "Use a sliding window `[left, right]` where characters within the window are all unique.",
+      "xp_cost": 2
+    },
+    {
+      "level": 2,
+      "text": "Store the last seen index of each character in a hash map.",
+      "xp_cost": 5
+    },
+    {
+      "level": 3,
+      "text": "When a repeat occurs, fast-forward `left` to `last[c] + 1` if it is greater than `left`.",
+      "xp_cost": 10
+    }
+  ],
+  "editorial_md": "### Optimal Approach: Sliding Window with Hash Map\n\nMaintain window boundaries `[left, right]`. When encountering a previously seen character in the current window, move `left` pointer to avoid duplicates.\n\n- Time Complexity: $O(n)$\n- Space Complexity: $O(\\min(n, m))$ where $m$ is charset size"
+}

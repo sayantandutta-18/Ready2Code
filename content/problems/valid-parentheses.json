@@ -1,0 +1,72 @@
+{
+  "slug": "valid-parentheses",
+  "title": "Valid Parentheses",
+  "difficulty": "easy",
+  "topic": "Stack and Queue",
+  "tags": [
+    "Stack",
+    "String"
+  ],
+  "company_tags": [
+    "Amazon",
+    "Bloomberg",
+    "Google"
+  ],
+  "statement_md": "Given a string `s` containing just the characters `'('`, `')'`, `'{'`, `'}'`, `'['` and `']'`, determine if the input string is valid.\n\nAn input string is valid if:\n1. Open brackets must be closed by the same type of brackets.\n2. Open brackets must be closed in the correct order.\n3. Every close bracket has a corresponding open bracket of the same type.",
+  "time_limit_ms": 1000,
+  "memory_limit_mb": 128,
+  "sample_tests": [
+    {
+      "input_text": "\"()\"",
+      "expected_output": "true"
+    },
+    {
+      "input_text": "\"()[]{}\"",
+      "expected_output": "true"
+    },
+    {
+      "input_text": "\"(]\"",
+      "expected_output": "false"
+    }
+  ],
+  "hidden_tests": [
+    {
+      "input_text": "\"([{}])\"",
+      "expected_output": "true"
+    },
+    {
+      "input_text": "\"(((\"",
+      "expected_output": "false"
+    },
+    {
+      "input_text": "\")))\"",
+      "expected_output": "false"
+    },
+    {
+      "input_text": "\"{[]}\"",
+      "expected_output": "true"
+    },
+    {
+      "input_text": "\"[(])\"",
+      "expected_output": "false"
+    }
+  ],
+  "hints": [
+    {
+      "level": 1,
+      "text": "Think of what data structure gives Last-In-First-Out access.",
+      "xp_cost": 2
+    },
+    {
+      "level": 2,
+      "text": "A stack allows you to push opening brackets and pop them when matching closing ones appear.",
+      "xp_cost": 5
+    },
+    {
+      "level": 3,
+      "text": "Map each closing bracket to its opening counterpart. Pop on close, check matching, and ensure stack is empty at the end.",
+      "xp_cost": 10
+    }
+  ],
+  "editorial_md": "### Optimal Approach: Stack\n\nPush open brackets onto a stack. When finding a closed bracket, check if top of stack matches. Finally, verify stack is empty.\n\n- Time Complexity: $O(n)$\n- Space Complexity: $O(n)$"
+}

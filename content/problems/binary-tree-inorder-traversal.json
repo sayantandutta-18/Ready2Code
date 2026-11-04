@@ -1,0 +1,62 @@
+{
+  "slug": "binary-tree-inorder-traversal",
+  "title": "Binary Tree Inorder Traversal",
+  "difficulty": "easy",
+  "topic": "Trees",
+  "tags": [
+    "Stack",
+    "Tree",
+    "Depth-First Search",
+    "Binary Tree"
+  ],
+  "company_tags": [
+    "Amazon",
+    "Microsoft",
+    "Meta"
+  ],
+  "statement_md": "Given the root of a binary tree, return the inorder traversal of its nodes' values.\n\nBinary tree input is represented as level-order serialization with `null` indicating empty branches.",
+  "time_limit_ms": 1000,
+  "memory_limit_mb": 128,
+  "sample_tests": [
+    {
+      "input_text": "[1, null, 2, 3]",
+      "expected_output": "[1, 3, 2]"
+    },
+    {
+      "input_text": "[]",
+      "expected_output": "[]"
+    },
+    {
+      "input_text": "[1]",
+      "expected_output": "[1]"
+    }
+  ],
+  "hidden_tests": [
+    {
+      "input_text": "[1, 2, 3, 4, 5, null, 8, null, null, 6, 7, 9]",
+      "expected_output": "[4, 2, 6, 5, 7, 1, 3, 9, 8]"
+    },
+    {
+      "input_text": "[3, 1, 2]",
+      "expected_output": "[1, 3, 2]"
+    }
+  ],
+  "hints": [
+    {
+      "level": 1,
+      "text": "Inorder traversal visits: Left subtree -> Current Node -> Right subtree.",
+      "xp_cost": 2
+    },
+    {
+      "level": 2,
+      "text": "Can be done recursively, or iteratively using an explicit stack.",
+      "xp_cost": 5
+    },
+    {
+      "level": 3,
+      "text": "Push all left nodes onto a stack until reaching null. Pop, visit, then pivot to `node.right`.",
+      "xp_cost": 10
+    }
+  ],
+  "editorial_md": "### Optimal Approach: Iterative Stack\n\nTraverse leftwards continuously pushing nodes into stack. Once null is reached, pop the top node, append to result, and move right.\n\n- Time Complexity: $O(n)$\n- Space Complexity: $O(h)$ where $h$ is tree height"
+}
