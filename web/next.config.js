@@ -7,10 +7,11 @@ const nextConfig = {
     return config;
   },
   async rewrites() {
+    const apiTarget = process.env.API_INTERNAL_URL || 'http://localhost:8000/:path*';
     return [
       {
         source: '/api/:path*',
-        destination: 'http://localhost:8000/:path*',
+        destination: apiTarget,
       },
     ]
   },

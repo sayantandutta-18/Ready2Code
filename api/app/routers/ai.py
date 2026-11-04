@@ -1,30 +1,31 @@
 import os
 from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 from ..database import get_db
 from ..models.entities import Problem, XPLedger, User
+from ..rate_limiter import rate_limit_ai
 
 router = APIRouter(prefix="/ai", tags=["ai"])
 
 class HintRequest(BaseModel):
-    problem_id: str
-    user_code: str
-    level: int = 1 # 1, 2, or 3
-    user_id: Optional[str] = "guest"
+    problem_id: str = Field(..., max_length=128)
+    user_code: str = Field(..., max_length=65536)
+    level: int = Field(default=1, ge=1, le=3) # 1, 2, or 3
+    user_id: Optional[str] = Field(default="guest", max_length=128)
 
 class ReviewRequest(BaseModel):
-    problem_id: str
-    code: str
+    problem_id: str = Field(..., max_length=128)
+    code: str = Field(..., max_length=65536)
 
 class ExplainVerdictRequest(BaseModel):
-    input_text: str
-    expected_output: str
-    actual_output: str
-    verdict: str
+    input_text: str = Field(..., max_length=10000)
+    expected_output: str = Field(..., max_length=10000)
+    actual_output: str = Field(..., max_length=10000)
+    verdict: str = Field(..., max_length=32)
 
-@router.post("/hint")
+@router.post("/hint", dependencies=[Depends(rate_limit_ai)])
 def get_socratic_hint(req: HintRequest, db: Session = Depends(get_db)):
     problem = db.query(Problem).filter(
         (Problem.id == req.problem_id) | (Problem.slug == req.problem_id)
@@ -47,7 +48,7 @@ def get_socratic_hint(req: HintRequest, db: Session = Depends(get_db)):
         "socratic_question": "What is the computational bottleneck in your current approach?" if req.level == 1 else "How does the chosen data structure reduce redundant checks?"
     }
 
-@router.post("/review")
+@router.post("/review", dependencies=[Depends(rate_limit_ai)])
 def review_code(req: ReviewRequest, db: Session = Depends(get_db)):
     code_lower = req.code.lower()
     has_nested_loops = code_lower.count("for ") >= 2 or ("for " in code_lower and "while " in code_lower)
@@ -70,7 +71,7 @@ def review_code(req: ReviewRequest, db: Session = Depends(get_db)):
         "suggestion": suggestion
     }
 
-@router.post("/explain-verdict")
+@router.post("/explain-verdict", dependencies=[Depends(rate_limit_ai)])
 def explain_verdict(req: ExplainVerdictRequest):
     if req.verdict == "WA":
         return {

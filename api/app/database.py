@@ -1,8 +1,9 @@
 import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
+from .config import settings
 
-DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./ready2code.db")
+DATABASE_URL = settings.DATABASE_URL
 
 # If using postgresql, ensure driver compatibility or fallback to sqlite gracefully
 if DATABASE_URL.startswith("postgresql://") or DATABASE_URL.startswith("postgres://"):

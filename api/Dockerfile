@@ -20,13 +20,13 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt
 
-# Copy source code and problem content
+# Copy source code and ensure content directory exists
 COPY . /app
-COPY ../content /content
+RUN mkdir -p /content
 
 # Create non-root user for production security
 RUN useradd -m -u 1000 ready2code && \
-    chown -R ready2code:ready2code /app
+    chown -R ready2code:ready2code /app /content
 
 USER ready2code
 

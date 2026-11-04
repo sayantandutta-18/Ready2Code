@@ -1,6 +1,6 @@
 from typing import Optional, List
 from fastapi import APIRouter, Depends, HTTPException
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 from sqlalchemy import desc
 from ..database import get_db
@@ -10,22 +10,22 @@ from ..auth_deps import get_current_user_optional
 router = APIRouter(prefix="/discussions", tags=["discussions"])
 
 class CreateDiscussionRequest(BaseModel):
-    problem_slug: str
-    title: str
-    body_md: str
+    problem_slug: str = Field(..., max_length=128)
+    title: str = Field(..., min_length=1, max_length=250)
+    body_md: str = Field(..., min_length=1, max_length=15000)
     is_solution: bool = False
-    author_id: str = "guest"
+    author_id: str = Field(default="guest", max_length=128)
 
 class VoteRequest(BaseModel):
-    user_id: str = "guest"
-    target_type: str # discussion, comment
-    target_id: str
+    user_id: str = Field(default="guest", max_length=128)
+    target_type: str = Field(..., max_length=32) # discussion, comment
+    target_id: str = Field(..., max_length=128)
     value: int # 1 or -1
 
 class CommentRequest(BaseModel):
-    author_id: str = "guest"
-    body_md: str
-    parent_id: Optional[str] = None
+    author_id: str = Field(default="guest", max_length=128)
+    body_md: str = Field(..., min_length=1, max_length=10000)
+    parent_id: Optional[str] = Field(default=None, max_length=128)
 
 @router.get("/problem/{problem_slug}")
 def get_problem_discussions(

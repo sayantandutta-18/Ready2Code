@@ -3,7 +3,7 @@ import json
 import zoneinfo
 from datetime import datetime, date, timezone, timedelta
 from typing import Optional, List
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy import func
@@ -14,19 +14,20 @@ from ..models.entities import (
 )
 from ..judge.client import run_code, LANGUAGE_MAP, map_status_id
 from ..auth_deps import get_current_user_optional
+from ..rate_limiter import rate_limit_submissions
 
 router = APIRouter(prefix="/submissions", tags=["submissions"])
 
 class RunRequest(BaseModel):
-    problem_id: str
-    language: str
-    code: str
+    problem_id: str = Field(..., max_length=128)
+    language: str = Field(..., max_length=32)
+    code: str = Field(..., max_length=65536)
 
 class SubmitRequest(BaseModel):
-    user_id: Optional[str] = "guest"
-    problem_id: str
-    language: str
-    code: str
+    user_id: Optional[str] = Field(default="guest", max_length=128)
+    problem_id: str = Field(..., max_length=128)
+    language: str = Field(..., max_length=32)
+    code: str = Field(..., max_length=65536)
 
 def build_executable_source(code: str, language: str, input_str: str) -> str:
     """
@@ -95,7 +96,7 @@ const fnNames = Object.keys(global).filter(k => typeof global[k] === 'function')
 def normalize_output(val: str) -> str:
     return val.strip().replace(" ", "").replace("\r\n", "\n").lower()
 
-@router.post("/run")
+@router.post("/run", dependencies=[Depends(rate_limit_submissions)])
 def run_sample_tests(req: RunRequest, db: Session = Depends(get_db)):
     problem = db.query(Problem).filter(
         (Problem.id == req.problem_id) | (Problem.slug == req.problem_id)
@@ -155,7 +156,7 @@ def run_sample_tests(req: RunRequest, db: Session = Depends(get_db)):
         "results": results
     }
 
-@router.post("")
+@router.post("", dependencies=[Depends(rate_limit_submissions)])
 def submit_solution(
     req: SubmitRequest,
     current_user: Optional[User] = Depends(get_current_user_optional),

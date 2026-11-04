@@ -109,7 +109,7 @@ def create_interview(req: CreateInterviewRequest):
         "verdict": req.verdict,
         "ctc": req.ctc,
         "difficulty": req.difficulty,
-        "rounds": [r.dict() for r in req.rounds],
+        "rounds": [r.model_dump() if hasattr(r, "model_dump") else r.dict() for r in req.rounds],
         "advice": req.advice
     }
     INTERVIEWS_DB.insert(0, item)

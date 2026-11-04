@@ -1,7 +1,7 @@
 from datetime import datetime, timezone
 from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 from ..database import get_db
 from ..models.entities import Note, Problem, User
@@ -10,9 +10,9 @@ from ..auth_deps import get_current_user_optional
 router = APIRouter(prefix="/notes", tags=["notes"])
 
 class NotePayload(BaseModel):
-    problem_id: str
-    body_md: str
-    user_id: Optional[str] = None
+    problem_id: str = Field(..., max_length=128)
+    body_md: str = Field(..., max_length=50000)
+    user_id: Optional[str] = Field(default=None, max_length=128)
 
 @router.get("/{problem_id}")
 def get_note(

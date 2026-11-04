@@ -5,7 +5,11 @@ import subprocess
 import httpx
 from typing import Dict, Any, Optional
 
-JUDGE0_URL = os.getenv("JUDGE0_URL", "http://localhost:2358")
+try:
+    from ..config import settings
+    JUDGE0_URL = settings.JUDGE0_URL
+except Exception:
+    JUDGE0_URL = os.getenv("JUDGE0_URL", "http://localhost:2358")
 
 # Common Judge0 Language IDs:
 # Python 3: 71

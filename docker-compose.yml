@@ -69,6 +69,20 @@ services:
       redis:
         condition: service_healthy
 
+  web:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+    container_name: ready2code-web
+    ports:
+      - "3000:3000"
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:8000
+      API_INTERNAL_URL: http://api:8000/:path*
+      NODE_ENV: development
+    depends_on:
+      - api
+
 volumes:
   pgdata:
   redisdata:
