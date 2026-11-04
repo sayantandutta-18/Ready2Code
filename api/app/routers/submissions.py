@@ -204,7 +204,7 @@ def submit_solution(req: SubmitRequest, db: Session = Depends(get_db)):
 
     if past_ac:
         slower = sum(1 for s in past_ac if s.runtime_ms >= total_time_ms)
-        faster_than_pct = round((slower / len(past_ac)) * 100, 1)
+        faster_than_pct = max(5.0, round((slower / len(past_ac)) * 100, 1))
 
     # Ensure a user exists for tracking (guest or logged-in)
     user_id = req.user_id or "guest"

@@ -2,13 +2,16 @@ import os
 import sys
 import glob
 import json
+from datetime import datetime, timedelta
 
 # Ensure parent directory is in path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from app.database import engine, SessionLocal, Base
 from app.models.entities import (
-    Topic, Problem, ProblemTag, ProblemTest, ProblemHint, Editorial
+    Topic, Problem, ProblemTag, ProblemTest, ProblemHint, Editorial,
+    ProblemList, ListItem, StudyPlan, PlanDay, Contest, ContestProblem,
+    ContestEntry, User, Discussion
 )
 
 def validate_problem_dict(p_dict: dict, filename: str):
@@ -49,12 +52,11 @@ def seed_database(content_dir: str = "../content/problems"):
     search_path = os.path.join(os.path.dirname(__file__), content_dir, "*.json")
     files = glob.glob(search_path)
     if not files:
-        # Try alternate path
         search_path = os.path.join(os.getcwd(), "content", "problems", "*.json")
         files = glob.glob(search_path)
 
-    print(f"Found {len(files)} problem files to inspect.")
     seeded_count = 0
+    problem_cache = {}
 
     for fpath in files:
         with open(fpath, "r", encoding="utf-8") as f:
@@ -62,7 +64,6 @@ def seed_database(content_dir: str = "../content/problems"):
 
         validate_problem_dict(data, os.path.basename(fpath))
 
-        # Check idempotency
         prob = db.query(Problem).filter(Problem.slug == data["slug"]).first()
         topic_obj = topic_cache.get(data.get("topic", "Arrays").lower())
         topic_id = topic_obj.id if topic_obj else None
@@ -86,6 +87,8 @@ def seed_database(content_dir: str = "../content/problems"):
             prob.difficulty = data.get("difficulty", "easy").lower()
             prob.topic_id = topic_id
             db.commit()
+
+        problem_cache[prob.slug] = prob
 
         # Update Tags
         existing_tags = {t.tag for t in prob.tags}
@@ -145,8 +148,104 @@ def seed_database(content_dir: str = "../content/problems"):
         db.commit()
         seeded_count += 1
 
+    # --- Phase 2: Seed System Lists (Blind 75 & NeetCode 150) ---
+    system_lists = [
+        {
+            "name": "Blind 75 High-Frequency Core",
+            "description": "Essential foundational algorithmic patterns curated for top tech interviews.",
+            "slugs": ["two-sum", "valid-parentheses", "best-time-to-buy-and-sell-stock", "maximum-subarray", "reverse-linked-list", "number-of-islands", "coin-change", "merge-intervals"]
+        },
+        {
+            "name": "NeetCode 150 Essentials",
+            "description": "Structured curriculum spanning arrays, linked lists, trees, graphs, and dynamic programming.",
+            "slugs": ["two-sum", "valid-parentheses", "binary-search", "longest-substring-without-repeating-characters", "climbing-stairs", "binary-tree-inorder-traversal"]
+        }
+    ]
+
+    for sl in system_lists:
+        pl = db.query(ProblemList).filter(ProblemList.name == sl["name"]).first()
+        if not pl:
+            pl = ProblemList(name=sl["name"], description=sl["description"], is_system=True, visibility="public")
+            db.add(pl)
+            db.commit()
+            db.refresh(pl)
+
+        db.query(ListItem).filter(ListItem.list_id == pl.id).delete()
+        for idx, slug in enumerate(sl["slugs"]):
+            p = problem_cache.get(slug)
+            if p:
+                db.add(ListItem(list_id=pl.id, problem_id=p.id, position=idx))
+        db.commit()
+
+    # --- Phase 2: Seed Study Plans (30/60/90 Days) ---
+    plan = db.query(StudyPlan).filter(StudyPlan.name == "30-Day Interview Readiness Bootcamp").first()
+    if not plan:
+        plan = StudyPlan(
+            name="30-Day Interview Readiness Bootcamp",
+            description="Daily assigned algorithmic challenges progressing from arrays to dynamic programming.",
+            duration_days=30
+        )
+        db.add(plan)
+        db.commit()
+        db.refresh(plan)
+
+        day_assignments = [
+            (1, "two-sum"),
+            (2, "best-time-to-buy-and-sell-stock"),
+            (3, "valid-parentheses"),
+            (4, "binary-search"),
+            (5, "reverse-linked-list"),
+            (6, "maximum-subarray"),
+            (7, "climbing-stairs"),
+            (8, "number-of-islands"),
+            (9, "merge-intervals"),
+            (10, "longest-substring-without-repeating-characters"),
+            (11, "coin-change"),
+            (12, "binary-tree-inorder-traversal")
+        ]
+        for day_num, slug in day_assignments:
+            p = problem_cache.get(slug)
+            if p:
+                db.add(PlanDay(plan_id=plan.id, day_number=day_num, problem_id=p.id))
+        db.commit()
+
+    # --- Phase 2: Seed Contests ---
+    contest = db.query(Contest).filter(Contest.title == "Ready2Code Weekly Contest 101").first()
+    if not contest:
+        contest = Contest(
+            title="Ready2Code Weekly Contest 101",
+            starts_at=datetime.utcnow() - timedelta(hours=1),
+            duration_min=90,
+            type="weekly",
+            status="live"
+        )
+        db.add(contest)
+        db.commit()
+        db.refresh(contest)
+
+        c_probs = [("two-sum", 100, 1), ("maximum-subarray", 200, 2), ("number-of-islands", 300, 3)]
+        for slug, pts, pos in c_probs:
+            p = problem_cache.get(slug)
+            if p:
+                db.add(ContestProblem(contest_id=contest.id, problem_id=p.id, points=pts, position=pos))
+
+        # Add sample contestants
+        u1 = db.query(User).filter(User.username == "algo_ninja").first()
+        if not u1:
+            u1 = User(id="user_ninja", username="algo_ninja", display_name="Ninja Coder", rating=1820)
+            db.add(u1)
+        u2 = db.query(User).filter(User.username == "byte_master").first()
+        if not u2:
+            u2 = User(id="user_byte", username="byte_master", display_name="Byte Master", rating=1750)
+            db.add(u2)
+        db.commit()
+
+        db.add(ContestEntry(contest_id=contest.id, user_id=u1.id, score=300, penalty_s=180, rank=1))
+        db.add(ContestEntry(contest_id=contest.id, user_id=u2.id, score=100, penalty_s=300, rank=2))
+        db.commit()
+
     db.close()
-    print(f"Successfully seeded {seeded_count} problems idempotently.")
+    print(f"Successfully seeded {seeded_count} problems, lists, study plans, and live contests idempotently.")
 
 if __name__ == "__main__":
     seed_database()

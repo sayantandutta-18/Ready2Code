@@ -26,13 +26,29 @@ Updated: November 2026
 
 ---
 
-## 🌟 Advanced Differentiators Included
-- [x] **C3.1 3D Algorithm Visualizer Engine**: Reusable trace player in `/visualizer/[algo]` rendering arrays as 3D pillars, floating hash map panels, transport controls (play, pause, step forward/back, speed 0.5x/1x/2x, scrub bar), and screen reader accessibility.
-- [x] **C3.3 Socratic AI Hint Bot**: Tiered hints (Level 1 conceptual, Level 2 pattern, Level 3 data structure) with XP costs.
-- [x] **C3.4 AI Code Review**: Complexity analysis and bottleneck detector at `POST /ai/review`.
-- [x] **C3.9 Blind Mode**: Toggle to hide problem difficulty and tags to simulate real interview pressure.
+## ⚡ Phase 2: Version 2 — COMPLETE (C2.1 to C2.5)
+- [x] **C2.1 Curated lists and 30/60/90-day plans**: System lists (Blind 75, NeetCode 150) and 30-Day Interview Readiness Bootcamp calendar checklist at `/lists`, `/lists/[id]`, and `/plans/[id]`.
+- [x] **C2.2 Contests and live leaderboard**: Timed weekly contests with penalties (5 min penalty per WA), 10s auto-polling live standings, and Elo rating history at `/contests` and `/contests/[id]`.
+- [x] **C2.3 Discussion and solution posts**: Markdown discussion threads, voting (+1/-1), and community solutions unlockable by writing a 50+ word explanation at `/discussions`.
+- [x] **C2.4 XP, badges, and leaderboards**: Global ranking by XP, streak consistency, and Elo rating at `/leaderboard`.
+- [x] **C2.5 Analytics and spaced repetition**: Learner analytics at `/analytics` with weekly solves bar chart, acceptance by topic, weak-topic detection, and spaced repetition review queue (1, 3, 7, 21 days) at `/review`.
 
 ---
 
-## 🔮 Next Checkpoints Planned
-- **Phase 2: Version 2**: Curated lists (Blind 75, NeetCode 150), 30/60/90-day study plans (C2.1), Timed contests & live standings (C2.2), Community discussion forum (C2.3), Spaced repetition review queue (C2.5).
+## 🌟 Phase 3: Differentiators — COMPLETE (C3.1, C3.4, C3.5, C3.6, C3.9, C3.10, C3.12)
+- [x] **C3.1 3D algorithm visualizer engine**: Reusable trace player at `/visualizer/[algo]` with 3D pillars for values, floating hash map panels, transport controls (play, pause, next/prev step, speed, scrub bar), and screen reader accessibility.
+- [x] **C3.4 AI code review and error explainer**: Time and space complexity analysis, bottleneck identification, and plain-language explanation of failed tests at `POST /ai/review` and `POST /ai/explain-verdict`.
+- [x] **C3.5 Pattern-first learning and quiz**: 15 algorithm patterns with signals, canonical templates, and interactive pattern recognition quizzes unlocking tagged problems at `/patterns` and `/patterns/[id]`.
+- [x] **C3.6 Brute to optimal ladder**: Three progression stages (Brute, Better, Optimal) with runtime threshold enforcement at `/ladder/[problem]`.
+- [x] **C3.9 Mock interview timer and blind mode**: Simulated FAANG technical interview at `/mock` with 20/45 minute timer, simulated interviewer dialogue, editor auto-lock, and separate scores for Correctness and Communication.
+- [x] **C3.10 Placement prep & CS fundamentals**: Indian campus recruiter tracks (Aptitude, Product DSA, CS Fundamentals Core: OS, DBMS, Networks) with English/Hindi/Bengali regional explanations at `/placement`.
+- [x] **C3.12 Verified skill certificates**: Timed skill test issuing shareable certificates with verification IDs and LinkedIn share integration at `/certificates/[code]`.
+
+---
+
+## 🔮 Next Planned Phase: Phase 4 Growth
+- **C4.1 Social practice**: Real-time study rooms with Yjs and 1v1 battles.
+- **C4.2 Retention & rewards**: Mentor marketplace and avatar collection.
+- **C4.3 Company roadmaps**: 60-day company-specific plans and interview experience wall.
+- **C4.4 Career tools**: Verified skill portfolio and job referral board.
+- **C4.5 Creators & classrooms**: Custom problem authoring with reference validation and teacher classroom mode.
