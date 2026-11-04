@@ -1,5 +1,5 @@
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from sqlalchemy import (
     Column, String, Integer, Text, Boolean, DateTime, ForeignKey, Index, PrimaryKeyConstraint, Float
 )
@@ -8,6 +8,9 @@ from ..database import Base
 
 def gen_uuid():
     return str(uuid.uuid4())
+
+def utc_now():
+    return datetime.now(timezone.utc)
 
 class User(Base):
     __tablename__ = "users"
@@ -19,7 +22,7 @@ class User(Base):
     avatar_url = Column(String(255), nullable=True)
     timezone = Column(String(64), default="UTC")
     rating = Column(Integer, default=1500)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime(timezone=True), default=utc_now)
 
     submissions = relationship("Submission", back_populates="user", cascade="all, delete-orphan")
     problem_statuses = relationship("UserProblemStatus", back_populates="user", cascade="all, delete-orphan")
@@ -119,7 +122,7 @@ class Submission(Base):
     runtime_ms = Column(Integer, default=0)
     memory_kb = Column(Integer, default=0)
     failed_test_index = Column(Integer, nullable=True)
-    created_at = Column(DateTime, default=datetime.utcnow, index=True)
+    created_at = Column(DateTime(timezone=True), default=utc_now, index=True)
 
     user = relationship("User", back_populates="submissions")
     problem = relationship("Problem", back_populates="submissions")
@@ -140,7 +143,7 @@ class Bookmark(Base):
 
     user_id = Column(String(36), ForeignKey("users.id"), primary_key=True)
     problem_id = Column(String(36), ForeignKey("problems.id"), primary_key=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime(timezone=True), default=utc_now)
 
     user = relationship("User", back_populates="bookmarks")
 
@@ -150,7 +153,7 @@ class Note(Base):
     user_id = Column(String(36), ForeignKey("users.id"), primary_key=True)
     problem_id = Column(String(36), ForeignKey("problems.id"), primary_key=True)
     body_md = Column(Text, default="")
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    updated_at = Column(DateTime(timezone=True), default=utc_now, onupdate=utc_now)
 
     user = relationship("User", back_populates="notes")
 
@@ -179,7 +182,7 @@ class XPLedger(Base):
     amount = Column(Integer, nullable=False)
     reason = Column(String(64), nullable=False)
     ref_id = Column(String(64), nullable=True)
-    created_at = Column(DateTime, default=datetime.utcnow, index=True)
+    created_at = Column(DateTime(timezone=True), default=utc_now, index=True)
 
     user = relationship("User", back_populates="xp_entries")
 
@@ -197,7 +200,7 @@ class UserBadge(Base):
 
     user_id = Column(String(36), ForeignKey("users.id"), primary_key=True)
     badge_id = Column(String(36), ForeignKey("badges.id"), primary_key=True)
-    earned_at = Column(DateTime, default=datetime.utcnow)
+    earned_at = Column(DateTime(timezone=True), default=utc_now)
 
 # ================= PHASE 2 ENTITIES =================
 
@@ -290,7 +293,7 @@ class Rating(Base):
     rating_before = Column(Integer, nullable=False)
     rating_after = Column(Integer, nullable=False)
     rank = Column(Integer, nullable=False)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime(timezone=True), default=utc_now)
 
 class Discussion(Base):
     __tablename__ = "discussions"
@@ -303,7 +306,7 @@ class Discussion(Base):
     is_solution = Column(Boolean, default=False)
     votes = Column(Integer, default=0)
     is_hidden = Column(Boolean, default=False)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime(timezone=True), default=utc_now)
 
     problem = relationship("Problem", back_populates="discussions")
     author = relationship("User", back_populates="discussions")
@@ -319,7 +322,7 @@ class Comment(Base):
     body_md = Column(Text, nullable=False)
     votes = Column(Integer, default=0)
     is_hidden = Column(Boolean, default=False)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime(timezone=True), default=utc_now)
 
     discussion = relationship("Discussion", back_populates="comments")
     author = relationship("User")
@@ -407,6 +410,6 @@ class Certificate(Base):
     skill = Column(String(64), nullable=False)
     score = Column(Integer, default=100)
     verify_code = Column(String(32), unique=True, nullable=False, index=True)
-    issued_at = Column(DateTime, default=datetime.utcnow)
+    issued_at = Column(DateTime(timezone=True), default=utc_now)
 
     user = relationship("User")

@@ -1,6 +1,6 @@
 import re
 import json
-from datetime import datetime, date
+from datetime import datetime, date, timezone
 from typing import Optional, List
 from pydantic import BaseModel
 from fastapi import APIRouter, Depends, HTTPException
@@ -243,7 +243,7 @@ def submit_solution(req: SubmitRequest, db: Session = Depends(get_db)):
                 problem_id=problem.id,
                 status="solved",
                 best_runtime_ms=total_time_ms,
-                solved_at=datetime.utcnow()
+                solved_at=datetime.now(timezone.utc)
             )
             db.add(status_rec)
         else:

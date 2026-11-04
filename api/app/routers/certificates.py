@@ -1,5 +1,5 @@
 import secrets
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional, List
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
@@ -34,7 +34,7 @@ def issue_certificate(req: SubmitSkillTestRequest, db: Session = Depends(get_db)
         skill=req.skill,
         score=req.score_pct,
         verify_code=code,
-        issued_at=datetime.utcnow()
+        issued_at=datetime.now(timezone.utc)
     )
     db.add(cert)
     db.commit()

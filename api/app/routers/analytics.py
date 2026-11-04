@@ -1,4 +1,4 @@
-from datetime import datetime, date, timedelta
+from datetime import datetime, date, timedelta, timezone
 from typing import Optional, List
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
@@ -20,7 +20,7 @@ class GradeReviewRequest(BaseModel):
 @router.get("/analytics")
 def get_analytics(user_id: str = "guest", db: Session = Depends(get_db)):
     # Solved per week
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
     weekly_solves = [
         {"week": "Week 1", "solves": 2},
         {"week": "Week 2", "solves": 4},

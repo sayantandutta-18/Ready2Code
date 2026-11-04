@@ -1,8 +1,19 @@
 # Ready2Code — Project Status & Roadmap
 
 Platform: **Ready2Code** (Interactive 3D DSA Arena)
-Status: **Production-Level Application (Phases 0, 1, 2, 3, and 4 Complete)**
+Current Phase: **Phase 0 (Audit & Warning Fixes) COMPLETED**
 Updated: November 2026
+
+---
+
+## 🔍 Phase 0 - Production Audit & Fixes — COMPLETE
+- [x] **Complete Route Audit**: Examined all 29 routes across `web/app/` documenting data sources, mock data, and placeholder elements in `AUDIT.md`.
+- [x] **Interactive Elements & Form Audit**: Documented all un-wired or mock buttons, forms, and links (streak freeze, mock evaluations, bookmark catch fallbacks, etc.).
+- [x] **API Endpoints Inventory**: Mapped all 46 API endpoints across 17 backend routers with frontend connection status.
+- [x] **Timezone Deprecation Fixes**: Replaced `datetime.utcnow()` with `datetime.now(timezone.utc)` across `entities.py`, `contests.py`, `analytics.py`, `certificates.py`, `notes.py`, `submissions.py`, and `seed.py`. All 13 pytest tests passing with zero deprecation warnings.
+- [x] **npm audit Investigation**: Evaluated vulnerabilities; confirmed non-breaking status while avoiding breaking upgrades to Next 16 without `--force`.
+- [x] **Port 3000 Check for `npm run dev`**: Created `web/scripts/dev.js` to verify port 3000 availability before launch, exiting with a clear diagnostic message if busy.
+- [x] **Verification**: 13/13 backend pytest tests passing, `npm run build` static/dynamic compilation passing (code 0).
 
 ---
 

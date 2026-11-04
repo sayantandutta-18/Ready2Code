@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel
@@ -38,7 +38,7 @@ def save_note(payload: NotePayload, db: Session = Depends(get_db)):
         db.add(note)
     else:
         note.body_md = payload.body_md
-        note.updated_at = datetime.utcnow()
+        note.updated_at = datetime.now(timezone.utc)
 
     db.commit()
     return {"status": "saved", "updated_at": note.updated_at.isoformat()}

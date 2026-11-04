@@ -1,5 +1,5 @@
 import os
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Optional, List
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
@@ -18,19 +18,20 @@ class ContestSubmission(BaseModel):
 @router.get("")
 def list_contests(db: Session = Depends(get_db)):
     contests = db.query(Contest).order_by(Contest.starts_at.desc()).all()
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
     res = []
     for c in contests:
-        end_time = c.starts_at + timedelta(minutes=c.duration_min)
+        starts_at = c.starts_at if c.starts_at.tzinfo else c.starts_at.replace(tzinfo=timezone.utc)
+        end_time = starts_at + timedelta(minutes=c.duration_min)
         status = "upcoming"
-        if c.starts_at <= now <= end_time:
+        if starts_at <= now <= end_time:
             status = "live"
         elif now > end_time:
             status = "past"
         res.append({
             "id": c.id,
             "title": c.title,
-            "starts_at": c.starts_at.isoformat(),
+            "starts_at": starts_at.isoformat(),
             "duration_min": c.duration_min,
             "type": c.type,
             "status": status,
@@ -105,7 +106,7 @@ def contest_submit(contest_id: str, req: ContestSubmission, db: Session = Depend
 
     if req.verdict == "AC":
         entry.score += pts
-        entry.finished_at = datetime.utcnow()
+        entry.finished_at = datetime.now(timezone.utc)
     else:
         # 5 minutes penalty per wrong submission before acceptance
         entry.penalty_s += 300

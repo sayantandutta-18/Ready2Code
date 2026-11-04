@@ -2,7 +2,7 @@ import os
 import sys
 import glob
 import json
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 # Ensure parent directory is in path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
@@ -214,7 +214,7 @@ def seed_database(content_dir: str = "../content/problems"):
     if not contest:
         contest = Contest(
             title="Ready2Code Weekly Contest 101",
-            starts_at=datetime.utcnow() - timedelta(hours=1),
+            starts_at=datetime.now(timezone.utc) - timedelta(hours=1),
             duration_min=90,
             type="weekly",
             status="live"
