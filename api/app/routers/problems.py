@@ -20,7 +20,7 @@ def list_problems(
     sort_by: Optional[str] = "id",
     sort_order: Optional[str] = "asc",
     page: Optional[int] = None,
-    limit: Optional[int] = 25,
+    limit: Optional[int] = None,
     user_id: Optional[str] = None,
     random_unsolved: bool = False,
     current_user: Optional[User] = Depends(get_current_user_optional),
@@ -132,17 +132,18 @@ def list_problems(
         results.sort(key=lambda x: (x["best_runtime_ms"] is None, x["best_runtime_ms"] or 999999), reverse=reverse)
 
     # Server-side pagination
-    if page is not None and page > 0:
-        lim = limit or 25
+    if page is not None or limit is not None:
+        eff_page = page if (page is not None and page > 0) else 1
+        lim = limit if (limit is not None and limit > 0) else 25
         total_count = len(results)
-        start_idx = (page - 1) * lim
+        start_idx = (eff_page - 1) * lim
         end_idx = start_idx + lim
         page_items = results[start_idx:end_idx]
         total_pages = max(1, (total_count + lim - 1) // lim)
         return {
             "items": page_items,
             "total": total_count,
-            "page": page,
+            "page": eff_page,
             "limit": lim,
             "total_pages": total_pages
         }

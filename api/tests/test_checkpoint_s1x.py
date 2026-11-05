@@ -104,5 +104,13 @@ def test_no_hidden_tests_in_problems_api():
         assert len(topics_res) == 10
         assert all("name" in t and "slug" in t for t in topics_res)
 
+        # 4. Check list_problems with limit=200 returns total=100
+        paged_200 = list_problems(limit=200, db=db)
+        assert isinstance(paged_200, dict)
+        assert paged_200["total"] == 100
+        assert len(paged_200["items"]) == 100
+        assert paged_200["page"] == 1
+        assert paged_200["limit"] == 200
+
     finally:
         db.close()

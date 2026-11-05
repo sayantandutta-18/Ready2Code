@@ -6,12 +6,17 @@ Updated: November 2026
 
 ---
 
-## 📦 Checkpoint S1.x - Load 100-Problem Content Bank — COMPLETE
+## 📦 Checkpoint S1.x - Load 100-Problem Content Bank & Problem Count Fix — COMPLETE
 - [x] **Launch Content Bank Ingestion (100 Problems, 10 Topics)**:
   - Extracted and verified all 100 launch problems from `content/problems/*.json` and `content/index.json`.
   - Created idempotent seed script `api/scripts/seed.py` that loads 100 problems, 10 topics, sample tests, hidden tests, hints, and tags without duplication.
   - Topics seeded in exact canonical syllabus order: Arrays and Hashing, Two Pointers and Sliding Window, Strings, Stack and Queue, Linked List, Trees, Graphs, Binary Search, Dynamic Programming, Heap, Intervals and Greedy.
   - Second execution loads 0 new problems and does not fail.
+- [x] **Problem Count & Server-Side Pagination Fix**:
+  - Diagnosed parameter handling in `api/app/routers/problems.py`: when `GET /problems?limit=200` was invoked without `page`, it previously returned a raw array omitting the `total` pagination wrapper.
+  - Updated `list_problems` pagination condition to activate whenever either `page` or `limit` is provided (`eff_page = page or 1`, `lim = limit or 25`), returning `{ "total": 100, "items": [...], "page": 1, "limit": 200, "total_pages": 1 }`.
+  - Unpaginated requests (e.g. `list_problems(db=db)` and `/roadmap`) continue returning raw lists of all 100 problems, preserving backward compatibility with existing tests.
+  - Hardened `web/app/problems/page.tsx` with defensive type guards to unpack either `{ items, total }` or raw arrays, ensuring full 100 problems count (25 per page) and all 10 topics display seamlessly in the UI.
 - [x] **Schema & Model Extensions**:
   - Added `scene` (String) and `starter_code` (Text) to `Problem` model in `api/app/models/entities.py`.
   - Created Alembic migration `api/alembic/versions/0002_add_scene_and_starter_code.py`.

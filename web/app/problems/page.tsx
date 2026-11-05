@@ -156,9 +156,15 @@ function ProblemsContent() {
     },
   });
 
-  const problems = pagedData?.items || [];
-  const totalCount = pagedData?.total || 0;
-  const totalPages = pagedData?.total_pages || 1;
+  const problems = Array.isArray(pagedData)
+    ? pagedData
+    : pagedData?.items || [];
+  const totalCount = Array.isArray(pagedData)
+    ? pagedData.length
+    : pagedData?.total || 0;
+  const totalPages = Array.isArray(pagedData)
+    ? Math.max(1, Math.ceil(pagedData.length / 25))
+    : pagedData?.total_pages || 1;
 
   const handleClearFilters = () => {
     setTopic("all");
