@@ -1,0 +1,114 @@
+{
+  "slug": "simplify-unix-path",
+  "title": "Simplify Path",
+  "topic": "Stack and Queue",
+  "topic_key": "stack",
+  "difficulty": "medium",
+  "statement_md": "Given an absolute Unix path, return the canonical path. Treat `.` as the current folder and `..` as the parent folder.\n\n**Function:** `simplifyPath(path)`\n\n**Input:** one JSON value per parameter, in the order above. **Output:** the returned value as JSON.",
+  "function_name": "simplifyPath",
+  "params": [
+    "path"
+  ],
+  "examples": [
+    {
+      "input": [
+        "/home/"
+      ],
+      "output": "/home"
+    },
+    {
+      "input": [
+        "/a/./b/../../c/"
+      ],
+      "output": "/c"
+    }
+  ],
+  "sample_tests": [
+    {
+      "input": [
+        "/home/"
+      ],
+      "output": "/home"
+    },
+    {
+      "input": [
+        "/a/./b/../../c/"
+      ],
+      "output": "/c"
+    }
+  ],
+  "hidden_tests": [
+    {
+      "input": [
+        "/.//b/./a/a"
+      ],
+      "output": "/b/a/a"
+    },
+    {
+      "input": [
+        "/..//./b/../.."
+      ],
+      "output": "/"
+    },
+    {
+      "input": [
+        "/./"
+      ],
+      "output": "/"
+    },
+    {
+      "input": [
+        "/.."
+      ],
+      "output": "/"
+    },
+    {
+      "input": [
+        "/a/.."
+      ],
+      "output": "/"
+    },
+    {
+      "input": [
+        "/b//a"
+      ],
+      "output": "/b/a"
+    },
+    {
+      "input": [
+        "/b/./././/"
+      ],
+      "output": "/b"
+    },
+    {
+      "input": [
+        "/../b"
+      ],
+      "output": "/b"
+    },
+    {
+      "input": [
+        "/a/a"
+      ],
+      "output": "/a/a"
+    },
+    {
+      "input": [
+        "/./b/./../b"
+      ],
+      "output": "/b"
+    }
+  ],
+  "time_limit_ms": 1000,
+  "memory_limit_mb": 128,
+  "scene": "stack",
+  "hints": [
+    "Think about which element has to wait until a later element is seen.",
+    "Keep candidates in order. Pop when a new element resolves the ones on top.",
+    "Data structure: a stack (Python list used with append and pop)."
+  ],
+  "starter_code": {
+    "python": "def simplifyPath(path):\n    # Write your solution here\n    pass\n"
+  },
+  "reference_python": "import math, bisect, heapq, os\nfrom collections import Counter, defaultdict, deque\nfrom itertools import groupby\n\nclass TN:\n    def __init__(self, val, left=None, right=None):\n        self.val, self.left, self.right = val, left, right\n\ndef build(a):\n    if not a or a[0] is None:\n        return None\n    root = TN(a[0]); q = deque([root]); i = 1\n    while q and i < len(a):\n        node = q.popleft()\n        if i < len(a) and a[i] is not None:\n            node.left = TN(a[i]); q.append(node.left)\n        i += 1\n        if i < len(a) and a[i] is not None:\n            node.right = TN(a[i]); q.append(node.right)\n        i += 1\n    return root\n\ndef ser(root):\n    out = []; q = deque([root])\n    while q:\n        n = q.popleft()\n        if n is None:\n            out.append(None); continue\n        out.append(n.val); q.append(n.left); q.append(n.right)\n    while out and out[-1] is None:\n        out.pop()\n    return out\n\ndef ins(root, v):\n    if root is None:\n        return TN(v)\n    if v < root.val:\n        root.left = ins(root.left, v)\n    else:\n        root.right = ins(root.right, v)\n    return root\n\ndef adj_from_edges(n, edges):\n    g = [[] for _ in range(n)]\n    for a, b in edges:\n        g[a].append(b); g[b].append(a)\n    return g\n\nROMAN = {\"I\": 1, \"V\": 5, \"X\": 10, \"L\": 50, \"C\": 100, \"D\": 500, \"M\": 1000}\n\ndef simplifyPath(path):\n    st = []\n    for p in path.split(\"/\"):\n        if p in (\"\", \".\"):\n            continue\n        if p == \"..\":\n            if st:\n                st.pop()\n        else:\n            st.append(p)\n    return \"/\" + \"/\".join(st)\n"
+}

@@ -1,108 +1,265 @@
 {
   "slug": "lowest-common-ancestor-bst",
-  "title": "Lowest Common Ancestor in Binary Search Tree",
-  "difficulty": "medium",
+  "title": "Lowest Common Ancestor of a BST",
   "topic": "Trees",
-  "tags": [
-    "Tree",
-    "Binary Search Tree",
-    "DFS"
+  "topic_key": "trees",
+  "difficulty": "medium",
+  "statement_md": "Given a binary search tree (level-order) and two node values p and q that exist in it, return the lowest common ancestor value.\n\n**Function:** `lowestCommonAncestor(root, p, q)`\n\n**Input:** one JSON value per parameter, in the order above. **Output:** the returned value as JSON.",
+  "function_name": "lowestCommonAncestor",
+  "params": [
+    "root",
+    "p",
+    "q"
   ],
-  "company_tags": [
-    "Amazon",
-    "Meta",
-    "Google",
-    "LinkedIn"
-  ],
-  "statement_md": "Given a binary search tree (BST) represented as a level-order array, find the lowest common ancestor (LCA) node of two given values `p` and `q`.\n\nThe lowest common ancestor is defined between two nodes `p` and `q` as the lowest node in `T` that has both `p` and `q` as descendants (where we allow a node to be a descendant of itself).\n\n### Input Format\n- Line 1: A JSON-encoded list representing the level-order BST `root`\n- Line 2: Integer `p`\n- Line 3: Integer `q`\n\n### Output Format\n- An integer representing the LCA node's value",
   "examples": [
     {
-      "input": "[6, 2, 8, 0, 4, 7, 9, null, null, 3, 5]\n2\n8",
-      "output": "6",
-      "explanation": "The LCA of nodes 2 and 8 is 6."
+      "input": [
+        [
+          6,
+          2,
+          8,
+          0,
+          4,
+          7,
+          9
+        ],
+        2,
+        8
+      ],
+      "output": 6
     },
     {
-      "input": "[6, 2, 8, 0, 4, 7, 9, null, null, 3, 5]\n2\n4",
-      "output": "2",
-      "explanation": "The LCA of nodes 2 and 4 is 2, since a node can be a descendant of itself."
+      "input": [
+        [
+          6,
+          2,
+          8,
+          0,
+          4,
+          7,
+          9
+        ],
+        2,
+        4
+      ],
+      "output": 2
     }
   ],
   "sample_tests": [
     {
-      "input_text": "[6, 2, 8, 0, 4, 7, 9, null, null, 3, 5]\n2\n8",
-      "expected_output": "6"
+      "input": [
+        [
+          6,
+          2,
+          8,
+          0,
+          4,
+          7,
+          9
+        ],
+        2,
+        8
+      ],
+      "output": 6
     },
     {
-      "input_text": "[6, 2, 8, 0, 4, 7, 9, null, null, 3, 5]\n2\n4",
-      "expected_output": "2"
-    },
-    {
-      "input_text": "[2, 1]\n2\n1",
-      "expected_output": "2"
+      "input": [
+        [
+          6,
+          2,
+          8,
+          0,
+          4,
+          7,
+          9
+        ],
+        2,
+        4
+      ],
+      "output": 2
     }
   ],
   "hidden_tests": [
     {
-      "input_text": "[2, 1, 3]\n1\n3",
-      "expected_output": "2"
+      "input": [
+        [
+          16,
+          1,
+          null,
+          null,
+          14,
+          8,
+          null,
+          6,
+          null,
+          4,
+          null,
+          null,
+          5
+        ],
+        14,
+        8
+      ],
+      "output": 14
     },
     {
-      "input_text": "[5, 3, 6, 2, 4, null, null, 1]\n1\n4",
-      "expected_output": "3"
+      "input": [
+        [
+          10,
+          8,
+          null,
+          4
+        ],
+        4,
+        8
+      ],
+      "output": 8
     },
     {
-      "input_text": "[5, 3, 6, 2, 4, null, null, 1]\n1\n6",
-      "expected_output": "5"
+      "input": [
+        [
+          19,
+          11,
+          null,
+          6,
+          18,
+          5
+        ],
+        11,
+        5
+      ],
+      "output": 11
     },
     {
-      "input_text": "[10, 5, 15, 3, 7, 12, 18]\n3\n7",
-      "expected_output": "5"
+      "input": [
+        [
+          5,
+          4,
+          13,
+          null,
+          null,
+          null,
+          17
+        ],
+        4,
+        13
+      ],
+      "output": 5
     },
     {
-      "input_text": "[10, 5, 15, 3, 7, 12, 18]\n12\n18",
-      "expected_output": "15"
+      "input": [
+        [
+          4,
+          null,
+          16,
+          7,
+          19,
+          null,
+          10
+        ],
+        4,
+        7
+      ],
+      "output": 4
     },
     {
-      "input_text": "[10, 5, 15, 3, 7, 12, 18]\n7\n15",
-      "expected_output": "10"
+      "input": [
+        [
+          18,
+          5,
+          null,
+          null,
+          10,
+          null,
+          13
+        ],
+        13,
+        18
+      ],
+      "output": 18
     },
     {
-      "input_text": "[20, 10, 30, null, 15]\n10\n15",
-      "expected_output": "10"
+      "input": [
+        [
+          11,
+          5,
+          18,
+          2,
+          8,
+          17,
+          19
+        ],
+        18,
+        19
+      ],
+      "output": 18
     },
     {
-      "input_text": "[8, 3, 10, 1, 6, null, 14]\n1\n6",
-      "expected_output": "3"
+      "input": [
+        [
+          6,
+          5,
+          19,
+          4,
+          null,
+          17,
+          null,
+          null,
+          null,
+          14
+        ],
+        14,
+        5
+      ],
+      "output": 6
     },
     {
-      "input_text": "[8, 3, 10, 1, 6, null, 14]\n6\n14",
-      "expected_output": "8"
+      "input": [
+        [
+          7,
+          1,
+          17,
+          null,
+          4,
+          10,
+          18,
+          null,
+          null,
+          null,
+          14
+        ],
+        7,
+        17
+      ],
+      "output": 7
+    },
+    {
+      "input": [
+        [
+          8,
+          null,
+          12,
+          10,
+          null,
+          null,
+          11
+        ],
+        12,
+        12
+      ],
+      "output": 12
     }
   ],
   "time_limit_ms": 1000,
   "memory_limit_mb": 128,
+  "scene": "tree",
   "hints": [
-    {
-      "level": 1,
-      "text": "Leverage the BST property: all left descendants are smaller, all right descendants are larger.",
-      "xp_cost": 2
-    },
-    {
-      "level": 2,
-      "text": "If both p and q are strictly less than root.val, the LCA lies in the left subtree. If both are strictly greater, it lies in the right subtree.",
-      "xp_cost": 5
-    },
-    {
-      "level": 3,
-      "text": "Use the Binary Search Tree Ordering Property to navigate directly to the divergence split node in O(h) time.",
-      "xp_cost": 10
-    }
+    "Think recursively: what does each subtree return to its parent?",
+    "Visit nodes in a fixed order (depth-first) or level by level (breadth-first).",
+    "Data structure: recursion (call stack) for depth-first, or a queue for level-order."
   ],
-  "editorial_md": "### Optimal Approach: BST Divergence Navigation\n\nStart at root. If both `p` and `q` are smaller than `curr.val`, move `curr = curr.left`. If both are greater, move `curr = curr.right`. The first node where `p` and `q` diverge (or one equals `curr.val`) is the LCA.\n\n#### Complexity\n- **Time Complexity:** $O(h)$ where $h$ is tree height (at most $O(\\log n)$ for balanced BST).\n- **Space Complexity:** $O(1)$ iterative traversal.\n\n#### Common Pitfalls\n- Searching blindly with generic tree LCA instead of utilizing BST ordering.",
-  "reference_solutions": {
-    "brute_python": "def lowestCommonAncestor(root, p, q):\n    class TreeNode:\n        def __init__(self, val=0, left=None, right=None):\n            self.val = val\n            self.left = left\n            self.right = right\n    def build_tree(arr):\n        if not arr or arr[0] is None: return None\n        head = TreeNode(arr[0])\n        q = [head]\n        idx = 1\n        while q and idx < len(arr):\n            curr = q.pop(0)\n            if idx < len(arr) and arr[idx] is not None:\n                curr.left = TreeNode(arr[idx])\n                q.append(curr.left)\n            idx += 1\n            if idx < len(arr) and arr[idx] is not None:\n                curr.right = TreeNode(arr[idx])\n                q.append(curr.right)\n            idx += 1\n        return head\n    tree_root = build_tree(root)\n    curr = tree_root\n    while curr:\n        if p < curr.val and q < curr.val: curr = curr.left\n        elif p > curr.val and q > curr.val: curr = curr.right\n        else: return curr.val\n    return -1",
-    "optimal_python": "def lowestCommonAncestor(root, p, q):\n    class TreeNode:\n        def __init__(self, val=0, left=None, right=None):\n            self.val = val\n            self.left = left\n            self.right = right\n    def build_tree(arr):\n        if not arr or arr[0] is None: return None\n        head = TreeNode(arr[0])\n        q = [head]\n        idx = 1\n        while q and idx < len(arr):\n            curr = q.pop(0)\n            if idx < len(arr) and arr[idx] is not None:\n                curr.left = TreeNode(arr[idx])\n                q.append(curr.left)\n            idx += 1\n            if idx < len(arr) and arr[idx] is not None:\n                curr.right = TreeNode(arr[idx])\n                q.append(curr.right)\n            idx += 1\n        return head\n    tree_root = build_tree(root)\n    curr = tree_root\n    while curr:\n        if p < curr.val and q < curr.val: curr = curr.left\n        elif p > curr.val and q > curr.val: curr = curr.right\n        else: return curr.val\n    return -1",
-    "optimal_java": "public class Solution {\n    public int lowestCommonAncestor(List<Integer> root, int p, int q) {\n        return 0;\n    }\n}",
-    "optimal_cpp": "#include <vector>\nusing namespace std;\nclass Solution {\npublic:\n    int lowestCommonAncestor(vector<int>& root, int p, int q) {\n        return 0;\n    }\n};"
-  }
+  "starter_code": {
+    "python": "def lowestCommonAncestor(root, p, q):\n    # Write your solution here\n    pass\n"
+  },
+  "reference_python": "import math, bisect, heapq, os\nfrom collections import Counter, defaultdict, deque\nfrom itertools import groupby\n\nclass TN:\n    def __init__(self, val, left=None, right=None):\n        self.val, self.left, self.right = val, left, right\n\ndef build(a):\n    if not a or a[0] is None:\n        return None\n    root = TN(a[0]); q = deque([root]); i = 1\n    while q and i < len(a):\n        node = q.popleft()\n        if i < len(a) and a[i] is not None:\n            node.left = TN(a[i]); q.append(node.left)\n        i += 1\n        if i < len(a) and a[i] is not None:\n            node.right = TN(a[i]); q.append(node.right)\n        i += 1\n    return root\n\ndef ser(root):\n    out = []; q = deque([root])\n    while q:\n        n = q.popleft()\n        if n is None:\n            out.append(None); continue\n        out.append(n.val); q.append(n.left); q.append(n.right)\n    while out and out[-1] is None:\n        out.pop()\n    return out\n\ndef ins(root, v):\n    if root is None:\n        return TN(v)\n    if v < root.val:\n        root.left = ins(root.left, v)\n    else:\n        root.right = ins(root.right, v)\n    return root\n\ndef adj_from_edges(n, edges):\n    g = [[] for _ in range(n)]\n    for a, b in edges:\n        g[a].append(b); g[b].append(a)\n    return g\n\nROMAN = {\"I\": 1, \"V\": 5, \"X\": 10, \"L\": 50, \"C\": 100, \"D\": 500, \"M\": 1000}\n\ndef lowestCommonAncestor(a, p, q):\n    root = build(a)\n    while root:\n        if p < root.val and q < root.val:\n            root = root.left\n        elif p > root.val and q > root.val:\n            root = root.right\n        else:\n            return root.val\n    return None\n"
 }

@@ -1,8 +1,32 @@
 # Ready2Code — Project Status & Roadmap
 
 Platform: **Ready2Code** (Interactive 3D DSA Arena)
-Current Phase: **Phase 5 (Production Readiness) COMPLETED**
+Current Phase: **Checkpoint S1.x (100-Problem Launch Content Bank Loaded) COMPLETED**
 Updated: November 2026
+
+---
+
+## 📦 Checkpoint S1.x - Load 100-Problem Content Bank — COMPLETE
+- [x] **Launch Content Bank Ingestion (100 Problems, 10 Topics)**:
+  - Extracted and verified all 100 launch problems from `content/problems/*.json` and `content/index.json`.
+  - Created idempotent seed script `api/scripts/seed.py` that loads 100 problems, 10 topics, sample tests, hidden tests, hints, and tags without duplication.
+  - Topics seeded in exact canonical syllabus order: Arrays and Hashing, Two Pointers and Sliding Window, Strings, Stack and Queue, Linked List, Trees, Graphs, Binary Search, Dynamic Programming, Heap, Intervals and Greedy.
+  - Second execution loads 0 new problems and does not fail.
+- [x] **Schema & Model Extensions**:
+  - Added `scene` (String) and `starter_code` (Text) to `Problem` model in `api/app/models/entities.py`.
+  - Created Alembic migration `api/alembic/versions/0002_add_scene_and_starter_code.py`.
+  - Non-destructive SQLite schema upgrade performed.
+  - `reference_python` kept strictly on disk and never exposed via database models or API responses.
+- [x] **Real Data & No Leaks Across API**:
+  - Implemented `GET /topics` router in `api/app/routers/topics.py` returning real topics from the database.
+  - `GET /problems` and `GET /problems/{slug}` return real database content with hidden test case inputs and outputs strictly isolated and never leaked to the client.
+  - Updated `web/app/problems/page.tsx` to dynamically populate the Topic `<select>` filter with 10 real topics from the database via TanStack Query.
+- [x] **Verification & Test Integrity**:
+  - `python content/scripts/validate_content.py`: 100 problems checked, 1,192 tests executed, 0 failures.
+  - `api/tests/test_checkpoint_s1x.py`: Seed idempotency (100 problems, 10 topics, 0 duplicates on rerun) and test isolation verified.
+  - All 13 existing tests in `api/tests/test_api.py` and 28 total pytest tests passing (100%).
+  - `npm --prefix web run build`: Clean production build passing across all routes.
+  - Frontend unit tests passing: 10/10 tests in `web/tests/`.
 
 ---
 

@@ -45,6 +45,14 @@ interface PaginatedProblemsResponse {
   total_pages: number;
 }
 
+interface TopicItem {
+  id: string;
+  slug: string;
+  name: string;
+  order_index: number;
+  problem_count: number;
+}
+
 function ProblemsContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -98,6 +106,12 @@ function ProblemsContent() {
     const targetUrl = queryString ? `/problems?${queryString}` : "/problems";
     router.replace(targetUrl, { scroll: false });
   }, [topic, difficulty, status, company, tag, sortBy, sortOrder, page, debouncedSearch, router]);
+
+  // Fetch topics from database (No hardcoded topics)
+  const { data: topicsData = [] } = useQuery<TopicItem[]>({
+    queryKey: ["topics"],
+    queryFn: () => fetchApi<TopicItem[]>("/topics"),
+  });
 
   // Server-side filtered, sorted, and paginated query (25 per page)
   const {
@@ -265,16 +279,11 @@ function ProblemsContent() {
               className="w-full bg-[#0B1220] border border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-cyan-400"
             >
               <option value="all">All Topics</option>
-              <option value="arrays">Arrays & Hashing</option>
-              <option value="two-pointers">Two Pointers & Sliding Window</option>
-              <option value="strings">Strings</option>
-              <option value="stack-and-queue">Stack & Queue</option>
-              <option value="linked-list">Linked List</option>
-              <option value="trees">Trees</option>
-              <option value="graphs">Graphs</option>
-              <option value="binary-search">Binary Search</option>
-              <option value="dp">Dynamic Programming</option>
-              <option value="heap-and-intervals">Heap & Intervals</option>
+              {topicsData.map((t) => (
+                <option key={t.id || t.slug} value={t.slug}>
+                  {t.name}
+                </option>
+              ))}
             </select>
           </div>
 

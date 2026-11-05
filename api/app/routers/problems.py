@@ -31,8 +31,12 @@ def list_problems(
     if topic and topic.lower() != "all":
         t_clean = topic.strip().lower()
         t_first = t_clean.split()[0] if t_clean else ""
+        t_under = t_clean.replace("-", "_")
+        t_dash = t_clean.replace("_", "-")
         query = query.filter(
             Problem.topic.has(Topic.slug == t_clean) |
+            Problem.topic.has(Topic.slug == t_under) |
+            Problem.topic.has(Topic.slug == t_dash) |
             Problem.topic.has(Topic.slug == t_first) |
             Problem.topic.has(Topic.name.ilike(f"%{t_clean}%")) |
             Problem.topic.has(Topic.name.ilike(f"%{t_first}%")) |
@@ -95,7 +99,8 @@ def list_problems(
             "best_runtime_ms": p_info.get("best_runtime_ms"),
             "acceptance_rate": 68.5, # Default benchmark
             "time_limit_ms": p.time_limit_ms,
-            "memory_limit_mb": p.memory_limit_mb
+            "memory_limit_mb": p.memory_limit_mb,
+            "scene": getattr(p, "scene", None) or "array",
         }
         results.append(item)
         if p_status != "solved":
@@ -188,6 +193,14 @@ def get_problem(slug: str, user_id: Optional[str] = None, db: Session = Depends(
             "complexity_space": p.editorial.complexity_space
         }
 
+    starter_code_data = None
+    if getattr(p, "starter_code", None):
+        try:
+            import json
+            starter_code_data = json.loads(p.starter_code)
+        except Exception:
+            starter_code_data = p.starter_code
+
     return {
         "id": p.id,
         "slug": p.slug,
@@ -198,6 +211,8 @@ def get_problem(slug: str, user_id: Optional[str] = None, db: Session = Depends(
         "statement_md": p.statement_md,
         "time_limit_ms": p.time_limit_ms,
         "memory_limit_mb": p.memory_limit_mb,
+        "scene": getattr(p, "scene", None) or "array",
+        "starter_code": starter_code_data,
         "sample_tests": sample_tests,
         "hints": hints,
         "editorial": editorial,

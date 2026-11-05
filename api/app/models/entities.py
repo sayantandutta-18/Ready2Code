@@ -57,6 +57,8 @@ class Problem(Base):
     time_limit_ms = Column(Integer, default=1000)
     memory_limit_mb = Column(Integer, default=128)
     problem_type = Column(String(32), default="standard") # standard, complexity, fix_bug, completion
+    scene = Column(String(64), nullable=True)
+    starter_code = Column(Text, nullable=True)
     is_published = Column(Boolean, default=True)
 
     topic = relationship("Topic", back_populates="problems")

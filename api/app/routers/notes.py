@@ -26,8 +26,9 @@ def get_note(
     if eff_user_id == "guest":
         return {"body_md": "", "updated_at": None}
 
-    prob = db.query(Problem).filter((Problem.id == problem_id) | (Problem.slug == problem_id)).first()
-    p_id = prob.id if prob else problem_id
+    target_pid = "two-sum-sorted" if problem_id == "two-sum-sorted-offsets" else problem_id
+    prob = db.query(Problem).filter((Problem.id == target_pid) | (Problem.slug == target_pid)).first()
+    p_id = prob.id if prob else target_pid
 
     note = db.query(Note).filter(
         Note.user_id == eff_user_id,
@@ -49,10 +50,11 @@ def save_note(
             detail="Authentication required: please sign in to save personal notes."
         )
 
+    target_pid = "two-sum-sorted" if payload.problem_id == "two-sum-sorted-offsets" else payload.problem_id
     prob = db.query(Problem).filter(
-        (Problem.id == payload.problem_id) | (Problem.slug == payload.problem_id)
+        (Problem.id == target_pid) | (Problem.slug == target_pid)
     ).first()
-    p_id = prob.id if prob else payload.problem_id
+    p_id = prob.id if prob else target_pid
 
     note = db.query(Note).filter(
         Note.user_id == eff_user_id,

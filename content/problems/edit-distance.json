@@ -1,0 +1,129 @@
+{
+  "slug": "edit-distance",
+  "title": "Edit Distance",
+  "topic": "Dynamic Programming",
+  "topic_key": "dp",
+  "difficulty": "hard",
+  "statement_md": "Return the minimum number of insertions, deletions or replacements of single characters needed to turn word1 into word2.\n\n**Function:** `minDistance(word1, word2)`\n\n**Input:** one JSON value per parameter, in the order above. **Output:** the returned value as JSON.",
+  "function_name": "minDistance",
+  "params": [
+    "word1",
+    "word2"
+  ],
+  "examples": [
+    {
+      "input": [
+        "horse",
+        "ros"
+      ],
+      "output": 3
+    },
+    {
+      "input": [
+        "intention",
+        "execution"
+      ],
+      "output": 5
+    }
+  ],
+  "sample_tests": [
+    {
+      "input": [
+        "horse",
+        "ros"
+      ],
+      "output": 3
+    },
+    {
+      "input": [
+        "intention",
+        "execution"
+      ],
+      "output": 5
+    }
+  ],
+  "hidden_tests": [
+    {
+      "input": [
+        "",
+        "ac"
+      ],
+      "output": 2
+    },
+    {
+      "input": [
+        "acbbc",
+        "acacc"
+      ],
+      "output": 2
+    },
+    {
+      "input": [
+        "bab",
+        "bcab"
+      ],
+      "output": 1
+    },
+    {
+      "input": [
+        "a",
+        ""
+      ],
+      "output": 1
+    },
+    {
+      "input": [
+        "c",
+        "cbca"
+      ],
+      "output": 3
+    },
+    {
+      "input": [
+        "",
+        "bccaa"
+      ],
+      "output": 5
+    },
+    {
+      "input": [
+        "cb",
+        "ab"
+      ],
+      "output": 1
+    },
+    {
+      "input": [
+        "",
+        ""
+      ],
+      "output": 0
+    },
+    {
+      "input": [
+        "cbbc",
+        "ccbba"
+      ],
+      "output": 2
+    },
+    {
+      "input": [
+        "a",
+        "cac"
+      ],
+      "output": 2
+    }
+  ],
+  "time_limit_ms": 1000,
+  "memory_limit_mb": 128,
+  "scene": "dp_table",
+  "hints": [
+    "Break the problem into smaller versions of itself. What does the answer for size n depend on?",
+    "Write the recurrence first, then decide whether you need the whole table or just the last few values.",
+    "Data structure: a 1D or 2D array of subproblem answers, filled in order."
+  ],
+  "starter_code": {
+    "python": "def minDistance(word1, word2):\n    # Write your solution here\n    pass\n"
+  },
+  "reference_python": "import math, bisect, heapq, os\nfrom collections import Counter, defaultdict, deque\nfrom itertools import groupby\n\nclass TN:\n    def __init__(self, val, left=None, right=None):\n        self.val, self.left, self.right = val, left, right\n\ndef build(a):\n    if not a or a[0] is None:\n        return None\n    root = TN(a[0]); q = deque([root]); i = 1\n    while q and i < len(a):\n        node = q.popleft()\n        if i < len(a) and a[i] is not None:\n            node.left = TN(a[i]); q.append(node.left)\n        i += 1\n        if i < len(a) and a[i] is not None:\n            node.right = TN(a[i]); q.append(node.right)\n        i += 1\n    return root\n\ndef ser(root):\n    out = []; q = deque([root])\n    while q:\n        n = q.popleft()\n        if n is None:\n            out.append(None); continue\n        out.append(n.val); q.append(n.left); q.append(n.right)\n    while out and out[-1] is None:\n        out.pop()\n    return out\n\ndef ins(root, v):\n    if root is None:\n        return TN(v)\n    if v < root.val:\n        root.left = ins(root.left, v)\n    else:\n        root.right = ins(root.right, v)\n    return root\n\ndef adj_from_edges(n, edges):\n    g = [[] for _ in range(n)]\n    for a, b in edges:\n        g[a].append(b); g[b].append(a)\n    return g\n\nROMAN = {\"I\": 1, \"V\": 5, \"X\": 10, \"L\": 50, \"C\": 100, \"D\": 500, \"M\": 1000}\n\ndef minDistance(a, b):\n    m, n = len(a), len(b); dp = list(range(n + 1))\n    for i in range(1, m + 1):\n        prev = dp[0]; dp[0] = i\n        for j in range(1, n + 1):\n            tmp = dp[j]\n            dp[j] = prev if a[i - 1] == b[j - 1] else 1 + min(prev, dp[j], dp[j - 1])\n            prev = tmp\n    return dp[n]\n"
+}

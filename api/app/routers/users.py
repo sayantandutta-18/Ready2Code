@@ -120,9 +120,9 @@ def get_user_bookmarks(
 
     is_bookmarked = False
     if problem_id:
-        # Check by id or slug
-        prob = db.query(Problem).filter((Problem.id == problem_id) | (Problem.slug == problem_id)).first()
-        target_id = prob.id if prob else problem_id
+        target_pid = "two-sum-sorted" if problem_id == "two-sum-sorted-offsets" else problem_id
+        prob = db.query(Problem).filter((Problem.id == target_pid) | (Problem.slug == target_pid)).first()
+        target_id = prob.id if prob else target_pid
         is_bookmarked = target_id in b_ids
 
     problems = db.query(Problem).filter(Problem.id.in_(b_ids)).all() if b_ids else []
@@ -144,8 +144,9 @@ def toggle_bookmark(
             detail="Authentication required: please sign in to bookmark problems."
         )
 
-    prob = db.query(Problem).filter((Problem.id == req.problem_id) | (Problem.slug == req.problem_id)).first()
-    target_id = prob.id if prob else req.problem_id
+    target_pid = "two-sum-sorted" if req.problem_id == "two-sum-sorted-offsets" else req.problem_id
+    prob = db.query(Problem).filter((Problem.id == target_pid) | (Problem.slug == target_pid)).first()
+    target_id = prob.id if prob else target_pid
 
     bm = db.query(Bookmark).filter(
         Bookmark.user_id == eff_user_id,

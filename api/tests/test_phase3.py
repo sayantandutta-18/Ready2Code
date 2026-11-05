@@ -102,7 +102,7 @@ def two_sum_sorted(numbers, target):
         else: r -= 1
     return []
 """
-        sub_req = SubmitRequest(user_id=user_id, problem_id="two-sum-sorted-offsets", language="python", code=correct_code)
+        sub_req = SubmitRequest(user_id=user_id, problem_id="two-sum-sorted", language="python", code=correct_code)
         sub_res = submit_solution(sub_req, current_user=None, db=db)
         assert sub_res["verdict"] == "AC"
 
@@ -113,7 +113,7 @@ def two_sum_sorted(numbers, target):
 
         # Verify progress status is "solved" with best_runtime_ms
         from app.models.entities import Problem
-        prob = db.query(Problem).filter(Problem.slug == "two-sum-sorted-offsets").first()
+        prob = db.query(Problem).filter(Problem.slug == "two-sum-sorted").first()
         status = db.query(UserProblemStatus).filter(
             UserProblemStatus.user_id == user_id,
             UserProblemStatus.problem_id == prob.id

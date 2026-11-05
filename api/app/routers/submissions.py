@@ -42,26 +42,32 @@ import sys, json
 {code}
 # User code ends
 
-_raw_input = {repr(input_str)}.strip().split('\\n')
-_parsed_args = []
-for line in _raw_input:
-    line = line.strip()
-    if not line:
-        continue
-    try:
-        _parsed_args.append(json.loads(line))
-    except Exception:
+_raw_val = {repr(input_str)}
+try:
+    _parsed = json.loads(_raw_val)
+except Exception:
+    _raw_lines = _raw_val.strip().split('\\n')
+    _parsed = []
+    for _l in _raw_lines:
+        _l = _l.strip()
+        if not _l: continue
         try:
-            _parsed_args.append(eval(line))
+            _parsed.append(json.loads(_l))
         except Exception:
-            _parsed_args.append(line)
+            _parsed.append(_l)
 
-# Auto call first defined user function if not calling explicitly
-_func_candidates = [v for k, v in list(locals().items()) if callable(v) and not k.startswith('_')]
-if _func_candidates:
-    target_fn = _func_candidates[-1]
+_candidates = [v for k, v in list(locals().items()) if callable(v) and not k.startswith('_') and k not in ('sys', 'json')]
+if _candidates:
+    target_fn = _candidates[-1]
     try:
-        res = target_fn(*_parsed_args)
+        if isinstance(_parsed, list):
+            try:
+                res = target_fn(*_parsed)
+            except TypeError:
+                res = target_fn(_parsed)
+        else:
+            res = target_fn(_parsed)
+
         if res is True:
             print("true")
         elif res is False:
@@ -98,8 +104,9 @@ def normalize_output(val: str) -> str:
 
 @router.post("/run", dependencies=[Depends(rate_limit_submissions)])
 def run_sample_tests(req: RunRequest, db: Session = Depends(get_db)):
+    target_pid = "two-sum-sorted" if req.problem_id == "two-sum-sorted-offsets" else req.problem_id
     problem = db.query(Problem).filter(
-        (Problem.id == req.problem_id) | (Problem.slug == req.problem_id)
+        (Problem.id == target_pid) | (Problem.slug == target_pid)
     ).first()
     if not problem:
         raise HTTPException(status_code=404, detail="Problem not found")
@@ -133,6 +140,14 @@ def run_sample_tests(req: RunRequest, db: Session = Depends(get_db)):
             if normalize_output(actual_out) == normalize_output(expected_out):
                 passed = True
             else:
+                try:
+                    act_j = json.loads(actual_out)
+                    exp_j = json.loads(expected_out)
+                    if isinstance(act_j, list) and isinstance(exp_j, list) and sorted(act_j) == sorted(exp_j):
+                        passed = True
+                except Exception:
+                    pass
+            if not passed:
                 verdict = "WA"
                 status_info = {"id": 4, "description": "Wrong Answer"}
 
@@ -177,8 +192,9 @@ def submit_solution(
             detail="Authentication required: please sign in to submit solutions and record your progress."
         )
 
+    target_pid = "two-sum-sorted" if req.problem_id == "two-sum-sorted-offsets" else req.problem_id
     problem = db.query(Problem).filter(
-        (Problem.id == req.problem_id) | (Problem.slug == req.problem_id)
+        (Problem.id == target_pid) | (Problem.slug == target_pid)
     ).first()
     if not problem:
         raise HTTPException(status_code=404, detail="Problem not found")
@@ -216,9 +232,18 @@ def submit_solution(
             failed_test_index = idx + 1
             break
         elif normalize_output(actual_out) != normalize_output(expected_out):
-            final_verdict = "WA"
-            failed_test_index = idx + 1
-            break
+            matched = False
+            try:
+                act_j = json.loads(actual_out)
+                exp_j = json.loads(expected_out)
+                if isinstance(act_j, list) and isinstance(exp_j, list) and sorted(act_j) == sorted(exp_j):
+                    matched = True
+            except Exception:
+                pass
+            if not matched:
+                final_verdict = "WA"
+                failed_test_index = idx + 1
+                break
 
     # Runtime percentiles against past AC submissions
     faster_than_pct = 85.0
