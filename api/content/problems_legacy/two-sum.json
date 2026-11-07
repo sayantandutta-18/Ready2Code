@@ -1,0 +1,73 @@
+{
+  "slug": "two-sum",
+  "title": "Two Sum",
+  "difficulty": "easy",
+  "topic": "Arrays",
+  "tags": [
+    "Array",
+    "Hash Map"
+  ],
+  "company_tags": [
+    "Google",
+    "Amazon",
+    "Meta",
+    "Microsoft"
+  ],
+  "statement_md": "Given an array of integers `nums` and an integer `target`, return indices of the two numbers such that they add up to `target`.\n\nYou may assume that each input would have **exactly one solution**, and you may not use the same element twice.\n\nYou can return the answer in any order.",
+  "time_limit_ms": 1000,
+  "memory_limit_mb": 128,
+  "sample_tests": [
+    {
+      "input_text": "[2, 7, 11, 15]\n9",
+      "expected_output": "[0, 1]"
+    },
+    {
+      "input_text": "[3, 2, 4]\n6",
+      "expected_output": "[1, 2]"
+    },
+    {
+      "input_text": "[3, 3]\n6",
+      "expected_output": "[0, 1]"
+    }
+  ],
+  "hidden_tests": [
+    {
+      "input_text": "[1, 5, 7, 12, 19]\n13",
+      "expected_output": "[0, 3]"
+    },
+    {
+      "input_text": "[-3, 4, 3, 90]\n0",
+      "expected_output": "[0, 2]"
+    },
+    {
+      "input_text": "[0, 4, 3, 0]\n0",
+      "expected_output": "[0, 3]"
+    },
+    {
+      "input_text": "[-1, -2, -3, -4, -5]\n-8",
+      "expected_output": "[2, 4]"
+    },
+    {
+      "input_text": "[1000000, 500, 1000000]\n2000000",
+      "expected_output": "[0, 2]"
+    }
+  ],
+  "hints": [
+    {
+      "level": 1,
+      "text": "Can you check if the complement (target - current) exists?",
+      "xp_cost": 2
+    },
+    {
+      "level": 2,
+      "text": "Use a Hash Map to record previously visited numbers and their indices.",
+      "xp_cost": 5
+    },
+    {
+      "level": 3,
+      "text": "As you iterate over `nums`, lookup `target - num` in your dictionary. If found, return `[seen[target - num], i]`. Otherwise store `seen[num] = i`.",
+      "xp_cost": 10
+    }
+  ],
+  "editorial_md": "### Optimal Approach: One-Pass Hash Map\n\nStore indices in a map `seen`. At each number `x`, check if `target - x` is in `seen`. If so, return `[seen[target - x], index]`. Otherwise record `seen[x] = index`.\n\n- Time Complexity: $O(n)$\n- Space Complexity: $O(n)$"
+}

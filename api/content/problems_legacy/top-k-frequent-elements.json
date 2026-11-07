@@ -1,0 +1,59 @@
+{
+  "slug": "top-k-frequent-elements",
+  "title": "Top K Frequent Elements",
+  "difficulty": "medium",
+  "topic": "Arrays",
+  "tags": [
+    "Array",
+    "Hash Table",
+    "Heap",
+    "Bucket Sort"
+  ],
+  "company_tags": [
+    "Amazon",
+    "Meta",
+    "Google",
+    "Microsoft"
+  ],
+  "statement_md": "Given an integer array `nums` and an integer `k`, return the `k` most frequent elements. You may return the answer in **any order**.\n\nYour algorithm's time complexity must be better than $O(n \\log n)$, where $n$ is the array's size.",
+  "time_limit_ms": 1000,
+  "memory_limit_mb": 128,
+  "sample_tests": [
+    {
+      "input_text": "[1, 1, 1, 2, 2, 3]\n2",
+      "expected_output": "[1, 2]"
+    },
+    {
+      "input_text": "[1]\n1",
+      "expected_output": "[1]"
+    }
+  ],
+  "hidden_tests": [
+    {
+      "input_text": "[4, 1, -1, 2, -1, 2, 3]\n2",
+      "expected_output": "[-1, 2]"
+    },
+    {
+      "input_text": "[1, 2, 3, 4, 5, 5, 5, 6, 6, 7]\n1",
+      "expected_output": "[5]"
+    }
+  ],
+  "hints": [
+    {
+      "level": 1,
+      "text": "First, create a frequency map of each number.",
+      "xp_cost": 2
+    },
+    {
+      "level": 2,
+      "text": "A min-heap of size k gives O(n log k) time.",
+      "xp_cost": 5
+    },
+    {
+      "level": 3,
+      "text": "Bucket sort by frequency (max possible count is n) achieves optimal O(n) time.",
+      "xp_cost": 10
+    }
+  ],
+  "editorial_md": "### Linear Time Bucket Sort\n\n1. Count frequency using a hash map: $O(n)$.\n2. Allocate array of buckets from index 0 to $n$. Place numbers into bucket index equal to their frequency.\n3. Traverse buckets from index $n$ down to 1, collecting elements until $k$ elements are retrieved.\n\n```python\nfrom collections import Counter\n\ndef topKFrequent(nums: list[int], k: int) -> list[int]:\n    count = Counter(nums)\n    buckets = [[] for _ in range(len(nums) + 1)]\n    for num, freq in count.items():\n        buckets[freq].append(num)\n        \n    res = []\n    for freq in range(len(buckets) - 1, 0, -1):\n        for num in buckets[freq]:\n            res.append(num)\n            if len(res) == k:\n                return res\n    return res\n```\n\n- **Time Complexity:** $O(n)$\n- **Space Complexity:** $O(n)$"
+}

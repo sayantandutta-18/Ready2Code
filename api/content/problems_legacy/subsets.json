@@ -1,0 +1,69 @@
+{
+  "slug": "subsets",
+  "title": "Subsets",
+  "difficulty": "medium",
+  "topic": "Graphs",
+  "tags": [
+    "Array",
+    "Backtracking",
+    "Bit Manipulation"
+  ],
+  "company_tags": [
+    "Meta",
+    "Amazon",
+    "Bloomberg"
+  ],
+  "statement_md": "Given an integer array `nums` of **unique** elements, return all possible subsets (the power set).\n\nThe solution set **must not** contain duplicate subsets. Return the solution in any order.",
+  "time_limit_ms": 1000,
+  "memory_limit_mb": 128,
+  "sample_tests": [
+    {
+      "input_text": "[1, 2, 3]",
+      "expected_output": "[[], [1], [2], [1, 2], [3], [1, 3], [2, 3], [1, 2, 3]]"
+    },
+    {
+      "input_text": "[0]",
+      "expected_output": "[[], [0]]"
+    }
+  ],
+  "hidden_tests": [
+    {
+      "input_text": "[]",
+      "expected_output": "[[]]"
+    },
+    {
+      "input_text": "[1, 2]",
+      "expected_output": "[[], [1], [2], [1, 2]]"
+    },
+    {
+      "input_text": "[5]",
+      "expected_output": "[[], [5]]"
+    },
+    {
+      "input_text": "[4, 5, 6]",
+      "expected_output": "[[], [4], [5], [4, 5], [6], [4, 6], [5, 6], [4, 5, 6]]"
+    },
+    {
+      "input_text": "[7, 8, 9, 10]",
+      "expected_output": "16"
+    }
+  ],
+  "hints": [
+    {
+      "level": 1,
+      "text": "For every element, you either include it in current subset or exclude it.",
+      "xp_cost": 2
+    },
+    {
+      "level": 2,
+      "text": "Backtracking: backtrack(start_index, current_path). Add a copy of current_path at each decision step.",
+      "xp_cost": 5
+    },
+    {
+      "level": 3,
+      "text": "Total subsets generated will be 2^n.",
+      "xp_cost": 10
+    }
+  ],
+  "editorial_md": "### Optimal Approach: Cascading Backtracking\nAt each index, branch into choice: include element or skip to next index.\n- **Time Complexity:** $O(n \\cdot 2^n)$\n- **Space Complexity:** $O(n)$ call stack depth"
+}

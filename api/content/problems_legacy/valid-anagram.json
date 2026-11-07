@@ -1,0 +1,62 @@
+{
+  "slug": "valid-anagram",
+  "title": "Valid Anagram",
+  "difficulty": "easy",
+  "topic": "Strings",
+  "tags": [
+    "Hash Table",
+    "String",
+    "Sorting"
+  ],
+  "company_tags": [
+    "Google",
+    "Amazon",
+    "Bloomberg",
+    "Uber"
+  ],
+  "statement_md": "Given two strings `s` and `t`, return `true` if `t` is an anagram of `s`, and `false` otherwise.\n\nAn Anagram is a word or phrase formed by rearranging the letters of a different word or phrase, typically using all the original letters exactly once.",
+  "time_limit_ms": 1000,
+  "memory_limit_mb": 128,
+  "sample_tests": [
+    {
+      "input_text": "\"anagram\"\n\"nagaram\"",
+      "expected_output": "true"
+    },
+    {
+      "input_text": "\"rat\"\n\"car\"",
+      "expected_output": "false"
+    }
+  ],
+  "hidden_tests": [
+    {
+      "input_text": "\"a\"\n\"ab\"",
+      "expected_output": "false"
+    },
+    {
+      "input_text": "\"listen\"\n\"silent\"",
+      "expected_output": "true"
+    },
+    {
+      "input_text": "\"fluster\"\n\"restful\"",
+      "expected_output": "true"
+    }
+  ],
+  "hints": [
+    {
+      "level": 1,
+      "text": "If lengths are unequal, can they be anagrams?",
+      "xp_cost": 2
+    },
+    {
+      "level": 2,
+      "text": "Count the frequency of each character in both strings.",
+      "xp_cost": 5
+    },
+    {
+      "level": 3,
+      "text": "Use a fixed array of size 26 or a hash map to compare counts.",
+      "xp_cost": 10
+    }
+  ],
+  "editorial_md": "### Character Frequency Counting\n\n1. If $len(s) \\neq len(t)$, return `False`.\n2. Count character frequencies using a fixed 26-element array or hash table.\n3. Increment counts for $s$ and decrement for $t$.\n4. Check if all values are 0.\n\n- **Time Complexity:** $O(n)$ where $n = len(s)$.\n- **Space Complexity:** $O(1)$ since alphabet size is bounded (26 letters)."
+}

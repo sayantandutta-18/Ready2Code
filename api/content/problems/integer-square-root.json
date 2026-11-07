@@ -1,0 +1,114 @@
+{
+  "slug": "integer-square-root",
+  "title": "Square Root (Floor)",
+  "topic": "Binary Search",
+  "topic_key": "binary_search",
+  "difficulty": "easy",
+  "statement_md": "Return the integer part of the square root of a non-negative integer x, without using the power operator.\n\n**Function:** `mySqrt(x)`\n\n**Input:** one JSON value per parameter, in the order above. **Output:** the returned value as JSON.",
+  "function_name": "mySqrt",
+  "params": [
+    "x"
+  ],
+  "examples": [
+    {
+      "input": [
+        8
+      ],
+      "output": 2
+    },
+    {
+      "input": [
+        16
+      ],
+      "output": 4
+    }
+  ],
+  "sample_tests": [
+    {
+      "input": [
+        8
+      ],
+      "output": 2
+    },
+    {
+      "input": [
+        16
+      ],
+      "output": 4
+    }
+  ],
+  "hidden_tests": [
+    {
+      "input": [
+        2236
+      ],
+      "output": 47
+    },
+    {
+      "input": [
+        2886
+      ],
+      "output": 53
+    },
+    {
+      "input": [
+        8901
+      ],
+      "output": 94
+    },
+    {
+      "input": [
+        81
+      ],
+      "output": 9
+    },
+    {
+      "input": [
+        8017
+      ],
+      "output": 89
+    },
+    {
+      "input": [
+        8614
+      ],
+      "output": 92
+    },
+    {
+      "input": [
+        1789
+      ],
+      "output": 42
+    },
+    {
+      "input": [
+        6551
+      ],
+      "output": 80
+    },
+    {
+      "input": [
+        545
+      ],
+      "output": 23
+    },
+    {
+      "input": [
+        9242
+      ],
+      "output": 96
+    }
+  ],
+  "time_limit_ms": 1000,
+  "memory_limit_mb": 128,
+  "scene": "array",
+  "hints": [
+    "Ask whether the answer lies in the left or right half of the range.",
+    "Keep a range [lo, hi] and shrink it each step by looking at the middle value.",
+    "Data structure: two integer indexes lo and hi with mid = (lo + hi) // 2."
+  ],
+  "starter_code": {
+    "python": "def mySqrt(x):\n    # Write your solution here\n    pass\n"
+  },
+  "reference_python": "import math, bisect, heapq, os\nfrom collections import Counter, defaultdict, deque\nfrom itertools import groupby\n\nclass TN:\n    def __init__(self, val, left=None, right=None):\n        self.val, self.left, self.right = val, left, right\n\ndef build(a):\n    if not a or a[0] is None:\n        return None\n    root = TN(a[0]); q = deque([root]); i = 1\n    while q and i < len(a):\n        node = q.popleft()\n        if i < len(a) and a[i] is not None:\n            node.left = TN(a[i]); q.append(node.left)\n        i += 1\n        if i < len(a) and a[i] is not None:\n            node.right = TN(a[i]); q.append(node.right)\n        i += 1\n    return root\n\ndef ser(root):\n    out = []; q = deque([root])\n    while q:\n        n = q.popleft()\n        if n is None:\n            out.append(None); continue\n        out.append(n.val); q.append(n.left); q.append(n.right)\n    while out and out[-1] is None:\n        out.pop()\n    return out\n\ndef ins(root, v):\n    if root is None:\n        return TN(v)\n    if v < root.val:\n        root.left = ins(root.left, v)\n    else:\n        root.right = ins(root.right, v)\n    return root\n\ndef adj_from_edges(n, edges):\n    g = [[] for _ in range(n)]\n    for a, b in edges:\n        g[a].append(b); g[b].append(a)\n    return g\n\nROMAN = {\"I\": 1, \"V\": 5, \"X\": 10, \"L\": 50, \"C\": 100, \"D\": 500, \"M\": 1000}\n\ndef mySqrt(x):\n    return math.isqrt(x)\n"
+}

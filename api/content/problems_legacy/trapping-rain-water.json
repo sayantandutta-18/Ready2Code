@@ -1,0 +1,72 @@
+{
+  "slug": "trapping-rain-water",
+  "title": "Trapping Rain Water",
+  "difficulty": "hard",
+  "topic": "Arrays",
+  "tags": [
+    "Array",
+    "Two Pointers",
+    "Dynamic Programming",
+    "Stack",
+    "Monotonic Stack"
+  ],
+  "company_tags": [
+    "Google",
+    "Amazon",
+    "Apple",
+    "Goldman Sachs"
+  ],
+  "statement_md": "Given `n` non-negative integers representing an elevation map where the width of each bar is `1`, compute how much water it can trap after raining.",
+  "time_limit_ms": 1000,
+  "memory_limit_mb": 128,
+  "sample_tests": [
+    {
+      "input_text": "[0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1]",
+      "expected_output": "6"
+    },
+    {
+      "input_text": "[4, 2, 0, 3, 2, 5]",
+      "expected_output": "9"
+    }
+  ],
+  "hidden_tests": [
+    {
+      "input_text": "[]",
+      "expected_output": "0"
+    },
+    {
+      "input_text": "[3]",
+      "expected_output": "0"
+    },
+    {
+      "input_text": "[3, 2, 1]",
+      "expected_output": "0"
+    },
+    {
+      "input_text": "[2, 0, 2]",
+      "expected_output": "2"
+    },
+    {
+      "input_text": "[5, 4, 1, 2]",
+      "expected_output": "1"
+    }
+  ],
+  "hints": [
+    {
+      "level": 1,
+      "text": "Water trapped above bar i is min(max_left, max_right) - height[i].",
+      "xp_cost": 2
+    },
+    {
+      "level": 2,
+      "text": "Two pointers from left and right can eliminate O(n) prefix/suffix arrays.",
+      "xp_cost": 5
+    },
+    {
+      "level": 3,
+      "text": "If left_max < right_max, process left pointer and increment; otherwise process right pointer and decrement.",
+      "xp_cost": 10
+    }
+  ],
+  "editorial_md": "### Optimal Approach: Two Pointers\nConverging pointers from left and right maintaining `left_max` and `right_max`.\n- **Time Complexity:** $O(n)$\n- **Space Complexity:** $O(1)$"
+}

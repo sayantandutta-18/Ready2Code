@@ -1,0 +1,74 @@
+{
+  "slug": "group-anagrams",
+  "title": "Group Anagrams",
+  "difficulty": "medium",
+  "topic": "Strings",
+  "tags": [
+    "Array",
+    "Hash Table",
+    "String",
+    "Sorting"
+  ],
+  "company_tags": [
+    "Amazon",
+    "Google",
+    "Bloomberg"
+  ],
+  "statement_md": "Given an array of strings `strs`, group the **anagrams** together. You can return the answer in any order.\n\nAn Anagram is a word or phrase formed by rearranging the letters of a different word or phrase, typically using all the original letters exactly once.",
+  "time_limit_ms": 1500,
+  "memory_limit_mb": 128,
+  "sample_tests": [
+    {
+      "input_text": "[\"eat\", \"tea\", \"tan\", \"ate\", \"nat\", \"bat\"]",
+      "expected_output": "[[\"bat\"], [\"nat\", \"tan\"], [\"ate\", \"eat\", \"tea\"]]"
+    },
+    {
+      "input_text": "[\"\"]",
+      "expected_output": "[[\"\"]]"
+    },
+    {
+      "input_text": "[\"a\"]",
+      "expected_output": "[[\"a\"]]"
+    }
+  ],
+  "hidden_tests": [
+    {
+      "input_text": "[\"ab\", \"ba\", \"abc\", \"cba\", \"bca\"]",
+      "expected_output": "[[\"ab\", \"ba\"], [\"abc\", \"bca\", \"cba\"]]"
+    },
+    {
+      "input_text": "[\"listen\", \"silent\", \"enlist\", \"google\"]",
+      "expected_output": "[[\"google\"], [\"enlist\", \"listen\", \"silent\"]]"
+    },
+    {
+      "input_text": "[\"stop\", \"pots\", \"spot\", \"tops\", \"opts\"]",
+      "expected_output": "[[\"opts\", \"pots\", \"spot\", \"stop\", \"tops\"]]"
+    },
+    {
+      "input_text": "[\"hello\", \"world\"]",
+      "expected_output": "[[\"hello\"], [\"world\"]]"
+    },
+    {
+      "input_text": "[\"zzz\", \"zzz\", \"zzz\"]",
+      "expected_output": "[[\"zzz\", \"zzz\", \"zzz\"]]"
+    }
+  ],
+  "hints": [
+    {
+      "level": 1,
+      "text": "All anagrams share the same sorted character sequence.",
+      "xp_cost": 2
+    },
+    {
+      "level": 2,
+      "text": "Use a dictionary where the sorted string (or 26-char frequency tuple) is the key.",
+      "xp_cost": 5
+    },
+    {
+      "level": 3,
+      "text": "Group words into `dict[sorted_str].append(word)` and return `list(dict.values())`.",
+      "xp_cost": 10
+    }
+  ],
+  "editorial_md": "### Optimal Approach: Categorize by Sorted String or Character Count\nMapping each word to its canonical sorted signature groups anagrams in $O(n \\cdot k \\log k)$ or $O(n \\cdot k)$ using frequency arrays.\n- **Time Complexity:** $O(n \\cdot k \\log k)$\n- **Space Complexity:** $O(n \\cdot k)$"
+}

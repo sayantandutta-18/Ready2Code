@@ -1,0 +1,69 @@
+{
+  "slug": "longest-palindromic-substring",
+  "title": "Longest Palindromic Substring",
+  "difficulty": "medium",
+  "topic": "Strings",
+  "tags": [
+    "String",
+    "Dynamic Programming",
+    "Two Pointers"
+  ],
+  "company_tags": [
+    "Amazon",
+    "Google",
+    "Microsoft"
+  ],
+  "statement_md": "Given a string `s`, return the longest palindromic substring in `s`.",
+  "time_limit_ms": 1000,
+  "memory_limit_mb": 128,
+  "sample_tests": [
+    {
+      "input_text": "\"babad\"",
+      "expected_output": "\"bab\""
+    },
+    {
+      "input_text": "\"cbbd\"",
+      "expected_output": "\"bb\""
+    }
+  ],
+  "hidden_tests": [
+    {
+      "input_text": "\"a\"",
+      "expected_output": "\"a\""
+    },
+    {
+      "input_text": "\"ac\"",
+      "expected_output": "\"a\""
+    },
+    {
+      "input_text": "\"racecar\"",
+      "expected_output": "\"racecar\""
+    },
+    {
+      "input_text": "\"noon\"",
+      "expected_output": "\"noon\""
+    },
+    {
+      "input_text": "\"abacdfgdcaba\"",
+      "expected_output": "\"aba\""
+    }
+  ],
+  "hints": [
+    {
+      "level": 1,
+      "text": "A palindrome mirrors around its center.",
+      "xp_cost": 2
+    },
+    {
+      "level": 2,
+      "text": "There are 2n - 1 potential centers (n single characters and n-1 between characters).",
+      "xp_cost": 5
+    },
+    {
+      "level": 3,
+      "text": "Expand outwards from each center while s[left] == s[right] and track maximum length.",
+      "xp_cost": 10
+    }
+  ],
+  "editorial_md": "### Optimal Approach: Expand Around Centers\nTreat each position and gap as a potential palindrome center, expanding outward in $O(n)$ per center.\n- **Time Complexity:** $O(n^2)$\n- **Space Complexity:** $O(1)$"
+}

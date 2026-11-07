@@ -1,0 +1,226 @@
+{
+  "slug": "task-scheduler",
+  "title": "Task Scheduler",
+  "topic": "Heap, Intervals and Greedy",
+  "topic_key": "heap_greedy",
+  "difficulty": "medium",
+  "statement_md": "Tasks are single letters. Identical tasks need at least n units of time between them. Idle time is allowed. Return the least number of time units needed to run all tasks.\n\n**Function:** `leastInterval(tasks, n)`\n\n**Input:** one JSON value per parameter, in the order above. **Output:** the returned value as JSON.",
+  "function_name": "leastInterval",
+  "params": [
+    "tasks",
+    "n"
+  ],
+  "examples": [
+    {
+      "input": [
+        [
+          "A",
+          "A",
+          "A",
+          "B",
+          "B",
+          "B"
+        ],
+        2
+      ],
+      "output": 8
+    },
+    {
+      "input": [
+        [
+          "A",
+          "A",
+          "A",
+          "B",
+          "B",
+          "B"
+        ],
+        0
+      ],
+      "output": 6
+    }
+  ],
+  "sample_tests": [
+    {
+      "input": [
+        [
+          "A",
+          "A",
+          "A",
+          "B",
+          "B",
+          "B"
+        ],
+        2
+      ],
+      "output": 8
+    },
+    {
+      "input": [
+        [
+          "A",
+          "A",
+          "A",
+          "B",
+          "B",
+          "B"
+        ],
+        0
+      ],
+      "output": 6
+    }
+  ],
+  "hidden_tests": [
+    {
+      "input": [
+        [
+          "B",
+          "A",
+          "B",
+          "C",
+          "B",
+          "A"
+        ],
+        1
+      ],
+      "output": 6
+    },
+    {
+      "input": [
+        [
+          "A",
+          "C",
+          "B",
+          "C",
+          "B",
+          "A",
+          "A"
+        ],
+        2
+      ],
+      "output": 7
+    },
+    {
+      "input": [
+        [
+          "B",
+          "B",
+          "A",
+          "B",
+          "B",
+          "B",
+          "B",
+          "A"
+        ],
+        0
+      ],
+      "output": 8
+    },
+    {
+      "input": [
+        [
+          "C",
+          "B"
+        ],
+        0
+      ],
+      "output": 2
+    },
+    {
+      "input": [
+        [
+          "B",
+          "B",
+          "C",
+          "C",
+          "A",
+          "A",
+          "B"
+        ],
+        0
+      ],
+      "output": 7
+    },
+    {
+      "input": [
+        [
+          "A",
+          "A",
+          "A",
+          "B",
+          "C",
+          "A"
+        ],
+        1
+      ],
+      "output": 7
+    },
+    {
+      "input": [
+        [
+          "C",
+          "C",
+          "B",
+          "B",
+          "B",
+          "B",
+          "C",
+          "C"
+        ],
+        2
+      ],
+      "output": 11
+    },
+    {
+      "input": [
+        [
+          "A",
+          "B",
+          "C",
+          "B",
+          "C",
+          "C",
+          "C",
+          "A"
+        ],
+        0
+      ],
+      "output": 8
+    },
+    {
+      "input": [
+        [
+          "C",
+          "A",
+          "B",
+          "B",
+          "C"
+        ],
+        3
+      ],
+      "output": 6
+    },
+    {
+      "input": [
+        [
+          "C",
+          "A"
+        ],
+        0
+      ],
+      "output": 2
+    }
+  ],
+  "time_limit_ms": 1000,
+  "memory_limit_mb": 128,
+  "scene": "timeline",
+  "hints": [
+    "Ask which choice is safe to make right now and never needs to be undone.",
+    "Sorting by the right key often reveals the greedy order.",
+    "Data structure: a sorted list, or a heap (heapq) to repeatedly get the smallest or largest item."
+  ],
+  "starter_code": {
+    "python": "def leastInterval(tasks, n):\n    # Write your solution here\n    pass\n"
+  },
+  "reference_python": "import math, bisect, heapq, os\nfrom collections import Counter, defaultdict, deque\nfrom itertools import groupby\n\nclass TN:\n    def __init__(self, val, left=None, right=None):\n        self.val, self.left, self.right = val, left, right\n\ndef build(a):\n    if not a or a[0] is None:\n        return None\n    root = TN(a[0]); q = deque([root]); i = 1\n    while q and i < len(a):\n        node = q.popleft()\n        if i < len(a) and a[i] is not None:\n            node.left = TN(a[i]); q.append(node.left)\n        i += 1\n        if i < len(a) and a[i] is not None:\n            node.right = TN(a[i]); q.append(node.right)\n        i += 1\n    return root\n\ndef ser(root):\n    out = []; q = deque([root])\n    while q:\n        n = q.popleft()\n        if n is None:\n            out.append(None); continue\n        out.append(n.val); q.append(n.left); q.append(n.right)\n    while out and out[-1] is None:\n        out.pop()\n    return out\n\ndef ins(root, v):\n    if root is None:\n        return TN(v)\n    if v < root.val:\n        root.left = ins(root.left, v)\n    else:\n        root.right = ins(root.right, v)\n    return root\n\ndef adj_from_edges(n, edges):\n    g = [[] for _ in range(n)]\n    for a, b in edges:\n        g[a].append(b); g[b].append(a)\n    return g\n\nROMAN = {\"I\": 1, \"V\": 5, \"X\": 10, \"L\": 50, \"C\": 100, \"D\": 500, \"M\": 1000}\n\ndef leastInterval(tasks, n):\n    counts = Counter(tasks); maxf = max(counts.values())\n    num_max = sum(1 for v in counts.values() if v == maxf)\n    return max(len(tasks), (maxf - 1) * (n + 1) + num_max)\n"
+}

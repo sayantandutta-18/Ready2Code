@@ -1,0 +1,60 @@
+{
+  "slug": "merge-intervals",
+  "title": "Merge Intervals",
+  "difficulty": "medium",
+  "topic": "Arrays",
+  "tags": [
+    "Array",
+    "Sorting"
+  ],
+  "company_tags": [
+    "Google",
+    "Facebook",
+    "Microsoft"
+  ],
+  "statement_md": "Given an array of `intervals` where `intervals[i] = [start_i, end_i]`, merge all overlapping intervals, and return an array of the non-overlapping intervals that cover all the intervals in the input.",
+  "time_limit_ms": 1000,
+  "memory_limit_mb": 128,
+  "sample_tests": [
+    {
+      "input_text": "[[1,3],[2,6],[8,10],[15,18]]",
+      "expected_output": "[[1,6],[8,10],[15,18]]"
+    },
+    {
+      "input_text": "[[1,4],[4,5]]",
+      "expected_output": "[[1,5]]"
+    }
+  ],
+  "hidden_tests": [
+    {
+      "input_text": "[[1,4],[2,3]]",
+      "expected_output": "[[1,4]]"
+    },
+    {
+      "input_text": "[[1,4]]",
+      "expected_output": "[[1,4]]"
+    },
+    {
+      "input_text": "[[1,4],[0,2],[3,5]]",
+      "expected_output": "[[0,5]]"
+    }
+  ],
+  "hints": [
+    {
+      "level": 1,
+      "text": "Sorting the intervals by their start time makes overlap detection straightforward.",
+      "xp_cost": 2
+    },
+    {
+      "level": 2,
+      "text": "After sorting, two intervals overlap if the start of the second is $\\le$ end of the first.",
+      "xp_cost": 5
+    },
+    {
+      "level": 3,
+      "text": "Extend `out[-1][1] = max(out[-1][1], current_end)` when overlapping, otherwise append new interval.",
+      "xp_cost": 10
+    }
+  ],
+  "editorial_md": "### Optimal Approach: Sort by Start\n\nSorting intervals guarantees that any interval that could overlap with previous ones will appear adjacent.\n\n- Time Complexity: $O(n \\log n)$\n- Space Complexity: $O(n)$"
+}

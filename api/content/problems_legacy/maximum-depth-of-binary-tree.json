@@ -1,0 +1,74 @@
+{
+  "slug": "maximum-depth-of-binary-tree",
+  "title": "Maximum Depth of Binary Tree",
+  "difficulty": "easy",
+  "topic": "Trees",
+  "tags": [
+    "Tree",
+    "DFS",
+    "BFS",
+    "Binary Tree"
+  ],
+  "company_tags": [
+    "Google",
+    "Amazon",
+    "LinkedIn"
+  ],
+  "statement_md": "Given the root of a binary tree (represented as level-order array with `null`s), return its **maximum depth**.\n\nA binary tree's maximum depth is the number of nodes along the longest path from the root node down to the farthest leaf node.",
+  "time_limit_ms": 1000,
+  "memory_limit_mb": 128,
+  "sample_tests": [
+    {
+      "input_text": "[3, 9, 20, null, null, 15, 7]",
+      "expected_output": "3"
+    },
+    {
+      "input_text": "[1, null, 2]",
+      "expected_output": "2"
+    },
+    {
+      "input_text": "[]",
+      "expected_output": "0"
+    }
+  ],
+  "hidden_tests": [
+    {
+      "input_text": "[0]",
+      "expected_output": "1"
+    },
+    {
+      "input_text": "[1, 2, 3, 4, 5]",
+      "expected_output": "3"
+    },
+    {
+      "input_text": "[1, 2, null, 3, null, 4, null, 5]",
+      "expected_output": "5"
+    },
+    {
+      "input_text": "[10, 5, 15, null, null, 6, 20]",
+      "expected_output": "3"
+    },
+    {
+      "input_text": "[1, 2, 3, 4, null, null, 5]",
+      "expected_output": "3"
+    }
+  ],
+  "hints": [
+    {
+      "level": 1,
+      "text": "Can you compute the depth recursively from left and right subtrees?",
+      "xp_cost": 2
+    },
+    {
+      "level": 2,
+      "text": "The depth of a tree rooted at node is 1 + max(depth(left), depth(right)).",
+      "xp_cost": 5
+    },
+    {
+      "level": 3,
+      "text": "Base case: if node is None/empty, return 0.",
+      "xp_cost": 10
+    }
+  ],
+  "editorial_md": "### Optimal Approach: Recursive Depth-First Search\nEvery tree's height is derived from $1 + \\max(\\text{left\\_depth}, \\text{right\\_depth})$.\n- **Time Complexity:** $O(n)$\n- **Space Complexity:** $O(h)$ where $h$ is tree height"
+}

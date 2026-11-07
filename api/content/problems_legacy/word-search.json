@@ -1,0 +1,62 @@
+{
+  "slug": "word-search",
+  "title": "Word Search",
+  "difficulty": "medium",
+  "topic": "Graphs",
+  "tags": [
+    "Array",
+    "Backtracking",
+    "Matrix"
+  ],
+  "company_tags": [
+    "Bloomberg",
+    "Amazon",
+    "Microsoft",
+    "Twitter"
+  ],
+  "statement_md": "Given an `m x n` grid of characters `board` and a string `word`, return `true` if `word` exists in the grid.\n\nThe word can be constructed from letters of sequentially adjacent cells, where adjacent cells are horizontally or vertically neighboring. The same letter cell may not be used more than once.",
+  "time_limit_ms": 1000,
+  "memory_limit_mb": 128,
+  "sample_tests": [
+    {
+      "input_text": "[[\"A\", \"B\", \"C\", \"E\"], [\"S\", \"F\", \"C\", \"S\"], [\"A\", \"D\", \"E\", \"E\"]]\n\"ABCCED\"",
+      "expected_output": "true"
+    },
+    {
+      "input_text": "[[\"A\", \"B\", \"C\", \"E\"], [\"S\", \"F\", \"C\", \"S\"], [\"A\", \"D\", \"E\", \"E\"]]\n\"SEE\"",
+      "expected_output": "true"
+    },
+    {
+      "input_text": "[[\"A\", \"B\", \"C\", \"E\"], [\"S\", \"F\", \"C\", \"S\"], [\"A\", \"D\", \"E\", \"E\"]]\n\"ABCB\"",
+      "expected_output": "false"
+    }
+  ],
+  "hidden_tests": [
+    {
+      "input_text": "[[\"a\"]]\n\"a\"",
+      "expected_output": "true"
+    },
+    {
+      "input_text": "[[\"a\", \"b\"]]\n\"ba\"",
+      "expected_output": "true"
+    }
+  ],
+  "hints": [
+    {
+      "level": 1,
+      "text": "Iterate through every cell to find a match with word[0].",
+      "xp_cost": 2
+    },
+    {
+      "level": 2,
+      "text": "Perform depth-first search in 4 directions.",
+      "xp_cost": 5
+    },
+    {
+      "level": 3,
+      "text": "Temporarily mark board[r][c] as visited (e.g. '#') and restore it upon backtracking.",
+      "xp_cost": 10
+    }
+  ],
+  "editorial_md": "### Backtracking DFS with In-Place Visited Mask\n\n```python\ndef exist(board: list[list[str]], word: str) -> bool:\n    R, C = len(board), len(board[0])\n    \n    def dfs(r, c, idx):\n        if idx == len(word):\n            return True\n        if not (0 <= r < R and 0 <= c < C) or board[r][c] != word[idx]:\n            return False\n        \n        temp = board[r][c]\n        board[r][c] = '#'\n        found = (dfs(r + 1, c, idx + 1) or\n                 dfs(r - 1, c, idx + 1) or\n                 dfs(r, c + 1, idx + 1) or\n                 dfs(r, c - 1, idx + 1))\n        board[r][c] = temp\n        return found\n\n    for r in range(R):\n        for c in range(C):\n            if dfs(r, c, 0):\n                return True\n    return False\n```\n\n- **Time Complexity:** $O(R \\times C \\times 4^L)$ where $L = len(word)$.\n- **Space Complexity:** $O(L)$ stack depth."
+}

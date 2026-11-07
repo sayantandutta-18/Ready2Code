@@ -1,0 +1,58 @@
+{
+  "slug": "palindromic-substrings",
+  "title": "Palindromic Substrings",
+  "difficulty": "medium",
+  "topic": "Strings",
+  "tags": [
+    "Two Pointers",
+    "String",
+    "Dynamic Programming"
+  ],
+  "company_tags": [
+    "Meta",
+    "Amazon",
+    "Twitter",
+    "Goldman Sachs"
+  ],
+  "statement_md": "Given a string `s`, return the number of **palindromic substrings** in it.\n\nA string is a **palindrome** when it reads the same backward as forward.",
+  "time_limit_ms": 1000,
+  "memory_limit_mb": 128,
+  "sample_tests": [
+    {
+      "input_text": "\"abc\"",
+      "expected_output": "3"
+    },
+    {
+      "input_text": "\"aaa\"",
+      "expected_output": "6"
+    }
+  ],
+  "hidden_tests": [
+    {
+      "input_text": "\"a\"",
+      "expected_output": "1"
+    },
+    {
+      "input_text": "\"abccba\"",
+      "expected_output": "9"
+    }
+  ],
+  "hints": [
+    {
+      "level": 1,
+      "text": "Every palindrome has a center.",
+      "xp_cost": 2
+    },
+    {
+      "level": 2,
+      "text": "There are 2n - 1 potential centers (odd-length center at i, even-length center between i and i+1).",
+      "xp_cost": 5
+    },
+    {
+      "level": 3,
+      "text": "Expand outward from each center while characters match.",
+      "xp_cost": 10
+    }
+  ],
+  "editorial_md": "### Expand Around Centers\n\n```python\ndef countSubstrings(s: str) -> int:\n    n = len(s)\n    total = 0\n    def count_from(l, r):\n        c = 0\n        while l >= 0 and r < n and s[l] == s[r]:\n            c += 1\n            l -= 1\n            r += 1\n        return c\n    for i in range(n):\n        total += count_from(i, i)     # Odd length\n        total += count_from(i, i + 1) # Even length\n    return total\n```\n\n- **Time Complexity:** $O(n^2)$\n- **Space Complexity:** $O(1)$"
+}

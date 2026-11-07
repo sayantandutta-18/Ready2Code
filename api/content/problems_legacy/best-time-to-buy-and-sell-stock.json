@@ -1,0 +1,68 @@
+{
+  "slug": "best-time-to-buy-and-sell-stock",
+  "title": "Best Time to Buy and Sell Stock",
+  "difficulty": "easy",
+  "topic": "Arrays",
+  "tags": [
+    "Array",
+    "Dynamic Programming"
+  ],
+  "company_tags": [
+    "Amazon",
+    "Apple",
+    "Microsoft"
+  ],
+  "statement_md": "You are given an array `prices` where `prices[i]` is the price of a given stock on the $i$-th day.\n\nYou want to maximize your profit by choosing a single day to buy one stock and choosing a different day in the future to sell that stock.\n\nReturn the maximum profit you can achieve from this transaction. If you cannot achieve any profit, return 0.",
+  "time_limit_ms": 1000,
+  "memory_limit_mb": 128,
+  "sample_tests": [
+    {
+      "input_text": "[7, 1, 5, 3, 6, 4]",
+      "expected_output": "5"
+    },
+    {
+      "input_text": "[7, 6, 4, 3, 1]",
+      "expected_output": "0"
+    }
+  ],
+  "hidden_tests": [
+    {
+      "input_text": "[2, 4, 1]",
+      "expected_output": "2"
+    },
+    {
+      "input_text": "[3, 2, 6, 5, 0, 3]",
+      "expected_output": "4"
+    },
+    {
+      "input_text": "[1, 2]",
+      "expected_output": "1"
+    },
+    {
+      "input_text": "[1]",
+      "expected_output": "0"
+    },
+    {
+      "input_text": "[2, 1, 2, 1, 0, 1, 2]",
+      "expected_output": "2"
+    }
+  ],
+  "hints": [
+    {
+      "level": 1,
+      "text": "Can you track the minimum price seen so far while iterating?",
+      "xp_cost": 2
+    },
+    {
+      "level": 2,
+      "text": "Every day you consider selling at `price`, compare with `min_price` to update `max_profit`.",
+      "xp_cost": 5
+    },
+    {
+      "level": 3,
+      "text": "Maintain `lowest = min(lowest, price)` and `best = max(best, price - lowest)`. Single pass.",
+      "xp_cost": 10
+    }
+  ],
+  "editorial_md": "### Optimal Approach: One-Pass Tracking\n\nKeep track of the minimum price encountered so far. At each step, calculate the potential profit if sold today, updating maximum profit.\n\n- Time Complexity: $O(n)$\n- Space Complexity: $O(1)$"
+}

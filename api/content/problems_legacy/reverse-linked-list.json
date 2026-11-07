@@ -1,0 +1,64 @@
+{
+  "slug": "reverse-linked-list",
+  "title": "Reverse Linked List",
+  "difficulty": "easy",
+  "topic": "Linked List",
+  "tags": [
+    "Linked List",
+    "Recursion"
+  ],
+  "company_tags": [
+    "Amazon",
+    "Adobe",
+    "Meta"
+  ],
+  "statement_md": "Given the head of a singly linked list, reverse the list, and return the reversed list.\n\nInput representation is given as a list of numbers representing the node values.",
+  "time_limit_ms": 1000,
+  "memory_limit_mb": 128,
+  "sample_tests": [
+    {
+      "input_text": "[1, 2, 3, 4, 5]",
+      "expected_output": "[5, 4, 3, 2, 1]"
+    },
+    {
+      "input_text": "[1, 2]",
+      "expected_output": "[2, 1]"
+    },
+    {
+      "input_text": "[]",
+      "expected_output": "[]"
+    }
+  ],
+  "hidden_tests": [
+    {
+      "input_text": "[42]",
+      "expected_output": "[42]"
+    },
+    {
+      "input_text": "[1, 2, 3]",
+      "expected_output": "[3, 2, 1]"
+    },
+    {
+      "input_text": "[9, 8, 7, 6, 5, 4, 3, 2, 1]",
+      "expected_output": "[1, 2, 3, 4, 5, 6, 7, 8, 9]"
+    }
+  ],
+  "hints": [
+    {
+      "level": 1,
+      "text": "You need to change the `next` pointer of each node to point to its predecessor.",
+      "xp_cost": 2
+    },
+    {
+      "level": 2,
+      "text": "Keep track of `prev`, `curr`, and `nxt` pointers.",
+      "xp_cost": 5
+    },
+    {
+      "level": 3,
+      "text": "At each node: `nxt = curr.next; curr.next = prev; prev = curr; curr = nxt`. Return `prev`.",
+      "xp_cost": 10
+    }
+  ],
+  "editorial_md": "### Optimal Approach: Iterative 3-Pointers\n\nIterate through the linked list, redirecting each node's `next` pointer to the previously visited node.\n\n- Time Complexity: $O(n)$\n- Space Complexity: $O(1)$"
+}

@@ -1,0 +1,62 @@
+{
+  "slug": "same-tree",
+  "title": "Same Tree",
+  "difficulty": "easy",
+  "topic": "Trees",
+  "tags": [
+    "Tree",
+    "Depth-First Search",
+    "Binary Tree"
+  ],
+  "company_tags": [
+    "Google",
+    "Amazon",
+    "Microsoft",
+    "LinkedIn"
+  ],
+  "statement_md": "Given the roots of two binary trees `p` and `q`, write a function to check if they are the same or not.\n\nTwo binary trees are considered the same if they are structurally identical, and the nodes have the same value.",
+  "time_limit_ms": 1000,
+  "memory_limit_mb": 128,
+  "sample_tests": [
+    {
+      "input_text": "[1, 2, 3]\n[1, 2, 3]",
+      "expected_output": "true"
+    },
+    {
+      "input_text": "[1, 2]\n[1, null, 2]",
+      "expected_output": "false"
+    },
+    {
+      "input_text": "[1, 2, 1]\n[1, 1, 2]",
+      "expected_output": "false"
+    }
+  ],
+  "hidden_tests": [
+    {
+      "input_text": "[]\n[]",
+      "expected_output": "true"
+    },
+    {
+      "input_text": "[10, 5, 15]\n[10, 5, 15]",
+      "expected_output": "true"
+    }
+  ],
+  "hints": [
+    {
+      "level": 1,
+      "text": "Check if both nodes are null at the same time.",
+      "xp_cost": 2
+    },
+    {
+      "level": 2,
+      "text": "If only one is null, they cannot be identical.",
+      "xp_cost": 5
+    },
+    {
+      "level": 3,
+      "text": "If values match, recursively verify both left subtrees and right subtrees.",
+      "xp_cost": 10
+    }
+  ],
+  "editorial_md": "### Structural and Value Tree Equality\n\n```python\ndef isSameTree(p, q):\n    if not p and not q:\n        return True\n    if not p or not q or p.val != q.val:\n        return False\n    return isSameTree(p.left, q.left) and isSameTree(p.right, q.right)\n```\n\n- **Time Complexity:** $O(n)$\n- **Space Complexity:** $O(h)$"
+}

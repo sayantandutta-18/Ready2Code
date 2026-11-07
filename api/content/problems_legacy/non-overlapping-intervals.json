@@ -1,0 +1,63 @@
+{
+  "slug": "non-overlapping-intervals",
+  "title": "Non-overlapping Intervals",
+  "difficulty": "medium",
+  "topic": "Arrays",
+  "tags": [
+    "Array",
+    "Dynamic Programming",
+    "Greedy",
+    "Sorting"
+  ],
+  "company_tags": [
+    "Meta",
+    "Amazon",
+    "Google",
+    "Microsoft"
+  ],
+  "statement_md": "Given an array of intervals `intervals` where `intervals[i] = [start_i, end_i]`, return the minimum number of intervals you need to remove to make the rest of the intervals non-overlapping.",
+  "time_limit_ms": 1000,
+  "memory_limit_mb": 128,
+  "sample_tests": [
+    {
+      "input_text": "[[1, 2], [2, 3], [3, 4], [1, 3]]",
+      "expected_output": "1"
+    },
+    {
+      "input_text": "[[1, 2], [1, 2], [1, 2]]",
+      "expected_output": "2"
+    },
+    {
+      "input_text": "[[1, 2], [2, 3]]",
+      "expected_output": "0"
+    }
+  ],
+  "hidden_tests": [
+    {
+      "input_text": "[[1, 100], [11, 22], [1, 11], [2, 12]]",
+      "expected_output": "2"
+    },
+    {
+      "input_text": "[[-52, 31], [-73, -26], [82, 97], [-65, -11], [-62, -49]]",
+      "expected_output": "3"
+    }
+  ],
+  "hints": [
+    {
+      "level": 1,
+      "text": "This is equivalent to finding the maximum number of compatible non-overlapping intervals (Interval Scheduling).",
+      "xp_cost": 2
+    },
+    {
+      "level": 2,
+      "text": "Sort intervals by their ending times.",
+      "xp_cost": 5
+    },
+    {
+      "level": 3,
+      "text": "Greedily keep the interval that finishes earliest to leave room for future intervals.",
+      "xp_cost": 10
+    }
+  ],
+  "editorial_md": "### Greedy Interval Scheduling by End Time\n\n1. Sort intervals by end time `intervals.sort(key=lambda x: x[1])`.\n2. Maintain `prev_end = float('-inf')` and `removed = 0`.\n3. If `start >= prev_end`, keep interval and update `prev_end = end`.\n4. Otherwise, it overlaps with the earliest finishing interval, so discard it: `removed += 1`.\n\n- **Time Complexity:** $O(n \\log n)$\n- **Space Complexity:** $O(1)$ auxiliary."
+}

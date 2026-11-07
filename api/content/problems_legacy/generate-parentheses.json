@@ -1,0 +1,58 @@
+{
+  "slug": "generate-parentheses",
+  "title": "Generate Parentheses",
+  "difficulty": "medium",
+  "topic": "Strings",
+  "tags": [
+    "String",
+    "Dynamic Programming",
+    "Backtracking"
+  ],
+  "company_tags": [
+    "Google",
+    "Amazon",
+    "Microsoft",
+    "Meta"
+  ],
+  "statement_md": "Given `n` pairs of parentheses, write a function to generate all combinations of well-formed parentheses.",
+  "time_limit_ms": 1000,
+  "memory_limit_mb": 128,
+  "sample_tests": [
+    {
+      "input_text": "3",
+      "expected_output": "[\"((()))\", \"(()())\", \"(())()\", \"()(())\", \"()()()\"]"
+    },
+    {
+      "input_text": "1",
+      "expected_output": "[\"()\"]"
+    }
+  ],
+  "hidden_tests": [
+    {
+      "input_text": "2",
+      "expected_output": "[\"(())\", \"()()\"]"
+    },
+    {
+      "input_text": "4",
+      "expected_output": "[\"(((())))\", \"((()()))\", \"((())())\", \"((()))()\", \"(()(()))\", \"(()()())\", \"(()())()\", \"(())(())\", \"(())()()\", \"()((()))\", \"()(()())\", \"()(())()\", \"()()(())\", \"()()()()\"]"
+    }
+  ],
+  "hints": [
+    {
+      "level": 1,
+      "text": "Track open count and closed count.",
+      "xp_cost": 2
+    },
+    {
+      "level": 2,
+      "text": "You can add '(' if open < n.",
+      "xp_cost": 5
+    },
+    {
+      "level": 3,
+      "text": "You can add ')' if close < open.",
+      "xp_cost": 10
+    }
+  ],
+  "editorial_md": "### Backtracking Search\n\n```python\ndef generateParenthesis(n: int) -> list[str]:\n    res = []\n    def backtrack(curr, open_c, close_c):\n        if len(curr) == 2 * n:\n            res.append(curr)\n            return\n        if open_c < n:\n            backtrack(curr + '(', open_c + 1, close_c)\n        if close_c < open_c:\n            backtrack(curr + ')', open_c, close_c + 1)\n    backtrack(\"\", 0, 0)\n    return res\n```\n\n- **Time Complexity:** $O(\\frac{4^n}{\\sqrt{n}})$ (Catalan number $C_n$).\n- **Space Complexity:** $O(n)$ recursion depth."
+}

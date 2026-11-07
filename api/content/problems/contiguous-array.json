@@ -1,0 +1,199 @@
+{
+  "slug": "contiguous-array",
+  "title": "Contiguous Array",
+  "topic": "Arrays and Hashing",
+  "topic_key": "arrays",
+  "difficulty": "medium",
+  "statement_md": "Given a binary array (only 0 and 1), return the length of the longest contiguous subarray with an equal number of 0s and 1s.\n\n**Function:** `findMaxLength(nums)`\n\n**Input:** one JSON value per parameter, in the order above. **Output:** the returned value as JSON.",
+  "function_name": "findMaxLength",
+  "params": [
+    "nums"
+  ],
+  "examples": [
+    {
+      "input": [
+        [
+          0,
+          1
+        ]
+      ],
+      "output": 2
+    },
+    {
+      "input": [
+        [
+          0,
+          1,
+          0
+        ]
+      ],
+      "output": 2
+    }
+  ],
+  "sample_tests": [
+    {
+      "input": [
+        [
+          0,
+          1
+        ]
+      ],
+      "output": 2
+    },
+    {
+      "input": [
+        [
+          0,
+          1,
+          0
+        ]
+      ],
+      "output": 2
+    }
+  ],
+  "hidden_tests": [
+    {
+      "input": [
+        [
+          0,
+          0,
+          1,
+          1
+        ]
+      ],
+      "output": 4
+    },
+    {
+      "input": [
+        [
+          1
+        ]
+      ],
+      "output": 0
+    },
+    {
+      "input": [
+        [
+          1,
+          1,
+          1,
+          0,
+          0,
+          1,
+          0,
+          0,
+          1
+        ]
+      ],
+      "output": 8
+    },
+    {
+      "input": [
+        [
+          0,
+          1
+        ]
+      ],
+      "output": 2
+    },
+    {
+      "input": [
+        [
+          1,
+          0,
+          1,
+          1,
+          0,
+          0,
+          1,
+          0,
+          0,
+          1
+        ]
+      ],
+      "output": 10
+    },
+    {
+      "input": [
+        [
+          0,
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0
+        ]
+      ],
+      "output": 6
+    },
+    {
+      "input": [
+        [
+          0,
+          1,
+          1,
+          0,
+          1,
+          0,
+          1,
+          0,
+          0
+        ]
+      ],
+      "output": 8
+    },
+    {
+      "input": [
+        [
+          0,
+          1,
+          1,
+          1,
+          0
+        ]
+      ],
+      "output": 2
+    },
+    {
+      "input": [
+        [
+          1,
+          1,
+          1,
+          1
+        ]
+      ],
+      "output": 0
+    },
+    {
+      "input": [
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1
+        ]
+      ],
+      "output": 4
+    }
+  ],
+  "time_limit_ms": 1000,
+  "memory_limit_mb": 128,
+  "scene": "array",
+  "hints": [
+    "Scan the array once and ask what information you need about the values you have already seen.",
+    "A hash map or a running value can replace a nested loop.",
+    "Data structure: a hash map (dict). Store what you have seen; check each new value against it in O(1)."
+  ],
+  "starter_code": {
+    "python": "def findMaxLength(nums):\n    # Write your solution here\n    pass\n"
+  },
+  "reference_python": "import math, bisect, heapq, os\nfrom collections import Counter, defaultdict, deque\nfrom itertools import groupby\n\nclass TN:\n    def __init__(self, val, left=None, right=None):\n        self.val, self.left, self.right = val, left, right\n\ndef build(a):\n    if not a or a[0] is None:\n        return None\n    root = TN(a[0]); q = deque([root]); i = 1\n    while q and i < len(a):\n        node = q.popleft()\n        if i < len(a) and a[i] is not None:\n            node.left = TN(a[i]); q.append(node.left)\n        i += 1\n        if i < len(a) and a[i] is not None:\n            node.right = TN(a[i]); q.append(node.right)\n        i += 1\n    return root\n\ndef ser(root):\n    out = []; q = deque([root])\n    while q:\n        n = q.popleft()\n        if n is None:\n            out.append(None); continue\n        out.append(n.val); q.append(n.left); q.append(n.right)\n    while out and out[-1] is None:\n        out.pop()\n    return out\n\ndef ins(root, v):\n    if root is None:\n        return TN(v)\n    if v < root.val:\n        root.left = ins(root.left, v)\n    else:\n        root.right = ins(root.right, v)\n    return root\n\ndef adj_from_edges(n, edges):\n    g = [[] for _ in range(n)]\n    for a, b in edges:\n        g[a].append(b); g[b].append(a)\n    return g\n\nROMAN = {\"I\": 1, \"V\": 5, \"X\": 10, \"L\": 50, \"C\": 100, \"D\": 500, \"M\": 1000}\n\ndef findMaxLength(nums):\n    first = {0: -1}; bal = 0; best = 0\n    for i, x in enumerate(nums):\n        bal += 1 if x == 1 else -1\n        if bal in first:\n            best = max(best, i - first[bal])\n        else:\n            first[bal] = i\n    return best\n"
+}

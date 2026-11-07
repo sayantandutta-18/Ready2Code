@@ -1,0 +1,60 @@
+{
+  "slug": "coin-change-ii",
+  "title": "Coin Change II",
+  "difficulty": "medium",
+  "topic": "Dynamic Programming",
+  "tags": [
+    "Array",
+    "Dynamic Programming"
+  ],
+  "company_tags": [
+    "Amazon",
+    "Google",
+    "Bloomberg"
+  ],
+  "statement_md": "You are given an integer array `coins` representing coins of different denominations and an integer `amount` representing a total amount of money.\n\nReturn the number of combinations that make up that amount. If that amount of money cannot be made up by any combination of the coins, return `0`.\n\nYou may assume that you have an infinite number of each kind of coin.",
+  "time_limit_ms": 1000,
+  "memory_limit_mb": 128,
+  "sample_tests": [
+    {
+      "input_text": "5\n[1, 2, 5]",
+      "expected_output": "4"
+    },
+    {
+      "input_text": "3\n[2]",
+      "expected_output": "0"
+    },
+    {
+      "input_text": "10\n[10]",
+      "expected_output": "1"
+    }
+  ],
+  "hidden_tests": [
+    {
+      "input_text": "0\n[7]",
+      "expected_output": "1"
+    },
+    {
+      "input_text": "500\n[1, 2, 5]",
+      "expected_output": "12701"
+    }
+  ],
+  "hints": [
+    {
+      "level": 1,
+      "text": "This is the unbounded knapsack counting combinations problem.",
+      "xp_cost": 2
+    },
+    {
+      "level": 2,
+      "text": "Loop over coins in the outer loop to prevent permutation duplicates.",
+      "xp_cost": 5
+    },
+    {
+      "level": 3,
+      "text": "For each coin, iterate x from coin to amount: dp[x] += dp[x - coin].",
+      "xp_cost": 10
+    }
+  ],
+  "editorial_md": "### Unbounded Knapsack Dynamic Programming\n\n```python\ndef change(amount: int, coins: list[int]) -> int:\n    dp = [0] * (amount + 1)\n    dp[0] = 1\n    for coin in coins:\n        for x in range(coin, amount + 1):\n            dp[x] += dp[x - coin]\n    return dp[amount]\n```\n\n- **Time Complexity:** $O(N \\times amount)$\n- **Space Complexity:** $O(amount)$"
+}

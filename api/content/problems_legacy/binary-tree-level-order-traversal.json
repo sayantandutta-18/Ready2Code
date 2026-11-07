@@ -1,0 +1,62 @@
+{
+  "slug": "binary-tree-level-order-traversal",
+  "title": "Binary Tree Level Order Traversal",
+  "difficulty": "medium",
+  "topic": "Trees",
+  "tags": [
+    "Tree",
+    "BFS",
+    "Binary Tree"
+  ],
+  "company_tags": [
+    "Amazon",
+    "Microsoft",
+    "Bloomberg",
+    "Meta"
+  ],
+  "statement_md": "Given the `root` of a binary tree, return the level order traversal of its nodes' values. (i.e., from left to right, level by level).",
+  "time_limit_ms": 1000,
+  "memory_limit_mb": 128,
+  "sample_tests": [
+    {
+      "input_text": "[3, 9, 20, null, null, 15, 7]",
+      "expected_output": "[[3], [9, 20], [15, 7]]"
+    },
+    {
+      "input_text": "[1]",
+      "expected_output": "[[1]]"
+    },
+    {
+      "input_text": "[]",
+      "expected_output": "[]"
+    }
+  ],
+  "hidden_tests": [
+    {
+      "input_text": "[1, 2, 3, 4, 5]",
+      "expected_output": "[[1], [2, 3], [4, 5]]"
+    },
+    {
+      "input_text": "[1, 2, null, 3, null, 4]",
+      "expected_output": "[[1], [2], [3], [4]]"
+    }
+  ],
+  "hints": [
+    {
+      "level": 1,
+      "text": "What data structure processes items in first-in-first-out (FIFO) order?",
+      "xp_cost": 2
+    },
+    {
+      "level": 2,
+      "text": "Use a queue (collections.deque in Python).",
+      "xp_cost": 5
+    },
+    {
+      "level": 3,
+      "text": "At each level, record queue length N, pop N elements, and append their children.",
+      "xp_cost": 10
+    }
+  ],
+  "editorial_md": "### Breadth-First Search with Queue\n\n```python\nfrom collections import deque\n\ndef levelOrder(root):\n    if not root:\n        return []\n    res = []\n    q = deque([root])\n    while q:\n        level_size = len(q)\n        current_level = []\n        for _ in range(level_size):\n            node = q.popleft()\n            current_level.append(node.val)\n            if node.left:\n                q.append(node.left)\n            if node.right:\n                q.append(node.right)\n        res.append(current_level)\n    return res\n```\n\n- **Time Complexity:** $O(n)$\n- **Space Complexity:** $O(n)$"
+}

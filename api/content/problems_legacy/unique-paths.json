@@ -1,0 +1,62 @@
+{
+  "slug": "unique-paths",
+  "title": "Unique Paths",
+  "difficulty": "medium",
+  "topic": "Dynamic Programming",
+  "tags": [
+    "Math",
+    "Dynamic Programming",
+    "Combinatorics"
+  ],
+  "company_tags": [
+    "Google",
+    "Amazon",
+    "Meta",
+    "Adobe"
+  ],
+  "statement_md": "There is a robot on an `m x n` grid. The robot is initially located at the top-left corner `(grid[0][0])` and tries to move to the bottom-right corner `(grid[m - 1][n - 1])`. The robot can only move either down or right at any point in time.\n\nGiven the two integers `m` and `n`, return the number of possible unique paths that the robot can take to reach the bottom-right corner.",
+  "time_limit_ms": 1000,
+  "memory_limit_mb": 128,
+  "sample_tests": [
+    {
+      "input_text": "3\n7",
+      "expected_output": "28"
+    },
+    {
+      "input_text": "3\n2",
+      "expected_output": "3"
+    }
+  ],
+  "hidden_tests": [
+    {
+      "input_text": "1\n1",
+      "expected_output": "1"
+    },
+    {
+      "input_text": "10\n10",
+      "expected_output": "48620"
+    },
+    {
+      "input_text": "1\n10",
+      "expected_output": "1"
+    }
+  ],
+  "hints": [
+    {
+      "level": 1,
+      "text": "To reach cell (r, c), you must arrive from either (r-1, c) or (r, c-1).",
+      "xp_cost": 2
+    },
+    {
+      "level": 2,
+      "text": "dp[r][c] = dp[r-1][c] + dp[r][c-1].",
+      "xp_cost": 5
+    },
+    {
+      "level": 3,
+      "text": "You can optimize space to O(n) by using a single row.",
+      "xp_cost": 10
+    }
+  ],
+  "editorial_md": "### 1D Space Optimized Dynamic Programming\n\nThe recurrence is $dp[c] = dp[c] + dp[c-1]$.\n\n```python\ndef uniquePaths(m: int, n: int) -> int:\n    row = [1] * n\n    for _ in range(m - 1):\n        for c in range(1, n):\n            row[c] += row[c - 1]\n    return row[-1]\n```\n\n- **Time Complexity:** $O(m \\times n)$\n- **Space Complexity:** $O(n)$"
+}

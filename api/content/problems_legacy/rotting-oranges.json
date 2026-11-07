@@ -1,0 +1,62 @@
+{
+  "slug": "rotting-oranges",
+  "title": "Rotting Oranges",
+  "difficulty": "medium",
+  "topic": "Graphs",
+  "tags": [
+    "Array",
+    "BFS",
+    "Matrix"
+  ],
+  "company_tags": [
+    "Amazon",
+    "Microsoft",
+    "Google",
+    "Oracle"
+  ],
+  "statement_md": "You are given an `m x n` grid where each cell can have one of three values:\n- `0` representing an empty cell,\n- `1` representing a fresh orange, or\n- `2` representing a rotten orange.\n\nEvery minute, any fresh orange that is **4-directionally adjacent** to a rotten orange becomes rotten.\n\nReturn the minimum number of minutes that must elapse until no cell has a fresh orange. If this is impossible, return `-1`.",
+  "time_limit_ms": 1000,
+  "memory_limit_mb": 128,
+  "sample_tests": [
+    {
+      "input_text": "[[2, 1, 1], [1, 1, 0], [0, 1, 1]]",
+      "expected_output": "4"
+    },
+    {
+      "input_text": "[[2, 1, 1], [0, 1, 1], [1, 0, 1]]",
+      "expected_output": "-1"
+    },
+    {
+      "input_text": "[[0, 2]]",
+      "expected_output": "0"
+    }
+  ],
+  "hidden_tests": [
+    {
+      "input_text": "[[1]]",
+      "expected_output": "-1"
+    },
+    {
+      "input_text": "[[2, 2], [1, 1], [0, 0], [2, 0]]",
+      "expected_output": "1"
+    }
+  ],
+  "hints": [
+    {
+      "level": 1,
+      "text": "This is a multi-source shortest path problem.",
+      "xp_cost": 2
+    },
+    {
+      "level": 2,
+      "text": "Initialize a queue with all initially rotten oranges (cells with value 2) and count total fresh oranges.",
+      "xp_cost": 5
+    },
+    {
+      "level": 3,
+      "text": "Process minute-by-minute with level-by-level BFS. If fresh count drops to 0, return elapsed minutes.",
+      "xp_cost": 10
+    }
+  ],
+  "editorial_md": "### Multi-Source Breadth-First Search\n\n```python\nfrom collections import deque\n\ndef orangesRotting(grid: list[list[int]]) -> int:\n    R, C = len(grid), len(grid[0])\n    q = deque()\n    fresh = 0\n    for r in range(R):\n        for c in range(C):\n            if grid[r][c] == 2:\n                q.append((r, c))\n            elif grid[r][c] == 1:\n                fresh += 1\n                \n    if fresh == 0:\n        return 0\n        \n    minutes = 0\n    dirs = [(0, 1), (0, -1), (1, 0), (-1, 0)]\n    while q and fresh > 0:\n        minutes += 1\n        for _ in range(len(q)):\n            r, c = q.popleft()\n            for dr, dc in dirs:\n                nr, nc = r + dr, c + dc\n                if 0 <= nr < R and 0 <= nc < C and grid[nr][nc] == 1:\n                    grid[nr][nc] = 2\n                    fresh -= 1\n                    q.append((nr, nc))\n                    \n    return minutes if fresh == 0 else -1\n```\n\n- **Time Complexity:** $O(R \\times C)$\n- **Space Complexity:** $O(R \\times C)$"
+}

@@ -1,0 +1,72 @@
+{
+  "slug": "palindrome-number",
+  "title": "Palindrome Number",
+  "difficulty": "easy",
+  "topic": "Arrays",
+  "tags": [
+    "Math",
+    "Two Pointers"
+  ],
+  "company_tags": [
+    "Amazon",
+    "Bloomberg",
+    "Google"
+  ],
+  "statement_md": "Given an integer `x`, return `true` if `x` is a **palindrome**, and `false` otherwise.\n\nAn integer is a palindrome when it reads the same forward and backward.",
+  "time_limit_ms": 1000,
+  "memory_limit_mb": 128,
+  "sample_tests": [
+    {
+      "input_text": "121",
+      "expected_output": "true"
+    },
+    {
+      "input_text": "-121",
+      "expected_output": "false"
+    },
+    {
+      "input_text": "10",
+      "expected_output": "false"
+    }
+  ],
+  "hidden_tests": [
+    {
+      "input_text": "0",
+      "expected_output": "true"
+    },
+    {
+      "input_text": "12321",
+      "expected_output": "true"
+    },
+    {
+      "input_text": "123321",
+      "expected_output": "true"
+    },
+    {
+      "input_text": "1000021",
+      "expected_output": "false"
+    },
+    {
+      "input_text": "1000000001",
+      "expected_output": "true"
+    }
+  ],
+  "hints": [
+    {
+      "level": 1,
+      "text": "Negative numbers are never palindromes due to the leading minus sign.",
+      "xp_cost": 2
+    },
+    {
+      "level": 2,
+      "text": "Can you reverse half of the integer digits to avoid integer overflow?",
+      "xp_cost": 5
+    },
+    {
+      "level": 3,
+      "text": "Build reverted_number while x > reverted_number: reverted = reverted * 10 + x % 10; x //= 10. Check if x == reverted or x == reverted // 10.",
+      "xp_cost": 10
+    }
+  ],
+  "editorial_md": "### Optimal Approach: Reverting Half the Number\nReverse the right half of the digits and compare directly with the remaining left half.\n- **Time Complexity:** $O(\\log_{10} n)$\n- **Space Complexity:** $O(1)$"
+}

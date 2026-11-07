@@ -1,0 +1,64 @@
+{
+  "slug": "min-stack",
+  "title": "Min Stack",
+  "difficulty": "medium",
+  "topic": "Stack and Queue",
+  "tags": [
+    "Stack",
+    "Design"
+  ],
+  "company_tags": [
+    "Amazon",
+    "Bloomberg",
+    "Apple"
+  ],
+  "statement_md": "Design a stack that supports push, pop, top, and retrieving the minimum element in constant time $O(1)$.\n\nImplement the `MinStack` class with methods `push(val)`, `pop()`, `top()`, and `getMin()`.",
+  "time_limit_ms": 1000,
+  "memory_limit_mb": 128,
+  "sample_tests": [
+    {
+      "input_text": "[\"push\", \"push\", \"push\", \"getMin\", \"pop\", \"top\", \"getMin\"]\n[[-2], [0], [-3], [], [], [], []]",
+      "expected_output": "[null, null, null, -3, null, 0, -2]"
+    }
+  ],
+  "hidden_tests": [
+    {
+      "input_text": "[\"push\", \"getMin\"]\n[[5], []]",
+      "expected_output": "[null, 5]"
+    },
+    {
+      "input_text": "[\"push\", \"push\", \"getMin\"]\n[[1], [2], []]",
+      "expected_output": "[null, null, 1]"
+    },
+    {
+      "input_text": "[\"push\", \"push\", \"pop\", \"getMin\"]\n[[10], [5], [], []]",
+      "expected_output": "[null, null, null, 10]"
+    },
+    {
+      "input_text": "[\"push\", \"push\", \"push\", \"getMin\"]\n[[2], [0], [3], []]",
+      "expected_output": "[null, null, null, 0]"
+    },
+    {
+      "input_text": "[\"push\", \"top\"]\n[[42], []]",
+      "expected_output": "[null, 42]"
+    }
+  ],
+  "hints": [
+    {
+      "level": 1,
+      "text": "Can you pair each value with the minimum value at the time it was pushed?",
+      "xp_cost": 2
+    },
+    {
+      "level": 2,
+      "text": "Use two stacks: a main data stack and an auxiliary min_stack.",
+      "xp_cost": 5
+    },
+    {
+      "level": 3,
+      "text": "On push(x), push min(x, min_stack[-1]) onto min_stack. On pop(), pop both stacks.",
+      "xp_cost": 10
+    }
+  ],
+  "editorial_md": "### Optimal Approach: Two Stacks or Value-Min Tuples\nKeeping an auxiliary stack that records minimums up to each stack height yields true $O(1)$ operations.\n- **Time Complexity:** $O(1)$ for all operations\n- **Space Complexity:** $O(n)$"
+}

@@ -1,0 +1,267 @@
+{
+  "slug": "sliding-window-maximum",
+  "title": "Sliding Window Maximum",
+  "topic": "Two Pointers and Sliding Window",
+  "topic_key": "two_pointers",
+  "difficulty": "hard",
+  "statement_md": "Given an array and a window size `k`, return the maximum value of each window of size k as it slides from left to right.\n\n**Function:** `maxSlidingWindow(nums, k)`\n\n**Input:** one JSON value per parameter, in the order above. **Output:** the returned value as JSON.",
+  "function_name": "maxSlidingWindow",
+  "params": [
+    "nums",
+    "k"
+  ],
+  "examples": [
+    {
+      "input": [
+        [
+          1,
+          3,
+          -1,
+          -3,
+          5,
+          3,
+          6,
+          7
+        ],
+        3
+      ],
+      "output": [
+        3,
+        3,
+        5,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "input": [
+        [
+          1
+        ],
+        1
+      ],
+      "output": [
+        1
+      ]
+    }
+  ],
+  "sample_tests": [
+    {
+      "input": [
+        [
+          1,
+          3,
+          -1,
+          -3,
+          5,
+          3,
+          6,
+          7
+        ],
+        3
+      ],
+      "output": [
+        3,
+        3,
+        5,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "input": [
+        [
+          1
+        ],
+        1
+      ],
+      "output": [
+        1
+      ]
+    }
+  ],
+  "hidden_tests": [
+    {
+      "input": [
+        [
+          1,
+          4,
+          9,
+          5
+        ],
+        3
+      ],
+      "output": [
+        9,
+        9
+      ]
+    },
+    {
+      "input": [
+        [
+          8,
+          -9,
+          3
+        ],
+        3
+      ],
+      "output": [
+        8
+      ]
+    },
+    {
+      "input": [
+        [
+          9,
+          5
+        ],
+        1
+      ],
+      "output": [
+        9,
+        5
+      ]
+    },
+    {
+      "input": [
+        [
+          9,
+          -9,
+          -1,
+          5,
+          -6,
+          8
+        ],
+        3
+      ],
+      "output": [
+        9,
+        5,
+        5,
+        8
+      ]
+    },
+    {
+      "input": [
+        [
+          2,
+          8
+        ],
+        2
+      ],
+      "output": [
+        8
+      ]
+    },
+    {
+      "input": [
+        [
+          2,
+          -5,
+          6,
+          -5,
+          -1,
+          -9
+        ],
+        2
+      ],
+      "output": [
+        2,
+        6,
+        6,
+        -1,
+        -1
+      ]
+    },
+    {
+      "input": [
+        [
+          8,
+          9
+        ],
+        2
+      ],
+      "output": [
+        9
+      ]
+    },
+    {
+      "input": [
+        [
+          -1,
+          2,
+          -1,
+          0
+        ],
+        1
+      ],
+      "output": [
+        -1,
+        2,
+        -1,
+        0
+      ]
+    },
+    {
+      "input": [
+        [
+          1,
+          6,
+          -8,
+          -9,
+          0,
+          3,
+          -4,
+          -4
+        ],
+        1
+      ],
+      "output": [
+        1,
+        6,
+        -8,
+        -9,
+        0,
+        3,
+        -4,
+        -4
+      ]
+    },
+    {
+      "input": [
+        [
+          8,
+          4,
+          1,
+          5,
+          -9,
+          9,
+          5,
+          3
+        ],
+        4
+      ],
+      "output": [
+        8,
+        5,
+        9,
+        9,
+        9
+      ]
+    }
+  ],
+  "time_limit_ms": 1000,
+  "memory_limit_mb": 128,
+  "scene": "array",
+  "hints": [
+    "Think about what the two ends of the window or the two pointers tell you about the answer.",
+    "Move the pointer that cannot improve the answer, instead of trying all pairs.",
+    "Data structure: two integer indexes (left and right) moving in one pass, or a deque for a window."
+  ],
+  "starter_code": {
+    "python": "def maxSlidingWindow(nums, k):\n    # Write your solution here\n    pass\n"
+  },
+  "reference_python": "import math, bisect, heapq, os\nfrom collections import Counter, defaultdict, deque\nfrom itertools import groupby\n\nclass TN:\n    def __init__(self, val, left=None, right=None):\n        self.val, self.left, self.right = val, left, right\n\ndef build(a):\n    if not a or a[0] is None:\n        return None\n    root = TN(a[0]); q = deque([root]); i = 1\n    while q and i < len(a):\n        node = q.popleft()\n        if i < len(a) and a[i] is not None:\n            node.left = TN(a[i]); q.append(node.left)\n        i += 1\n        if i < len(a) and a[i] is not None:\n            node.right = TN(a[i]); q.append(node.right)\n        i += 1\n    return root\n\ndef ser(root):\n    out = []; q = deque([root])\n    while q:\n        n = q.popleft()\n        if n is None:\n            out.append(None); continue\n        out.append(n.val); q.append(n.left); q.append(n.right)\n    while out and out[-1] is None:\n        out.pop()\n    return out\n\ndef ins(root, v):\n    if root is None:\n        return TN(v)\n    if v < root.val:\n        root.left = ins(root.left, v)\n    else:\n        root.right = ins(root.right, v)\n    return root\n\ndef adj_from_edges(n, edges):\n    g = [[] for _ in range(n)]\n    for a, b in edges:\n        g[a].append(b); g[b].append(a)\n    return g\n\nROMAN = {\"I\": 1, \"V\": 5, \"X\": 10, \"L\": 50, \"C\": 100, \"D\": 500, \"M\": 1000}\n\ndef maxSlidingWindow(nums, k):\n    dq = deque(); res = []\n    for i, x in enumerate(nums):\n        while dq and nums[dq[-1]] <= x:\n            dq.pop()\n        dq.append(i)\n        if dq[0] <= i - k:\n            dq.popleft()\n        if i >= k - 1:\n            res.append(nums[dq[0]])\n    return res\n"
+}

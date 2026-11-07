@@ -1,0 +1,69 @@
+{
+  "slug": "climbing-stairs",
+  "title": "Climbing Stairs",
+  "difficulty": "easy",
+  "topic": "DP",
+  "tags": [
+    "Dynamic Programming",
+    "Math",
+    "Memoization"
+  ],
+  "company_tags": [
+    "Amazon",
+    "Google",
+    "Uber"
+  ],
+  "statement_md": "You are climbing a staircase. It takes `n` steps to reach the top.\n\nEach time you can either climb 1 or 2 steps. In how many distinct ways can you climb to the top?",
+  "time_limit_ms": 1000,
+  "memory_limit_mb": 128,
+  "sample_tests": [
+    {
+      "input_text": "2",
+      "expected_output": "2"
+    },
+    {
+      "input_text": "3",
+      "expected_output": "3"
+    }
+  ],
+  "hidden_tests": [
+    {
+      "input_text": "1",
+      "expected_output": "1"
+    },
+    {
+      "input_text": "4",
+      "expected_output": "5"
+    },
+    {
+      "input_text": "5",
+      "expected_output": "8"
+    },
+    {
+      "input_text": "10",
+      "expected_output": "89"
+    },
+    {
+      "input_text": "20",
+      "expected_output": "10946"
+    }
+  ],
+  "hints": [
+    {
+      "level": 1,
+      "text": "To reach step n, you could have come from step n-1 or n-2.",
+      "xp_cost": 2
+    },
+    {
+      "level": 2,
+      "text": "This matches the Fibonacci recurrence: `ways(n) = ways(n-1) + ways(n-2)`.",
+      "xp_cost": 5
+    },
+    {
+      "level": 3,
+      "text": "Store just the previous two values instead of an entire array for $O(1)$ space.",
+      "xp_cost": 10
+    }
+  ],
+  "editorial_md": "### Optimal Approach: Dynamic Programming (Space Optimized)\n\nThe recurrence relation is $dp[i] = dp[i-1] + dp[i-2]$ with base cases $dp[1]=1, dp[2]=2$.\n\n- Time Complexity: $O(n)$\n- Space Complexity: $O(1)$"
+}

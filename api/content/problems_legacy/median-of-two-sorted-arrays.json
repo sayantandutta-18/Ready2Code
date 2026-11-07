@@ -1,0 +1,63 @@
+{
+  "slug": "median-of-two-sorted-arrays",
+  "title": "Median of Two Sorted Arrays",
+  "difficulty": "hard",
+  "topic": "Binary Search",
+  "tags": [
+    "Array",
+    "Binary Search",
+    "Divide and Conquer"
+  ],
+  "company_tags": [
+    "Google",
+    "Amazon",
+    "Apple",
+    "Microsoft",
+    "Goldman Sachs"
+  ],
+  "statement_md": "Given two sorted arrays `nums1` and `nums2` of size `m` and `n` respectively, return the **median** of the two sorted arrays.\n\nThe overall run time complexity should be $O(\\log (m+n))$.",
+  "time_limit_ms": 1000,
+  "memory_limit_mb": 128,
+  "sample_tests": [
+    {
+      "input_text": "[1, 3]\n[2]",
+      "expected_output": "2.0"
+    },
+    {
+      "input_text": "[1, 2]\n[3, 4]",
+      "expected_output": "2.5"
+    }
+  ],
+  "hidden_tests": [
+    {
+      "input_text": "[0, 0]\n[0, 0]",
+      "expected_output": "0.0"
+    },
+    {
+      "input_text": "[]\n[1]",
+      "expected_output": "1.0"
+    },
+    {
+      "input_text": "[2]\n[]",
+      "expected_output": "2.0"
+    }
+  ],
+  "hints": [
+    {
+      "level": 1,
+      "text": "Binary search on the partition of the smaller array.",
+      "xp_cost": 2
+    },
+    {
+      "level": 2,
+      "text": "Partition both arrays such that left half and right half contain equal elements.",
+      "xp_cost": 5
+    },
+    {
+      "level": 3,
+      "text": "Ensure maxLeftA <= minRightB and maxLeftB <= minRightA.",
+      "xp_cost": 10
+    }
+  ],
+  "editorial_md": "### Optimal Binary Search on Partition\n\nBinary search on smaller array $A$ (size $m$) to find partition index $i$:\n1. $j = (m + n + 1) // 2 - i$\n2. If $maxLeftA \\le minRightB$ and $maxLeftB \\le minRightA$, valid partition found!\n3. If total length is odd: $\\max(maxLeftA, maxLeftB)$.\n4. If even: $(\\max(maxLeftA, maxLeftB) + \\min(minRightA, minRightB)) / 2.0$.\n\n```python\ndef findMedianSortedArrays(nums1: list[int], nums2: list[int]) -> float:\n    A, B = nums1, nums2\n    if len(A) > len(B):\n        A, B = B, A\n    m, n = len(A), len(B)\n    half = (m + n + 1) // 2\n    l, r = 0, m\n    \n    while l <= r:\n        i = (l + r) // 2\n        j = half - i\n        \n        A_left = A[i - 1] if i > 0 else float('-inf')\n        A_right = A[i] if i < m else float('inf')\n        B_left = B[j - 1] if j > 0 else float('-inf')\n        B_right = B[j] if j < n else float('inf')\n        \n        if A_left <= B_right and B_left <= A_right:\n            if (m + n) % 2:\n                return float(max(A_left, B_left))\n            return (max(A_left, B_left) + min(A_right, B_right)) / 2.0\n        elif A_left > B_right:\n            r = i - 1\n        else:\n            l = i + 1\n    return 0.0\n```\n\n- **Time Complexity:** $O(\\log(\\min(m, n)))$\n- **Space Complexity:** $O(1)$"
+}

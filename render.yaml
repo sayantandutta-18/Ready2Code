@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: ready2code-api
+    runtime: docker
+    dockerfilePath: ./api/Dockerfile
+    dockerContext: ./api
+    plan: free
+    region: oregon
+    healthCheckPath: /health
+    envVars:
+      - key: ENVIRONMENT
+        value: production
+      - key: DEV_DEMO_LOGIN
+        value: "false"
+      - key: CORS_ORIGINS
+        value: https://ready2code.vercel.app
+      - key: DATABASE_URL
+        sync: false
+      - key: REDIS_URL
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true

@@ -1,0 +1,68 @@
+{
+  "slug": "house-robber",
+  "title": "House Robber",
+  "difficulty": "medium",
+  "topic": "DP",
+  "tags": [
+    "Array",
+    "Dynamic Programming"
+  ],
+  "company_tags": [
+    "Google",
+    "Amazon",
+    "Microsoft"
+  ],
+  "statement_md": "You are a professional robber planning to rob houses along a street. Each house has a certain amount of money stashed, the only constraint stopping you from robbing each of them is that adjacent houses have security systems connected and **it will automatically contact the police if two adjacent houses were broken into on the same night**.\n\nGiven an integer array `nums` representing the amount of money of each house, return the maximum amount of money you can rob tonight **without alerting the police**.",
+  "time_limit_ms": 1000,
+  "memory_limit_mb": 128,
+  "sample_tests": [
+    {
+      "input_text": "[1, 2, 3, 1]",
+      "expected_output": "4"
+    },
+    {
+      "input_text": "[2, 7, 9, 3, 1]",
+      "expected_output": "12"
+    }
+  ],
+  "hidden_tests": [
+    {
+      "input_text": "[0]",
+      "expected_output": "0"
+    },
+    {
+      "input_text": "[2, 1, 1, 2]",
+      "expected_output": "4"
+    },
+    {
+      "input_text": "[5, 1, 2, 10, 6, 2]",
+      "expected_output": "17"
+    },
+    {
+      "input_text": "[100, 1, 1, 100]",
+      "expected_output": "200"
+    },
+    {
+      "input_text": "[20, 5, 2, 30]",
+      "expected_output": "50"
+    }
+  ],
+  "hints": [
+    {
+      "level": 1,
+      "text": "At each house i, you either rob it (nums[i] + max profit from house i-2) or skip it (max profit from house i-1).",
+      "xp_cost": 2
+    },
+    {
+      "level": 2,
+      "text": "Recurrence relation: dp[i] = max(dp[i-1], dp[i-2] + nums[i]).",
+      "xp_cost": 5
+    },
+    {
+      "level": 3,
+      "text": "You only need two variables (rob1, rob2) to achieve O(1) space.",
+      "xp_cost": 10
+    }
+  ],
+  "editorial_md": "### Optimal Approach: Constant-Space Dynamic Programming\nMaintain running bests for `rob1` and `rob2` representing optimal earnings ending at previous two positions.\n- **Time Complexity:** $O(n)$\n- **Space Complexity:** $O(1)$"
+}

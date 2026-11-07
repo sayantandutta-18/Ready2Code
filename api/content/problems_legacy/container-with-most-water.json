@@ -1,0 +1,62 @@
+{
+  "slug": "container-with-most-water",
+  "title": "Container With Most Water",
+  "difficulty": "medium",
+  "topic": "Arrays",
+  "tags": [
+    "Array",
+    "Two Pointers",
+    "Greedy"
+  ],
+  "company_tags": [
+    "Amazon",
+    "Google",
+    "Apple",
+    "Adobe"
+  ],
+  "statement_md": "You are given an integer array `height` of length `n`. There are `n` vertical lines drawn such that the two endpoints of the $i$-th line are `(i, 0)` and `(i, height[i])`.\n\nFind two lines that together with the x-axis form a container, such that the container contains the most water.\n\nReturn the maximum amount of water a container can store.",
+  "time_limit_ms": 1000,
+  "memory_limit_mb": 128,
+  "sample_tests": [
+    {
+      "input_text": "[1, 8, 6, 2, 5, 4, 8, 3, 7]",
+      "expected_output": "49"
+    },
+    {
+      "input_text": "[1, 1]",
+      "expected_output": "1"
+    }
+  ],
+  "hidden_tests": [
+    {
+      "input_text": "[4, 3, 2, 1, 4]",
+      "expected_output": "16"
+    },
+    {
+      "input_text": "[1, 2, 1]",
+      "expected_output": "2"
+    },
+    {
+      "input_text": "[2, 3, 10, 5, 7, 8, 9]",
+      "expected_output": "36"
+    }
+  ],
+  "hints": [
+    {
+      "level": 1,
+      "text": "The area between indices i and j is min(height[i], height[j]) * (j - i).",
+      "xp_cost": 2
+    },
+    {
+      "level": 2,
+      "text": "Start with two pointers at the widest possible span: left = 0 and right = n - 1.",
+      "xp_cost": 5
+    },
+    {
+      "level": 3,
+      "text": "To find a taller boundary, always move the pointer pointing to the shorter vertical line inward.",
+      "xp_cost": 10
+    }
+  ],
+  "editorial_md": "### Greedy Two Pointers\n\nThe container capacity is constrained by the shorter boundary: $Area = \\min(height[l], height[r]) \\times (r - l)$.\nMoving the taller pointer inward can only reduce or maintain width while never increasing the limiting height. Moving the shorter pointer inward is the only way that might discover a taller bar to offset the shrinking width.\n\n```python\ndef maxArea(height: list[int]) -> int:\n    l, r = 0, len(height) - 1\n    max_w = 0\n    while l < r:\n        h = min(height[l], height[r])\n        max_w = max(max_w, h * (r - l))\n        if height[l] < height[r]:\n            l += 1\n        else:\n            r -= 1\n    return max_w\n```\n\n- **Time Complexity:** $O(n)$ single pass.\n- **Space Complexity:** $O(1)$ constant memory."
+}
