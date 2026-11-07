@@ -495,9 +495,43 @@ export default function ProblemSolvePage({ params }: { params: { slug: string } 
           <div className="flex-1 overflow-y-auto p-6 space-y-4 text-sm text-slate-300">
             {activeTab === "statement" && (
               <div className="space-y-4">
-                <div className="font-sans leading-relaxed text-slate-200 whitespace-pre-line">
-                  {prob.statement_md}
+                <div className="font-sans leading-relaxed text-slate-200 space-y-1">
+                  {prob.statement_md.split("\n").map((line: string, lIdx: number) => {
+                    const parts = line.split(/(\*\*.*?\*\*|`.*?`)/g);
+                    return (
+                      <p key={lIdx} className="min-h-[1.25rem] leading-relaxed">
+                        {parts.map((part: string, pIdx: number) => {
+                          if (part.startsWith("**") && part.endsWith("**") && part.length >= 4) {
+                            return <strong key={pIdx} className="font-semibold text-white">{part.slice(2, -2)}</strong>;
+                          }
+                          if (part.startsWith("`") && part.endsWith("`") && part.length >= 2) {
+                            return (
+                              <code key={pIdx} className="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-300 font-mono text-xs border border-slate-700/80">
+                                {part.slice(1, -1)}
+                              </code>
+                            );
+                          }
+                          return part;
+                        })}
+                      </p>
+                    );
+                  })}
                 </div>
+
+                {prob.sample_tests && prob.sample_tests.length > 0 && (
+                  <div className="pt-4 border-t border-slate-800/80 space-y-3">
+                    <h3 className="text-xs uppercase font-mono font-bold tracking-wider text-slate-400">
+                      Examples:
+                    </h3>
+                    {prob.sample_tests.map((test: any, idx: number) => (
+                      <div key={idx} className="p-3.5 rounded-xl bg-[#121C2F] border border-slate-800 text-xs font-mono space-y-1.5 shadow-sm">
+                        <div className="text-slate-400 font-semibold">Example {idx + 1}:</div>
+                        <div className="text-slate-300"><span className="text-cyan-400 font-semibold">Input: </span>{test.input_text}</div>
+                        <div className="text-slate-300"><span className="text-emerald-400 font-semibold">Output: </span>{test.expected_output}</div>
+                      </div>
+                    ))}
+                  </div>
+                )}
 
                 <div className="pt-4 border-t border-slate-800/80">
                   <h3 className="text-xs uppercase font-mono font-bold tracking-wider text-slate-400 mb-2">

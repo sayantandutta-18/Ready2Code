@@ -63,7 +63,7 @@ export default function MockInterviewPage() {
     setSummaryReport(null);
   };
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (!userChatInput.trim()) return;
     const userMsg = userChatInput.trim();
     setUserChatInput("");
@@ -73,26 +73,55 @@ export default function MockInterviewPage() {
       { role: "candidate", text: userMsg },
     ]);
 
-    // Simulated interviewer response
-    setTimeout(() => {
-      setInterviewerMessages((prev) => [
-        ...prev,
-        {
-          role: "interviewer",
-          text: "Good consideration. Intervals are not guaranteed to be sorted initially. How does sorting by start time change the time complexity of your approach?",
-        },
-      ]);
-    }, 1200);
+    try {
+      const res = await fetch("/api/ai/interview", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: userMsg, code, problem_slug: problem.slug }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setInterviewerMessages((prev) => [
+          ...prev,
+          { role: "interviewer", text: data.reply },
+        ]);
+        return;
+      }
+    } catch {}
+
+    // Fallback response if offline
+    setInterviewerMessages((prev) => [
+      ...prev,
+      {
+        role: "interviewer",
+        text: "Good consideration. Intervals are not guaranteed to be sorted initially. How does sorting by start time change the time complexity of your approach?",
+      },
+    ]);
   };
 
-  const handleFinishInterview = () => {
+  const handleFinishInterview = async () => {
     setIsLocked(true);
+    let reviewData: any = null;
+    try {
+      const res = await fetch("/api/ai/review", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ problem_id: problem.slug, code }),
+      });
+      if (res.ok) {
+        reviewData = await res.json();
+      }
+    } catch {}
+
+    const feedbackText = reviewData
+      ? `Estimated complexity: ${reviewData.time_complexity} time, ${reviewData.space_complexity} space. ${reviewData.suggestion}`
+      : "Strong structural clarity. Clarified unsorted input assumptions early. Demonstrated an optimal O(n log n) sorting solution with O(n) space.";
+
     setSummaryReport({
-      correctness_score: 92,
-      communication_score: 88,
-      feedback:
-        "Strong structural clarity. Clarified unsorted input assumptions early. Demonstrated an optimal O(n log n) sorting solution with O(n) space.",
-      time_spent_min: Math.round((durationMin * 60 - secondsRemaining) / 60),
+      correctness_score: reviewData ? (reviewData.time_complexity.includes("²") ? 78 : 95) : 92,
+      communication_score: Math.min(95, 80 + interviewerMessages.length * 2),
+      feedback: feedbackText,
+      time_spent_min: Math.max(1, Math.round((durationMin * 60 - secondsRemaining) / 60)),
     });
   };
 

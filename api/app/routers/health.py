@@ -65,9 +65,11 @@ def health_check(db: Session = Depends(get_db)):
     return {
         "status": status,
         "db": db_ok, # Preserved for backward compatibility with existing tests
+        "redis": redis_ok,
+        "judge0": judge0_ok,
         "postgres": "up" if db_ok else "down",
-        "redis": "up" if redis_ok else "down",
-        "judge0": "up" if judge0_ok else "down",
+        "redis_status": "up" if redis_ok else "down",
+        "judge0_status": "up" if judge0_ok else "down",
         "environment": settings.ENVIRONMENT,
         "app": "Ready2Code API"
     }

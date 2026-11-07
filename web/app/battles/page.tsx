@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Swords, Zap, Trophy, Shield, Flame, Play, Timer, Sparkles, Users } from "lucide-react";
 import TiltCard from "@/components/ui/TiltCard";
+import { fetchApi } from "@/lib/api";
 
 export default function BattleLobbyPage() {
   const router = useRouter();
@@ -19,9 +20,8 @@ export default function BattleLobbyPage() {
     }, 1000);
 
     try {
-      const res = await fetch("http://localhost:8000/battles/queue", {
+      const data = await fetchApi<any>("/battles/queue", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           user_id: "usr_alex",
           username: "coder_alex",
@@ -29,7 +29,6 @@ export default function BattleLobbyPage() {
           preferred_language: "python"
         })
       });
-      const data = await res.json();
       clearInterval(interval);
       setTimeout(() => {
         router.push(`/battles/${data.id}`);

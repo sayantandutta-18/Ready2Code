@@ -25,13 +25,14 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r api/requirements.txt pytest pytest-asyncio
 
-      - name: Run Pytest Test Suite (26 tests)
+      - name: Run Pytest Test Suite (28 tests)
         run: |
           python -m pytest api/tests/ -v
 
-      - name: Validate Problem Bank Integrity (60 problems)
+      - name: Validate Problem Bank Integrity (100 problems)
         run: |
           python scripts/validate_problems.py
+          python content/scripts/validate_content.py
 
   frontend-build:
     name: Frontend Lint, Type-Check, Tests & Next.js Build

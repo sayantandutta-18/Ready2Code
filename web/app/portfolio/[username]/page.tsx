@@ -125,7 +125,7 @@ export default function PortfolioPage({ params }: { params: { username: string }
             {/* Direct Connect Buttons */}
             <div className="flex items-center gap-2">
               <a
-                href="https://github.com"
+                href={`https://github.com/${profile.username}`}
                 target="_blank"
                 rel="noreferrer"
                 className="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors"
@@ -134,7 +134,7 @@ export default function PortfolioPage({ params }: { params: { username: string }
                 <Github className="w-4 h-4" />
               </a>
               <a
-                href="https://linkedin.com"
+                href={`https://linkedin.com/in/${profile.username}`}
                 target="_blank"
                 rel="noreferrer"
                 className="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors"

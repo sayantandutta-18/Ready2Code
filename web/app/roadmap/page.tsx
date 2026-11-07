@@ -43,15 +43,21 @@ const TOPIC_CONFIG = [
 
 export default function RoadmapPage() {
   const {
-    data: allProblems = [],
+    data: rawProblemsData,
     isLoading,
     isError,
     error,
     refetch,
-  } = useQuery<ProblemItem[]>({
+  } = useQuery<any>({
     queryKey: ["roadmap-problems"],
-    queryFn: () => fetchApi<ProblemItem[]>("/problems"),
+    queryFn: () => fetchApi<any>("/problems"),
   });
+
+  const allProblems: ProblemItem[] = useMemo(() => {
+    if (Array.isArray(rawProblemsData)) return rawProblemsData;
+    if (rawProblemsData && Array.isArray(rawProblemsData.items)) return rawProblemsData.items;
+    return [];
+  }, [rawProblemsData]);
 
   const { topics, topicProblems } = useMemo(() => {
     const problemsByTopic: Record<string, ProblemItem[]> = {};

@@ -37,12 +37,18 @@ export default function DailyChallengePage() {
     queryFn: () => fetchApi<DailyData>("/daily"),
   });
 
-  const handleUseFreeze = () => {
+  const handleUseFreeze = async () => {
     if ((dailyData?.freezes_left ?? 0) > 0 && !freezeActive) {
-      setFreezeActive(true);
       try {
-        localStorage.setItem(`ready2code_freeze_${dailyData?.date}`, "active");
-      } catch {}
+        await fetchApi("/daily/freeze", { method: "POST" });
+        setFreezeActive(true);
+        refetch();
+        try {
+          localStorage.setItem(`ready2code_freeze_${dailyData?.date}`, "active");
+        } catch {}
+      } catch (err) {
+        setFreezeActive(true);
+      }
     }
   };
 

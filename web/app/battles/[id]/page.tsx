@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Swords, Play, CheckCircle2, XCircle, Trophy, ArrowLeft, Clock, Zap, AlertCircle } from "lucide-react";
 import dynamic from "next/dynamic";
 import confetti from "canvas-confetti";
+import { fetchApi } from "@/lib/api";
 
 const MonacoEditor = dynamic(() => import("@monaco-editor/react"), { ssr: false });
 
@@ -88,9 +89,8 @@ export default function BattleRoomPage({ params }: { params: { id: string } }) {
         origin: { y: 0.6 }
       });
       // Submit to backend
-      fetch(`http://localhost:8000/battles/${params.id}/submit`, {
+      fetchApi(`/battles/${params.id}/submit`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           user_id: "usr_alex",
           passed_tests: 5,

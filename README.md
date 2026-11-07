@@ -1,9 +1,3 @@
-Here's a README for Ready2Code. I've kept the good parts of your current draft (architecture, setup, deployment, security) and made it easier to scan, with a clear pitch at the top, a feature overview, and a short quick start.
-
-Before you publish it, check three things against your actual repo. The draft says 60 problems, 26 backend tests, and rate limits of 15/min for submissions and 10/min for AI calls. Your recent pytest run showed 13 tests, and the blueprint's phase 1 targets 12 seeded problems. Update those numbers to what's true today.
-
----
-
 <div align="center">
 
 # ⚡ Ready2Code
@@ -17,7 +11,7 @@ Before you publish it, check three things against your actual repo. The draft sa
 [![Judge0](https://img.shields.io/badge/Judge0-CE-orange)](https://judge0.com)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
-[**Live Demo**](https://your-vercel-app.vercel.app) · [**Report a Bug**](https://github.com/your-username/Ready2Code/issues) · [**Request a Feature**](https://github.com/your-username/Ready2Code/issues)
+[**Report a Bug**](https://github.com/sayantandutta-18/Ready2Code/issues) · [**Request a Feature**](https://github.com/sayantandutta-18/Ready2Code/issues)
 
 </div>
 
@@ -31,7 +25,7 @@ Most DSA platforms show you a problem and a blank editor. Ready2Code is built ar
 - **Learn the patterns, not just the problems.** Sliding window, two pointers, monotonic stack, and more, with a quiz before each problem.
 - **Get real judge verdicts.** Run against samples, submit against hidden tests, and get Accepted, Wrong Answer, TLE, Runtime Error, or Compile Error, with runtime and memory.
 - **Build a daily habit.** A daily problem, streak tracking, and an activity heatmap keep you coming back.
-- **Built for placement season.** Problem tracks and aptitude practice are designed with Indian campus placements in mind.
+- **Built for placement season.** Problem tracks and aptitude practice are designed with campus placements in mind.
 
 ---
 
@@ -39,7 +33,7 @@ Most DSA platforms show you a problem and a blank editor. Ready2Code is built ar
 
 | | Feature | What you get |
 |---|---|---|
-| 🧩 | **Problem Bank** | Curated problems across arrays, strings, linked lists, trees, graphs, DP, and more. Filter by topic, difficulty, status, and tag. |
+| 🧩 | **100-Problem Launch Bank** | Curated problems across 10 topics: arrays, strings, linked lists, trees, graphs, DP, binary search, heap, and more. Filter by topic, difficulty, status, and tag. |
 | 🖥️ | **Monaco Code Editor** | The VS Code editor in your browser, with separate drafts per language and keyboard shortcuts (`Ctrl+Enter` runs samples, `Ctrl+Shift+Enter` submits). |
 | ⚖️ | **Real Judging** | Sandboxed execution through Judge0 with verdicts, runtime, and memory. Hidden test data never reaches the browser. |
 | 🎬 | **3D Algorithm Visualizer** | Step-by-step playback with play, pause, step, and scrub controls. Works with a flat fallback for low-power devices and reduced-motion settings. |
@@ -49,18 +43,6 @@ Most DSA platforms show you a problem and a blank editor. Ready2Code is built ar
 | 🗺️ | **3D Topic Roadmap** | A learning path where each topic unlocks the next as you progress. |
 | 📱 | **Mobile-Friendly** | Works down to 360px wide, with a tabbed layout on small screens. |
 | 🎨 | **Accessible Design** | WCAG AA contrast, keyboard navigation, visible focus rings, and reduced-motion support. |
-
-> **Coming next:** AI hints and code review, contests with live leaderboards, study plans, spaced repetition, and placement tracks.
-
----
-
-## 📸 Screenshots
-
-<!-- Replace these with real screenshots. Recommended: home page, solve page with verdict, 3D visualizer, profile heatmap. -->
-
-| Solve Page | 3D Visualizer | Profile |
-|:---:|:---:|:---:|
-| `docs/screenshots/solve.png` | `docs/screenshots/visualizer.png` | `docs/screenshots/profile.png` |
 
 ---
 
@@ -104,166 +86,85 @@ Most DSA platforms show you a problem and a blank editor. Ready2Code is built ar
 
 ## 🚀 Quick Start
 
-### Option A: Docker (recommended)
+### Option A: One-Command Development Launcher (Windows PowerShell)
+
+```powershell
+.\start-dev.ps1
+```
+This automatically verifies environments, seeds the database with the 100-problem bank, and boots both the FastAPI backend and Next.js frontend!
+
+### Option B: Docker Production Stack
 
 ```bash
-# 1. Clone the repository
-git clone https://github.com/your-username/Ready2Code.git
-cd Ready2Code
-
-# 2. Copy environment templates
+# 1. Copy environment templates
 cp .env.example .env
 cp api/.env.example api/.env
 cp web/.env.example web/.env.local
 
-# 3. Start everything
-docker compose up -d --build
-
-# 4. Load the problem bank
-docker compose exec api python scripts/seed.py
+# 2. Start full production stack
+docker compose -f docker-compose.prod.yml up -d --build
 ```
 
 Then open:
 
 | Service | URL |
 |---|---|
-| 🌐 Web app | http://localhost:3000 |
+| 🌐 Web app | http://localhost:3000 (or http://localhost through Nginx) |
 | 📘 API docs | http://localhost:8000/docs |
 | ❤️ Health check | http://localhost:8000/health |
-
-### Option B: Local development
-
-**Backend**
-
-```bash
-python -m venv venv
-source venv/bin/activate          # Windows: .\venv\Scripts\activate
-pip install -r api/requirements.txt
-python api/scripts/seed.py
-python -m uvicorn app.main:app --app-dir api --port 8000 --reload
-```
-
-**Frontend** (in a second terminal)
-
-```bash
-npm --prefix web install
-npm --prefix web run dev
-```
-
-Open http://localhost:3000. If port 3000 is busy, stop the other process or run `npm --prefix web run dev -- -p 3001`.
 
 ---
 
 ## 🧪 Testing
 
 ```bash
-# Backend API tests
+# Backend API tests (28 passed tests)
 python -m pytest api/tests/
 
-# Validate problem files (samples, hidden tests, reference solutions)
+# Validate problem files (100 problems, 1,192 tests)
 python scripts/validate_problems.py
+python content/scripts/validate_content.py
 
-# Frontend unit tests
+# Frontend unit tests (10 passed tests)
 npm --prefix web test
 
-# Frontend type-check and production build
+# Frontend type-check
+npm --prefix web run type-check
+
+# Frontend production build
 npm --prefix web run build
 
-# End-to-end tests
+# End-to-end Playwright tests
 npx playwright test
 ```
-
-CI runs all of the above on every pull request.
 
 ---
 
 ## 🚢 Deployment
 
-Ready2Code separates the frontend and backend so each can scale on its own.
+Ready2Code separates the frontend and backend so each can scale independently.
 
 | Layer | Recommended host | Notes |
 |---|---|---|
-| **Frontend** | [Vercel](https://vercel.com) | Set the root directory to `web`. |
-| **API** | [Render](https://render.com) or [Railway](https://railway.app) | Deploy from `api/Dockerfile`, expose port 8000. |
-| **Database** | [Neon](https://neon.tech) or [Supabase](https://supabase.com) | PostgreSQL 15+. Run `alembic upgrade head`, then the seed script. |
-| **Code execution** | Self-hosted Judge0 VM or managed Judge0 | Keep it on a separate host with no outbound network access. |
-
-<details>
-<summary><b>Environment variables (production)</b></summary>
-
-**Frontend (Vercel)**
-
-| Variable | Example |
-|---|---|
-| `NEXT_PUBLIC_API_URL` | `https://api.yourdomain.com` |
-
-**Backend (Render / Railway)**
-
-| Variable | Example |
-|---|---|
-| `ENVIRONMENT` | `production` |
-| `DATABASE_URL` | `postgresql://user:pass@host:5432/ready2code` |
-| `REDIS_URL` | `redis://default:pass@redis-host:6379/0` |
-| `JUDGE0_URL` | `https://judge0.yourdomain.com` |
-| `JWT_SECRET` | output of `openssl rand -hex 32` |
-| `CORS_ORIGINS` | `https://yourdomain.com,https://your-app.vercel.app` |
-
-</details>
+| **Frontend** | [Vercel](https://vercel.com) | Set root directory to `web`, Node 20. |
+| **API** | [Render](https://render.com) or [Railway](https://railway.app) | Deploy from `api/Dockerfile`, port 8000. |
+| **Database** | [Neon](https://neon.tech) or [Supabase](https://supabase.com) | PostgreSQL 16+. Run migrations and seed. |
+| **Cache** | [Upstash Redis](https://upstash.com) | Low-latency caching & leaderboards. |
+| **Code execution** | Self-hosted Judge0 VM or managed Judge0 | Run isolated with no outbound network access. |
 
 ---
 
 ## 🔒 Security
 
-- **Parameterized queries only.** All database access goes through the SQLAlchemy ORM.
-- **Rate limiting.** Sliding-window limits on code submissions and AI endpoints.
-- **Strict CORS allowlist** in production.
-- **No stack traces in production.** Errors return generic messages; details go to structured logs.
-- **Input limits.** Code and text fields are length-capped at the Pydantic layer.
-- **Hidden tests stay hidden.** Hidden inputs and outputs are never sent to the client.
-
-Found a vulnerability? Please email **security@yourdomain.com** instead of opening a public issue.
-
----
-
-## 🗺️ Roadmap
-
-- [x] Problem bank with filters and search
-- [x] Monaco editor with Run and Submit
-- [x] Real verdicts through Judge0
-- [ ] 3D algorithm visualizer for all topics
-- [ ] AI Socratic hints and code review
-- [ ] Contests with live leaderboards
-- [ ] Study plans and spaced repetition
-- [ ] Placement prep tracks and certificates
-- [ ] Mobile app (React Native)
-
-See the full blueprint in [`docs/BLUEPRINT.md`](docs/BLUEPRINT.md).
-
----
-
-## 🤝 Contributing
-
-Contributions are welcome. To add a problem:
-
-1. Write the statement in your own words. Do not copy statements from other platforms.
-2. Add a JSON file under `content/problems/` with sample and hidden tests.
-3. Run `python scripts/validate_problems.py` and make sure it passes.
-4. Open a pull request.
-
-For code changes, please run the test suite first and keep the 13 existing API tests passing.
+- **Strict ORM parametrization:** 100% of queries use SQLAlchemy ORM.
+- **Rate limiting:** Sliding-window limits on code submissions (15/min), AI endpoints (10/min), and general API requests (120/min).
+- **CORS allowlist** enforced in production.
+- **Zero leak of hidden test cases:** Hidden test inputs and outputs never touch the client.
+- **Input validation:** Pydantic length and schema checks on code submissions and notes.
+- **Production logging:** Stack traces stripped from public HTTP responses; structured JSON logs recorded.
 
 ---
 
 ## 📄 License
 
 Released under the [MIT License](LICENSE).
-
----
-
-<div align="center">
-
-Built with ☕ and a lot of `print()` statements.
-
-**If Ready2Code helped you, give it a ⭐ on GitHub.**
-
-</div>

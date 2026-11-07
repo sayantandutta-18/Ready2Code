@@ -71,6 +71,24 @@ def review_code(req: ReviewRequest, db: Session = Depends(get_db)):
         "suggestion": suggestion
     }
 
+class InterviewChatRequest(BaseModel):
+    message: str = Field(..., max_length=2000)
+    code: Optional[str] = Field(default="", max_length=65536)
+    problem_slug: Optional[str] = Field(default="merge-intervals", max_length=128)
+
+@router.post("/interview", dependencies=[Depends(rate_limit_ai)])
+def interview_chat(req: InterviewChatRequest):
+    msg = req.message.lower()
+    if "edge" in msg or "case" in msg or "empty" in msg:
+        reply = "Great question regarding edge cases. Consider empty arrays, single elements, and completely disjoint intervals. How does your algorithm handle identical overlapping boundaries?"
+    elif "sort" in msg or "order" in msg:
+        reply = "Sorting is often a great foundation for intervals! If you sort by start times, how can you determine if the next interval overlaps with the previous one in a single pass?"
+    elif "complexity" in msg or "time" in msg or "space" in msg:
+        reply = "Sorting will take O(N log N) time, followed by a linear scan O(N). Is that acceptable, or can we do better without extra memory?"
+    else:
+        reply = "Good line of thought. Focus on maintaining an invariant: keep the last merged interval and check if the current interval starts before the previous one ends."
+    return {"reply": reply}
+
 @router.post("/explain-verdict", dependencies=[Depends(rate_limit_ai)])
 def explain_verdict(req: ExplainVerdictRequest):
     if req.verdict == "WA":

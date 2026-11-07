@@ -34,6 +34,7 @@ async function main() {
   const child = spawn(cmd, ["next", "dev", "-p", String(PORT)], {
     stdio: "inherit",
     env: process.env,
+    shell: isWindows,
   });
 
   child.on("exit", (code) => {

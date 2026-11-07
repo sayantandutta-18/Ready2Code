@@ -36,7 +36,16 @@ interface PlanDetail {
 
 export default function PlanDetailPage({ params }: { params: { id: string } }) {
   const { id } = params;
-  const [activeDay, setActiveDay] = useState(1);
+  const [activeDay, setActiveDay] = useState(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem(`ready2code_plan_${id}_day`);
+      if (saved) {
+        const parsed = parseInt(saved, 10);
+        if (!isNaN(parsed) && parsed > 0) return parsed;
+      }
+    }
+    return 1;
+  });
 
   const {
     data: planData,
@@ -48,6 +57,21 @@ export default function PlanDetailPage({ params }: { params: { id: string } }) {
     queryKey: ["plan", id, activeDay],
     queryFn: () => fetchApi<PlanDetail>(`/plans/${id}?current_day=${activeDay}`),
   });
+
+  const handleSetActiveDay = (day: number) => {
+    setActiveDay(day);
+    if (typeof window !== "undefined") {
+      try {
+        localStorage.setItem(`ready2code_plan_${id}_day`, String(day));
+      } catch {}
+    }
+  };
+
+  const handleMarkDayComplete = () => {
+    if (!planData) return;
+    const nextDay = Math.min(planData.duration_days, activeDay + 1);
+    handleSetActiveDay(nextDay);
+  };
 
   if (isLoading) {
     return (
@@ -73,10 +97,6 @@ export default function PlanDetailPage({ params }: { params: { id: string } }) {
 
   const currentDayData =
     planData.days.find((d) => d.day_number === activeDay) || planData.days[0];
-
-  const handleMarkDayComplete = () => {
-    setActiveDay((prev) => Math.min(planData.duration_days, prev + 1));
-  };
 
   return (
     <div className="max-w-6xl mx-auto px-4 lg:px-8 py-10 space-y-8">
@@ -118,7 +138,7 @@ export default function PlanDetailPage({ params }: { params: { id: string } }) {
               <button
                 key={d.day_number}
                 disabled={!d.unlocked}
-                onClick={() => setActiveDay(d.day_number)}
+                onClick={() => handleSetActiveDay(d.day_number)}
                 className={`h-14 rounded-xl border flex flex-col items-center justify-center transition-all ${
                   isSelected
                     ? "bg-cyan-500 text-slate-950 ring-2 ring-cyan-300 font-bold scale-105 shadow-lg shadow-cyan-500/25"
