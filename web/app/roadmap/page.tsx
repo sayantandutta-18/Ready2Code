@@ -66,11 +66,14 @@ export default function RoadmapPage() {
     }
 
     for (const p of allProblems) {
-      const topicLower = (p.topic || "arrays").toLowerCase().replace(/ /g, "-");
+      const topicLower = (p.topic || "").toLowerCase();
+      const pKey = ((p as any).topic_key || "").toLowerCase();
       const matched = TOPIC_CONFIG.find(
         (t) =>
-          t.slug === topicLower ||
-          t.name.toLowerCase() === (p.topic || "").toLowerCase()
+          t.slug === pKey ||
+          t.slug === pKey.replace(/_/g, "-") ||
+          topicLower.includes(t.name.toLowerCase()) ||
+          t.name.toLowerCase().includes(topicLower)
       );
       const targetSlug = matched ? matched.slug : "arrays";
       if (!problemsByTopic[targetSlug]) problemsByTopic[targetSlug] = [];

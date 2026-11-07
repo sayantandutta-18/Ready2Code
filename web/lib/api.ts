@@ -1,12 +1,18 @@
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "";
 
 export async function fetchApi<T>(endpoint: string, options?: RequestInit): Promise<T> {
-  // Use relative /api path if client-side and Next rewrites are enabled, or absolute API_BASE
-  const url = endpoint.startsWith("http")
-    ? endpoint
-    : endpoint.startsWith("/api")
-    ? endpoint
-    : `${API_BASE}${endpoint.startsWith("/") ? "" : "/"}${endpoint}`;
+  let url = endpoint;
+  if (!url.startsWith("http")) {
+    if (API_BASE) {
+      const base = API_BASE.replace(/\/$/, "");
+      const cleanPath = endpoint.startsWith("/") ? endpoint : `/${endpoint}`;
+      url = `${base}${cleanPath}`;
+    } else {
+      // Default to Next.js API routes under /api/...
+      const cleanPath = endpoint.startsWith("/") ? endpoint : `/${endpoint}`;
+      url = cleanPath.startsWith("/api") ? cleanPath : `/api${cleanPath}`;
+    }
+  }
 
   // Attach auth token if available in browser
   const headers: Record<string, string> = {

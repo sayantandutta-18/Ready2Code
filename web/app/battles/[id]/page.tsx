@@ -33,9 +33,8 @@ export default function BattleRoomPage({ params }: { params: { id: string } }) {
     // Poll battle endpoint or simulate realistic duel pacing
     const fetchBattle = async () => {
       try {
-        const res = await fetch(`http://localhost:8000/battles/${params.id}`);
-        if (res.ok) {
-          const data = await res.json();
+        const data = await fetchApi<any>(`/battles/${params.id}`);
+        if (data) {
           setBattle(data);
           if (data.player2) {
             setOpponentName(data.player2.username);
