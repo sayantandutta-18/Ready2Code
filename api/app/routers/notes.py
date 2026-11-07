@@ -62,6 +62,10 @@ def save_note(
     ).first()
 
     if not note:
+        user_record = db.query(User).filter(User.id == eff_user_id).first()
+        if not user_record:
+            db.add(User(id=eff_user_id, username=eff_user_id, display_name=eff_user_id))
+            db.commit()
         note = Note(user_id=eff_user_id, problem_id=p_id, body_md=payload.body_md)
         db.add(note)
     else:

@@ -5,6 +5,10 @@ __pycache__/
 *.pyc
 .pytest_cache/
 *.env.local
+.env
+api/.env
+!*.example
+!*.example.*
 .DS_Store
 *.tsbuildinfo
 playwright-report/

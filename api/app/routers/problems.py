@@ -175,6 +175,14 @@ def get_problem(slug: str, user_id: Optional[str] = None, db: Session = Depends(
         for t in p.tests if not t.is_hidden
     ]
 
+    examples = [
+        {
+            "input": t.input_text,
+            "output": t.expected_output
+        }
+        for t in p.tests if not t.is_hidden
+    ]
+
     hints = [
         {
             "id": h.id,
@@ -214,6 +222,7 @@ def get_problem(slug: str, user_id: Optional[str] = None, db: Session = Depends(
         "memory_limit_mb": p.memory_limit_mb,
         "scene": getattr(p, "scene", None) or "array",
         "starter_code": starter_code_data,
+        "examples": examples,
         "sample_tests": sample_tests,
         "hints": hints,
         "editorial": editorial,

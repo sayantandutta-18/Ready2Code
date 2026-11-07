@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from ..database import get_db
-from ..models.entities import Problem, UserLadder, LadderStage
+from ..models.entities import Problem, UserLadder, LadderStage, User
 
 router = APIRouter(prefix="/ladder", tags=["ladder"])
 
@@ -107,6 +107,10 @@ def submit_stage(req: StageSubmitRequest, db: Session = Depends(get_db)):
     next_stage = next_map.get(req.stage, "mastered")
 
     if not user_prog:
+        user_record = db.query(User).filter(User.id == req.user_id).first()
+        if not user_record:
+            db.add(User(id=req.user_id, username=req.user_id, display_name=req.user_id))
+            db.commit()
         user_prog = UserLadder(user_id=req.user_id, problem_id=prob.id, stage_reached=next_stage)
         db.add(user_prog)
     else:

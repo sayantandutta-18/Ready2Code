@@ -1,6 +1,17 @@
 import os
 from typing import List
 from pydantic import BaseModel, Field
+from dotenv import load_dotenv
+
+# Priority 1: api/.env, Priority 2: root .env
+for _p in [
+    os.path.join(os.path.dirname(__file__), "..", ".env"),
+    os.path.join(os.getcwd(), "api", ".env"),
+    os.path.join(os.getcwd(), ".env"),
+]:
+    if os.path.exists(_p):
+        load_dotenv(_p, override=True)
+        break
 
 class Settings(BaseModel):
     ENVIRONMENT: str = Field(default_factory=lambda: os.getenv("ENVIRONMENT", "development"))
@@ -22,6 +33,7 @@ class Settings(BaseModel):
     JWT_SECRET: str = Field(default_factory=lambda: os.getenv("JWT_SECRET", "ready2code-super-secret-jwt-key-change-in-prod-2026"))
     JWT_ALGORITHM: str = "HS256"
     JWT_EXPIRES_DAYS: int = 7
+    DEV_DEMO_LOGIN: bool = Field(default_factory=lambda: os.getenv("DEV_DEMO_LOGIN", "true").lower() in ("true", "1", "yes"))
     
     # CORS
     CORS_ORIGINS: List[str] = Field(default_factory=lambda: [

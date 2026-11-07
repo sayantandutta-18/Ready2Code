@@ -121,18 +121,26 @@ def get_review_queue(user_id: str = "guest", db: Session = Depends(get_db)):
 
 @router.post("/review/grade")
 def grade_review(req: GradeReviewRequest, db: Session = Depends(get_db)):
+    # Resolve problem_id if passed as slug
+    prob = db.query(Problem).filter((Problem.id == req.problem_id) | (Problem.slug == req.problem_id)).first()
+    actual_problem_id = prob.id if prob else req.problem_id
+
     rq = db.query(ReviewQueue).filter(
         ReviewQueue.user_id == req.user_id,
-        ReviewQueue.problem_id == req.problem_id
+        ReviewQueue.problem_id == actual_problem_id
     ).first()
 
     intervals = [1, 3, 7, 21]
     today = date.today()
 
     if not rq:
+        user_record = db.query(User).filter(User.id == req.user_id).first()
+        if not user_record:
+            db.add(User(id=req.user_id, username=req.user_id, display_name=req.user_id))
+            db.commit()
         rq = ReviewQueue(
             user_id=req.user_id,
-            problem_id=req.problem_id,
+            problem_id=actual_problem_id,
             due_date=today.isoformat(),
             interval_days=1
         )

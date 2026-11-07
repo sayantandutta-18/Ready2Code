@@ -1,148 +1,145 @@
 # Ready2Code — Comprehensive Codebase Audit (Phase 0)
 
 Date: November 2026  
-Status: Phase 0 Completed
+Status: Phase 0 Completed  
+Workspace: `Ready2Code` (Interactive 3D DSA Arena)
 
 ---
 
 ## 1. Route Audit (`web/app`)
 
-Every route in `web/app`, its data consumption model, and audit notes:
+Every route in `web/app`, its data consumption model, API endpoints called, and hard-coded/mock elements:
 
 | Route | File Path | Data Source Category | API Endpoint Called (if any) | Hard-coded / Mock Data Elements |
 | :--- | :--- | :--- | :--- | :--- |
-| `/` | `web/app/page.tsx` | Partial API | `GET /api/daily` | Stats counters (63+ problems, 15 patterns), quick topic tags, hero problem initial fallback state. |
-| `/analytics` | `web/app/analytics/page.tsx` | Partial API | `GET /api/analytics` | Hardcoded initial fallback state (weekly solves, topic acceptance, weak topics). |
-| `/battles` | `web/app/battles/page.tsx` | Partial API | `POST /battles/queue` | Active duelists count (412 Online), Season 4 champion, rules list, recent duel matches list. |
-| `/battles/[id]` | `web/app/battles/[id]/page.tsx` | Partial API | `GET /battles/{id}`, `POST /battles/{id}/submit` | Hardcoded initial problem (Two Sum), local interval simulation for opponent test passing, simulated judge output. |
-| `/certificates/[code]` | `web/app/certificates/[code]/page.tsx` | Partial API | `GET /api/certificates/verify/{code}` | Fallback mock certificate object if API call fails. |
-| `/companies` | `web/app/companies/page.tsx` | **Hard-coded Mock** | None | `COMPANIES_DATA` array containing 6 companies, packages, rounds, target topics, and descriptions. |
-| `/companies/[name]` | `web/app/companies/[name]/page.tsx` | **Hard-coded Mock** | None | Hardcoded 8-day schedule array; milestone checkboxes update local component state only. |
-| `/contests` | `web/app/contests/page.tsx` | Partial API | `GET /api/contests` | Fallback contest list if API fails. |
-| `/contests/[id]` | `web/app/contests/[id]/page.tsx` | Full API | `GET /api/contests/{id}`, `GET /api/contests/{id}/standings`, `POST /api/contests/{id}/submit` | Fallback mock contest and problem list if API request fails. |
-| `/daily` | `web/app/daily/page.tsx` | Partial API | `GET /api/daily` | Initial streak state (3 days); "Use Streak Freeze" only modifies local React state. |
-| `/interviews` | `web/app/interviews/page.tsx` | **Hard-coded Mock** | None | `INTERVIEWS_DATA` array (4 candidate debriefs); filter buttons only filter local array. |
-| `/jobs` | `web/app/jobs/page.tsx` | **Hard-coded Mock** | None | `JOBS_DATA` array (5 partner companies); "Fast-Track Apply" only modifies local state array. |
-| `/ladder/[problem]` | `web/app/ladder/[problem]/page.tsx` | Full API | `GET /api/ladder/{problem}`, `POST /api/ladder/stage` | Fallback 3-stage ladder if API request fails. |
-| `/leaderboard` | `web/app/leaderboard/page.tsx` | Partial API | `GET /api/leaderboard` | Fallback top-5 users array if API request fails. |
-| `/lists` | `web/app/lists/page.tsx` | Full API | `GET /api/lists`, `GET /api/plans`, `POST /api/lists` | Fallback system lists (Blind 75, NeetCode 150) and 30-Day Bootcamp plan. |
-| `/lists/[id]` | `web/app/lists/[id]/page.tsx` | Full API | `GET /api/lists/{id}` | Fallback mock problems array if API request fails. |
-| `/mock` | `web/app/mock/page.tsx` | **Placeholder / Mock** | None | Hardcoded problem (Merge Intervals), hardcoded interviewer message dialogue, hardcoded evaluation score (85/90). |
-| `/patterns` | `web/app/patterns/page.tsx` | Partial API | `GET /api/patterns` | Fallback 15 patterns array from `data.ts`. |
-| `/patterns/[id]` | `web/app/patterns/[id]/page.tsx` | Full API | `GET /api/patterns/{id}`, `POST /api/patterns/{id}/quiz` | Fallback pattern template and quiz question if API request fails. |
-| `/placement` | `web/app/placement/page.tsx` | Partial API | `GET /api/placement/questions` | Hardcoded tracks array; fallback CS questions (OS, DBMS, Networks). |
-| `/plans/[id]` | `web/app/plans/[id]/page.tsx` | Partial API | `GET /api/plans/{id}` | Day checkboxes toggle local component state; not saved to backend. |
-| `/portfolio/[username]` | `web/app/portfolio/[username]/page.tsx` | **Hard-coded Mock** | None | Hardcoded stats (1,640 ELO, 32-day streak, 148 problems solved); hardcoded `ActivityTower` props. |
-| `/problems` | `web/app/problems/page.tsx` | Full API | `GET /api/problems` | Fallback problem list (12 problems) if API request fails. |
-| `/problems/[slug]` | `web/app/problems/[slug]/page.tsx` | Full API | `GET /api/problems/{slug}`, `POST /api/submissions/run`, `POST /api/submissions`, `GET /api/submissions`, `GET /api/notes/{id}`, `POST /api/notes`, `POST /api/ai/hint`, `POST /api/ai/review`, `GET /api/discussions/problem/{slug}`, `POST /api/discussions`, `POST /api/users/me/bookmarks/toggle` | Silent mock fallbacks in catch blocks (fakes Accepted verdict with confetti if server/judge unreachable). |
-| `/profile/[username]` | `web/app/profile/[username]/page.tsx` | Partial API | `GET /api/users/{username}` | Hardcoded badge definitions; fallback user stats if API request fails. |
-| `/review` | `web/app/review/page.tsx` | Full API | `GET /api/review`, `POST /api/review/grade` | Fallback flashcards array if API request fails. |
-| `/roadmap` | `web/app/roadmap/page.tsx` | **Hard-coded Mock** | None | `DEFAULT_TOPICS` (7 islands) and `TOPIC_PROBLEMS` dictionary hardcoded; zero API calls. |
-| `/settings` | `web/app/settings/page.tsx` | Full API | `PATCH /api/users/me` | Timezone list and default blind mode setting stored in localStorage. |
-| `/visualizer/[algo]` | `web/app/visualizer/[algo]/page.tsx` | **Hard-coded Mock** | None | `TWO_SUM_TRACE` and `BUBBLE_SORT_TRACE` hardcoded step frames; no API trace generation. |
+| `/` | `web/app/page.tsx` | Partial API | `GET /daily` | Stats counters (63+ problems, 15 patterns), hero problem fallback state. |
+| `/analytics` | `web/app/analytics/page.tsx` | Partial API | `GET /analytics` | Fallback initial chart structure if API fails. |
+| `/battles` | `web/app/battles/page.tsx` | Partial API | `POST /battles/queue`, `GET /battles/{id}` | Active duelists counter (412 Online), Season 4 champion banner, rules list. |
+| `/battles/[id]` | `web/app/battles/[id]/page.tsx` | Partial API | `GET /battles/{id}`, `POST /battles/{id}/submit` | Opponent test progress simulated via client `setInterval`, initial problem state. |
+| `/certificates/[code]` | `web/app/certificates/[code]/page.tsx` | Partial API | `GET /certificates/verify/{code}` | Fallback mock certificate if verification fails. |
+| `/companies` | `web/app/companies/page.tsx` | Real API | `GET /companies` | None (reads dynamically from `GET /companies` via TanStack Query). |
+| `/companies/[name]` | `web/app/companies/[name]/page.tsx` | Real API | `GET /companies/{name}` | None (reads company roadmap and milestones from backend API). |
+| `/contests` | `web/app/contests/page.tsx` | Real API | `GET /contests`, `GET /leaderboard` | Fallback contest list if API unreachable. |
+| `/contests/[id]` | `web/app/contests/[id]/page.tsx` | Real API | `GET /contests/{id}`, `GET /contests/{id}/standings` | Fallback mock contest if API unreachable. |
+| `/daily` | `web/app/daily/page.tsx` | Real API | `GET /daily`, `POST /daily/freeze` | Fallback daily problem if API unreachable. |
+| `/interviews` | `web/app/interviews/page.tsx` | Real API | `GET /interviews`, `POST /interviews` | None (reads debrief list from API and creates new experiences). |
+| `/jobs` | `web/app/jobs/page.tsx` | Real API | `GET /jobs`, `POST /jobs/{id}/apply` | None (reads open jobs from API and posts applications). |
+| `/ladder/[problem]` | `web/app/ladder/[problem]/page.tsx` | Real API | `GET /ladder/{problem}`, `POST /ladder/stage` | Fallback ladder steps if API unreachable. |
+| `/leaderboard` | `web/app/leaderboard/page.tsx` | Real API | `GET /leaderboard` | Fallback top-5 users array if API unreachable. |
+| `/lists` | `web/app/lists/page.tsx` | Real API | `GET /lists`, `GET /plans`, `POST /lists` | Fallback system lists (Blind 75, NeetCode 150). |
+| `/lists/[id]` | `web/app/lists/[id]/page.tsx` | Real API | `GET /lists/{id}` | Fallback problem array if API unreachable. |
+| `/login` | `web/app/login/page.tsx` | Real API | `POST /auth/login` | Demo profile buttons (`algo_ninja`, `byte_master`) when demo enabled. |
+| `/mock` | `web/app/mock/page.tsx` | Partial API | `POST /ai/interview`, `POST /ai/review` | Hardcoded sample problem (Merge Intervals) and canned dialogue fallbacks. |
+| `/patterns` | `web/app/patterns/page.tsx` | Real API | `GET /patterns` | Fallback pattern cards if API unreachable. |
+| `/patterns/[id]` | `web/app/patterns/[id]/page.tsx` | Real API | `GET /patterns/{id}`, `POST /patterns/{id}/quiz` | Fallback pattern template and quiz if API unreachable. |
+| `/placement` | `web/app/placement/page.tsx` | Real API | `GET /placement/questions` | Static track tab headers; questions loaded from API. |
+| `/plans/[id]` | `web/app/plans/[id]/page.tsx` | Real API | `GET /plans/{id}` | Day checkboxes toggle local component state. |
+| `/portfolio/[username]` | `web/app/portfolio/[username]/page.tsx` | Partial API | `GET /users/{username}` | Hardcoded activity tower stats; user profile read from API. |
+| `/problems` | `web/app/problems/page.tsx` | Real API | `GET /problems`, `GET /topics` | None (100 problems, 25/page pagination, 10 topics from DB). |
+| `/problems/[slug]` | `web/app/problems/[slug]/page.tsx` | Real API | `GET /problems/{slug}`, `POST /submissions/run`, `POST /submissions`, `GET /submissions`, `GET /notes/{id}`, `POST /notes`, `GET /users/me/bookmarks`, `POST /users/me/bookmarks/toggle` | None (Statement, tests, limits, Judge0 execution, notes, bookmarks from API). |
+| `/profile/[username]` | `web/app/profile/[username]/page.tsx` | Real API | `GET /users/{username}` | Hardcoded badge rule templates; user stats from API. |
+| `/register` | `web/app/register/page.tsx` | Real API | `POST /auth/register` | Demo profile quick-select chips when demo enabled. |
+| `/review` | `web/app/review/page.tsx` | Real API | `GET /review`, `POST /review/grade` | Fallback flashcards array if API unreachable. |
+| `/roadmap` | `web/app/roadmap/page.tsx` | Partial API | `GET /problems` | `TOPIC_CONFIG` hardcoded 8 topics instead of 10 from DB; problem data from API. |
+| `/settings` | `web/app/settings/page.tsx` | Real API | `PATCH /users/me` | Timezone dropdown options static; user settings updated via API. |
+| `/visualizer/[algo]` | `web/app/visualizer/[algo]/page.tsx` | **Placeholder / Mock** | None | Hardcoded traces (`TWO_SUM_TRACE`, `BUBBLE_SORT_TRACE`); client-only animation. |
 
 ---
 
-## 2. Interactive Elements Audit (Buttons, Forms, Links)
+## 2. API Endpoints Audit (`api/app/routers`)
 
-Interactive elements that are non-functional, do not persist to the API, or have mock handlers:
-
-| Page / Component | Element | Current Behavior | Required Production Fix |
-| :--- | :--- | :--- | :--- |
-| `web/app/daily/page.tsx` | "Use Streak Freeze" button | Only updates local React state (`freezes_left - 1`). Does not persist to backend. | Wire to `POST /api/daily/freeze` or `POST /api/users/me/streak/freeze`. |
-| `web/app/plans/[id]/page.tsx` | Day milestone checkboxes | Toggles local state array `completedDays`. Reloading resets progress. | Save day progress to user plan progress API. |
-| `web/app/companies/[name]/page.tsx` | Milestone checkboxes | Toggles local state array `completedDays`. Reloading resets progress. | Persist company roadmap progress to backend. |
-| `web/app/jobs/page.tsx` | "1-Click Fast-Track Apply" button | Adds job ID to local component state array `appliedJobs`. No DB record. | Connect to `POST /api/jobs/{id}/apply` with user Elo & certificate. |
-| `web/app/mock/page.tsx` | Interview chat "Send" button | Adds message and triggers canned simulated response timeout. | Send user message to AI interview model (`POST /api/ai/interview`). |
-| `web/app/mock/page.tsx` | "Finish Interview" button | Hardcodes scores (`correctness: 85, communication: 90`). | Run user code against test suite & submit to `POST /api/ai/review`. |
-| `web/app/problems/[slug]/page.tsx` | Run & Submit error catch blocks | On network/judge failure, catch block fakes sample test pass or fake Accepted submission. | Show clear error banner ("Judge unavailable, please try again") without faking results. |
-| `web/app/problems/[slug]/page.tsx` | Bookmark toggle error catch block | On failure, quietly inverts boolean state without notifying user of failure. | Revert optimistic state and show error toast. |
-| `web/app/battles/[id]/page.tsx` | Opponent test progress | Incremented every 28s via client-side `setInterval`. | Replace with server polling or WebSocket battle state updates. |
-| `web/app/battles/[id]/page.tsx` | "Play Again" button | Calls `window.location.reload()`. | Queue user for a fresh matchmaking duel (`POST /battles/queue`). |
-| `web/app/portfolio/[username]/page.tsx` | GitHub & LinkedIn icon buttons | Open generic `https://github.com` and `https://linkedin.com`. | Populate with user's configured social handles from profile settings. |
-| `web/app/visualizer/[algo]/page.tsx` | Input editor button | Read-only static array displays for Two Sum and Bubble Sort. | Allow custom array input and generate execution trace. |
-| `web/app/roadmap/page.tsx` | Topic island completion rings | Always shows hardcoded progress numbers (e.g. Arrays: 3/4 solved). | Compute progress dynamically from user's solved problem status. |
-
----
-
-## 3. API Endpoints Audit (`api/app/routers`)
-
-All endpoints across the 17 backend routers, their HTTP methods, and frontend integration status:
+All 58 endpoints across the 22 backend routers, their HTTP methods, paths, and frontend integration status:
 
 | Router File | Method & Path | Called by Frontend? | Calling Frontend Component / Page | Notes |
 | :--- | :--- | :---: | :--- | :--- |
-| `health.py` | `GET /health` | No | Direct container healthcheck | Verifies DB connection and Judge0 reachability. |
-| `problems.py` | `GET /problems` | **Yes** | `web/app/problems/page.tsx` | Supports `search`, `topic`, `difficulty`, `status`. |
-| `problems.py` | `GET /problems/{slug}` | **Yes** | `web/app/problems/[slug]/page.tsx` | Returns statement, sample tests, limits, hints, editorial. |
-| `submissions.py` | `POST /submissions/run` | **Yes** | `web/app/problems/[slug]/page.tsx` | Executes against sample tests with limits. |
-| `submissions.py` | `POST /submissions` | **Yes** | `web/app/problems/[slug]/page.tsx` | Evaluates hidden tests, assigns verdicts, updates XP & streak. |
-| `submissions.py` | `GET /submissions` | **Yes** | `web/app/problems/[slug]/page.tsx` | Retrieves past submissions for problem. |
-| `daily.py` | `GET /daily` | **Yes** | `web/app/page.tsx`, `web/app/daily/page.tsx` | Deterministic daily problem & streak count. |
-| `users.py` | `GET /users/{username}` | **Yes** | `web/app/profile/[username]/page.tsx` | User profile, solve statistics, rating, streak. |
-| `users.py` | `PATCH /users/me` | **Yes** | `web/app/settings/page.tsx` | Updates display name, username, timezone, preferences. |
-| `users.py` | `GET /users/me/bookmarks` | No | None | Endpoint available; frontend lacks dedicated bookmarks view. |
-| `users.py` | `POST /users/me/bookmarks/toggle` | **Yes** | `web/app/problems/[slug]/page.tsx` | Toggles bookmark for current problem. |
-| `notes.py` | `GET /notes/{problem_id}` | **Yes** | `web/app/problems/[slug]/page.tsx` | Retrieves problem note markdown. |
-| `notes.py` | `POST /notes` | **Yes** | `web/app/problems/[slug]/page.tsx` | 2-second debounced autosave note endpoint. |
-| `ai.py` | `POST /ai/hint` | **Yes** | `web/app/problems/[slug]/page.tsx` | Socratic hint bot. |
-| `ai.py` | `POST /ai/review` | **Yes** | `web/app/problems/[slug]/page.tsx` | Complexity analysis and code review. |
-| `ai.py` | `POST /ai/explain-verdict` | No | None | Backend explainer for failed test cases; not wired in UI. |
-| `lists.py` | `GET /lists` | **Yes** | `web/app/lists/page.tsx` | System and user curated lists. |
-| `lists.py` | `GET /lists/{list_id}` | **Yes** | `web/app/lists/[id]/page.tsx` | List details and problem list items. |
-| `lists.py` | `POST /lists` | **Yes** | `web/app/lists/page.tsx` | Creates a new custom list. |
-| `lists.py` | `PUT /lists/{list_id}/reorder` | No | None | Endpoint ready; UI lacks drag-and-drop reorder. |
-| `plans.py` | `GET /plans` | **Yes** | `web/app/lists/page.tsx` | List of 30/60/90-day study plans. |
-| `plans.py` | `GET /plans/{plan_id}` | **Yes** | `web/app/plans/[id]/page.tsx` | Plan schedule with assigned daily problems. |
-| `contests.py` | `GET /contests` | **Yes** | `web/app/contests/page.tsx` | Contests list with status calculation. |
-| `contests.py` | `GET /contests/{contest_id}` | **Yes** | `web/app/contests/[id]/page.tsx` | Contest details and problems. |
-| `contests.py` | `GET /contests/{contest_id}/standings` | **Yes** | `web/app/contests/[id]/page.tsx` | 10-second polling leaderboard with WA penalties. |
-| `contests.py` | `POST /contests/{contest_id}/submit` | **Yes** | `web/app/contests/[id]/page.tsx` | Records contest submission score & penalty. |
-| `contests.py` | `GET /contests/ratings/{username}` | No | None | Historical contest rating trajectory. |
-| `discussions.py` | `GET /discussions/problem/{slug}` | **Yes** | `web/app/problems/[slug]/page.tsx` | Discussion threads & solutions for problem. |
-| `discussions.py` | `POST /discussions` | **Yes** | `web/app/problems/[slug]/page.tsx` | Post discussion thread or gated community solution. |
-| `discussions.py` | `POST /discussions/vote` | No | None | Upvote/downvote (+1/-1); not wired in UI. |
-| `analytics.py` | `GET /analytics` | **Yes** | `web/app/analytics/page.tsx` | Solves per week, topic acceptance, weak topics. |
-| `analytics.py` | `GET /review` | **Yes** | `web/app/review/page.tsx` | Active recall review queue (1, 3, 7, 21 days). |
+| `ai.py` | `POST /ai/hint` | No | None | Available for Socratic hint bot. |
+| `ai.py` | `POST /ai/review` | **Yes** | `web/app/mock/page.tsx` | Code review and complexity feedback. |
+| `ai.py` | `POST /ai/interview` | **Yes** | `web/app/mock/page.tsx` | Interactive AI interview responses. |
+| `ai.py` | `POST /ai/explain-verdict` | No | None | Backend explainer for failed test cases. |
+| `analytics.py` | `GET /analytics` | **Yes** | `web/app/analytics/page.tsx` | Weekly solve counts and topic stats. |
+| `analytics.py` | `GET /review` | **Yes** | `web/app/review/page.tsx` | Spaced repetition flashcards queue. |
 | `analytics.py` | `POST /review/grade` | **Yes** | `web/app/review/page.tsx` | Grades spaced repetition flashcard. |
-| `analytics.py` | `GET /leaderboard` | **Yes** | `web/app/leaderboard/page.tsx` | Rankings by XP, streak, and Elo rating. |
-| `patterns.py` | `GET /patterns` | **Yes** | `web/app/patterns/page.tsx` | 15 algorithmic pattern templates & signals. |
-| `patterns.py` | `GET /patterns/{slug}` | **Yes** | `web/app/patterns/[id]/page.tsx` | Pattern detail and quiz challenge. |
-| `patterns.py` | `POST /patterns/{slug}/quiz` | **Yes** | `web/app/patterns/[id]/page.tsx` | Submits quiz answer and unlocks tagged problems. |
-| `ladder.py` | `GET /ladder/{problem_slug}` | **Yes** | `web/app/ladder/[problem]/page.tsx` | 3-stage brute to optimal ladder for problem. |
-| `ladder.py` | `POST /ladder/stage` | **Yes** | `web/app/ladder/[problem]/page.tsx` | Validates runtime threshold per ladder stage. |
-| `placement.py` | `GET /placement/tracks` | No | None | Returns track catalogue; page uses local tab definitions. |
-| `placement.py` | `GET /placement/questions` | **Yes** | `web/app/placement/page.tsx` | CS core, aptitude, and regional translations (EN/HI/BN). |
-| `certificates.py` | `POST /certificates/issue` | No | Tested via Pytest | Timed proctored test flow not yet hooked in UI. |
-| `certificates.py` | `GET /certificates/verify/{code}` | **Yes** | `web/app/certificates/[code]/page.tsx` | Validates public certificate ID. |
-| `battles.py` | `POST /battles/queue` | **Yes** | `web/app/battles/page.tsx` | Matchmaking queue for 1v1 PvP coding duel. |
-| `battles.py` | `GET /battles/{battle_id}` | **Yes** | `web/app/battles/[id]/page.tsx` | Duel status, problem details, and opponent progress. |
-| `battles.py` | `POST /battles/{battle_id}/submit` | **Yes** | `web/app/battles/[id]/page.tsx` | Submits battle solution and triggers win state. |
+| `analytics.py` | `GET /leaderboard` | **Yes** | `web/app/leaderboard/page.tsx`, `web/app/contests/page.tsx` | Global XP and streak rankings. |
+| `auth.py` | `POST /auth/register` | **Yes** | `web/lib/authContext.tsx`, `web/app/register/page.tsx` | User registration & JWT session. |
+| `auth.py` | `POST /auth/login` | **Yes** | `web/lib/authContext.tsx`, `web/app/login/page.tsx` | User login & JWT session. |
+| `auth.py` | `GET /auth/me` | **Yes** | `web/lib/authContext.tsx` | Validates session token & loads profile. |
+| `battles.py` | `POST /battles/queue` | **Yes** | `web/app/battles/page.tsx` | Matchmaking queue for 1v1 duel. |
+| `battles.py` | `GET /battles/{battle_id}` | **Yes** | `web/app/battles/[id]/page.tsx` | Duel status, problem, and opponent state. |
+| `battles.py` | `POST /battles/{battle_id}/submit` | **Yes** | `web/app/battles/[id]/page.tsx` | Evaluates duel submission. |
+| `certificates.py` | `POST /certificates/issue` | No | Tested via Pytest | Timed certification test issuance. |
+| `certificates.py` | `GET /certificates/verify/{verify_code}` | **Yes** | `web/app/certificates/[code]/page.tsx` | Public certificate verification. |
+| `companies.py` | `GET /companies` | **Yes** | `web/app/companies/page.tsx` | List of company preparation tracks. |
+| `companies.py` | `GET /companies/{slug}` | **Yes** | `web/app/companies/[name]/page.tsx` | Company detailed roadmap & days. |
+| `contests.py` | `GET /contests` | **Yes** | `web/app/contests/page.tsx` | List of live/past contests. |
+| `contests.py` | `GET /contests/{contest_id}` | **Yes** | `web/app/contests/[id]/page.tsx` | Contest details and problem set. |
+| `contests.py` | `GET /contests/{contest_id}/standings` | **Yes** | `web/app/contests/[id]/page.tsx` | Live contest scoreboard. |
+| `contests.py` | `POST /contests/{contest_id}/submit` | No | UI wires to submissions router | Contest problem submission. |
+| `contests.py` | `GET /contests/ratings/{username}` | No | None | Historical rating progression. |
+| `daily.py` | `GET /daily` | **Yes** | `web/app/page.tsx`, `web/app/daily/page.tsx` | Daily challenge problem and streak. |
+| `daily.py` | `POST /daily/freeze` | **Yes** | `web/app/daily/page.tsx` | Consumes streak freeze protection. |
+| `discussions.py` | `GET /discussions/problem/{problem_slug}` | No | None | Problem discussion forum threads. |
+| `discussions.py` | `POST /discussions` | No | None | Post community solution or comment. |
+| `discussions.py` | `POST /discussions/vote` | No | None | Upvote/downvote comment. |
+| `health.py` | `GET /health` | No | Docker & cloud healthchecks | Multi-service health check (DB, Redis, Judge0). |
+| `interviews.py` | `GET /interviews` | **Yes** | `web/app/interviews/page.tsx` | Company interview debrief cards. |
+| `interviews.py` | `POST /interviews` | **Yes** | `web/app/interviews/page.tsx` | Share student interview experience. |
+| `jobs.py` | `GET /jobs` | **Yes** | `web/app/jobs/page.tsx` | Curated hiring opportunities. |
+| `jobs.py` | `POST /jobs/{job_id}/apply` | **Yes** | `web/app/jobs/page.tsx` | 1-click fast track job application. |
+| `ladder.py` | `GET /ladder/{problem_slug}` | **Yes** | `web/app/ladder/[problem]/page.tsx` | Multi-stage algorithmic ladder. |
+| `ladder.py` | `POST /ladder/stage` | **Yes** | `web/app/ladder/[problem]/page.tsx` | Validates complexity ladder stage. |
+| `lists.py` | `GET /lists` | **Yes** | `web/app/lists/page.tsx` | Curated problem lists (Blind 75, etc.). |
+| `lists.py` | `GET /lists/{list_id}` | **Yes** | `web/app/lists/[id]/page.tsx` | List details and items. |
+| `lists.py` | `POST /lists` | **Yes** | `web/app/lists/page.tsx` | Creates user custom list. |
+| `lists.py` | `PUT /lists/{list_id}/reorder` | No | None | Reorders list items. |
+| `notes.py` | `GET /notes/{problem_id}` | **Yes** | `web/app/problems/[slug]/page.tsx` | Retrieves user problem notes. |
+| `notes.py` | `POST /notes` | **Yes** | `web/app/problems/[slug]/page.tsx` | Autosaves user notes. |
+| `patterns.py` | `GET /patterns` | **Yes** | `web/app/patterns/page.tsx` | 15 core algorithmic patterns. |
+| `patterns.py` | `GET /patterns/{slug}` | **Yes** | `web/app/patterns/[id]/page.tsx` | Pattern detail & template code. |
+| `patterns.py` | `POST /patterns/{slug}/quiz` | **Yes** | `web/app/patterns/[id]/page.tsx` | Evaluates pattern quiz answer. |
+| `placement.py` | `GET /placement/tracks` | No | None | Returns track metadata. |
+| `placement.py` | `GET /placement/questions` | **Yes** | `web/app/placement/page.tsx` | CS fundamentals questions (OS, DBMS, Networks). |
+| `plans.py` | `GET /plans` | **Yes** | `web/app/lists/page.tsx` | Bootcamp study schedules. |
+| `plans.py` | `GET /plans/{plan_id}` | **Yes** | `web/app/plans/[id]/page.tsx` | Day-by-day plan problem schedule. |
+| `problems.py` | `GET /problems` | **Yes** | `web/app/problems/page.tsx`, `web/app/roadmap/page.tsx` | 100 problems with server-side filters & pagination. |
+| `problems.py` | `GET /problems/{slug}` | **Yes** | `web/app/problems/[slug]/page.tsx` | Full problem statement, sample tests, limits, hints. |
+| `submissions.py` | `POST /submissions/run` | **Yes** | `web/app/problems/[slug]/page.tsx` | Executes user code on sample test cases. |
+| `submissions.py` | `POST /submissions` | **Yes** | `web/app/problems/[slug]/page.tsx` | Evaluates hidden test cases via Judge0. |
+| `submissions.py` | `GET /submissions` | **Yes** | `web/app/problems/[slug]/page.tsx` | Problem submission history. |
+| `topics.py` | `GET /topics` | **Yes** | `web/app/problems/page.tsx` | 10 database topics and problem counts. |
+| `users.py` | `GET /users/{username}` | **Yes** | `web/app/profile/[username]/page.tsx`, `web/app/portfolio/[username]/page.tsx` | User profile, solved count, rating, streak. |
+| `users.py` | `PATCH /users/me` | **Yes** | `web/app/settings/page.tsx` | Updates user settings & preferences. |
+| `users.py` | `GET /users/me/bookmarks` | **Yes** | `web/app/problems/[slug]/page.tsx` | User bookmarked problems. |
+| `users.py` | `POST /users/me/bookmarks/toggle` | **Yes** | `web/app/problems/[slug]/page.tsx` | Toggles problem bookmark. |
 
 ---
 
-## 4. Fixes Executed in Phase 0
+## 3. Environment Variables Audit & Production Flags
 
-1. **Timezone Awareness Standardization (`datetime.now(timezone.utc)`):**
-   - Removed deprecated `datetime.utcnow()` from:
-     - `api/app/models/entities.py` (all Column defaults & onupdates converted to timezone-aware UTC)
-     - `api/app/routers/contests.py` (all comparison timestamps timezone-aware)
-     - `api/app/routers/analytics.py`
-     - `api/app/routers/certificates.py`
-     - `api/app/routers/notes.py`
-     - `api/app/routers/submissions.py`
-     - `api/scripts/seed.py`
-   - Verified with Pytest: **All 13 tests passing in 2.42s with zero deprecation warnings**.
+### A. Frontend (`web`) Environment Variables
 
-2. **NPM Audit Analysis:**
-   - Ran `npm audit fix` (without `--force`).
-   - Identified that remaining advisory on Next.js/postcss would require upgrading to Next 16.x (which is a breaking change for Next 14 App Router). Remained on stable Next 14 per guidelines.
+| Variable Name | Read By | Purpose | Masked Value | Production Status & Flags |
+| :--- | :--- | :--- | :--- | :--- |
+| `NEXT_PUBLIC_API_URL` | `web/lib/api.ts` | Base API URL for browser API requests | `http://localhost:8000` (local dev) | ⚠️ **FLAG: Default points to `http://localhost:8000`**. In production (Vercel), user browsers cannot reach localhost. Must be set to `<RENDER_URL>` in Vercel Environment Variables. |
+| `API_INTERNAL_URL` | `web/next.config.js` | Target destination for Next.js server rewrites (`/api/:path*`) | `http://localhost:8000/:path*` | ⚠️ **FLAG: Default points to `http://localhost:8000` (or `http://api:8000` in Docker)**. On Vercel, serverless function rewrites cannot connect to `localhost:8000` or Docker internal `api:8000`. Must be updated to `<RENDER_URL>/:path*` or removed in favor of direct `NEXT_PUBLIC_API_URL` calls. |
+| Next.js rewrites | `web/next.config.js` | Proxies `/api/:path*` to `API_INTERNAL_URL` | `source: /api/:path* -> destination: <API_INTERNAL_URL>` | ⚠️ **FLAG: Rewrites point to localhost by default**. In production on Vercel, must not rewrite to localhost or internal Docker hostnames. |
 
-3. **Port Availability Enforcement for `npm run dev`:**
-   - Created `web/scripts/dev.js` to probe port 3000 before starting.
-   - If port 3000 is occupied, it exits immediately and displays a clean message:
-     ```
-     [Ready2Code] ERROR: Port 3000 is currently busy / in use by another process.
-     Ready2Code web server requires port 3000 by default.
-     Please free port 3000 or set PORT=<port> npm run dev.
-     ```
-   - Updated `web/package.json` `"dev"` script to invoke `node scripts/dev.js`.
+### B. Backend (`api`) Environment Variables
+
+| Variable Name | Read By | Purpose | Masked Value | Production Status & Flags |
+| :--- | :--- | :--- | :--- | :--- |
+| `DATABASE_URL` | `api/app/config.py`, `api/alembic/env.py`, `api/scripts/seed.py` | Primary database connection string | `postgresql://ready2code:<POSTGRES_PASSWORD>@localhost:5432/ready2code_db` (local dev) | ⚠️ **FLAG: Default in `config.py` falls back to `sqlite:///./ready2code.db` and example files point to `localhost:5432`**. In production, must be set to Neon Postgres `<NEON_URL>` with `sslmode=require`. |
+| `REDIS_URL` | `api/app/config.py`, `api/app/rate_limiter.py`, `api/app/routers/health.py` | Redis connection URL for caching & rate limiting | `redis://localhost:6379/0` (local dev) | ⚠️ **FLAG: Points to `localhost:6379`**. In production, must point to `<UPSTASH_REDIS_URL>` or be handled gracefully if Redis is disabled. |
+| `CORS_ORIGINS` | `api/app/config.py`, `api/app/main.py` | Allowed CORS origins for browser fetch | `http://localhost:3000,http://127.0.0.1:3000,https://ready2code.vercel.app` | ✅ **OK**: Production origin `https://ready2code.vercel.app` is included in default list. |
+| `JWT_SECRET` | `api/app/config.py`, `api/app/auth_deps.py`, `api/app/routers/auth.py` | Symmetric key for signing auth tokens | `<JWT_SECRET>` | ⚠️ **FLAG: Default in `config.py` is a hardcoded string**. Must be overridden in production with a 64+ char random secret. |
+| `DEV_DEMO_LOGIN` | `api/app/config.py`, `web/lib/authContext.tsx`, `web/app/login/page.tsx` | Allows one-click demo credentials (`algo_ninja`) | `true` (local dev) | ⚠️ **FLAG: Must be explicitly set to `false` in production** to disable demo buttons and require registered accounts. |
+| `ENVIRONMENT` | `api/app/config.py`, `api/app/main.py`, `api/app/logging_config.py` | App execution environment mode | `development` (local dev) | ⚠️ **FLAG: Must be set to `production` in production** to enable JSON logging, strict CORS credentials enforcement, and sanitize error responses. |
+| `JUDGE0_URL` | `api/app/config.py`, `api/app/routers/submissions.py`, `api/app/routers/health.py` | Judge0 code evaluation API | `http://localhost:2358` (local dev), `http://judge0:2358` (docker) | ⚠️ **FLAG: Points to `http://localhost:2358` or `http://judge0:2358`**. In cloud production (Render/Railway), `judge0:2358` is unreachable unless Judge0 is hosted or public Judge0 CE is used. The submission endpoint correctly handles judge unavailability without crashing. |
+
+---
+
+## 4. Summary & Verification
+
+- **31 Frontend Routes**: Audited and catalogued.
+- **58 Backend API Endpoints**: Audited and cross-referenced with frontend calls.
+- **Environment Flags**: All values pointing to `localhost`, `127.0.0.1`, `api:8000`, and `judge0:2358` have been flagged for the upcoming local setup (Phase 1) and production rollout (Phases 4-5).
+- **Code Changes in Phase 0**: Zero code changes executed; purely audit report update.

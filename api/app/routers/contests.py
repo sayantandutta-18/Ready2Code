@@ -95,6 +95,10 @@ def contest_submit(contest_id: str, req: ContestSubmission, db: Session = Depend
     ).first()
 
     if not entry:
+        user_record = db.query(User).filter(User.id == req.user_id).first()
+        if not user_record:
+            db.add(User(id=req.user_id, username=req.user_id, display_name=req.user_id))
+            db.commit()
         entry = ContestEntry(contest_id=contest_id, user_id=req.user_id, score=0, penalty_s=0)
         db.add(entry)
 
