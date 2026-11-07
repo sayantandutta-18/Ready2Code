@@ -40,10 +40,10 @@ export default function CodeEditor({
     const saved = localStorage.getItem(key);
     if (saved !== null) {
       onCodeChange(saved);
-    } else if (defaultStarterCodes[language]) {
+    } else if (defaultStarterCodes && defaultStarterCodes[language]) {
       onCodeChange(defaultStarterCodes[language]);
     }
-  }, [problemSlug, language]);
+  }, [problemSlug, language, defaultStarterCodes?.[language]]);
 
   const handleEditorChange = (value: string | undefined) => {
     const val = value || "";
