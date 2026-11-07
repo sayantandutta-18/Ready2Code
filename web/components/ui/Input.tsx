@@ -43,7 +43,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           <input
             ref={ref}
             id={inputId}
-            className={`w-full rounded-xl border border-slate-700/80 bg-[var(--surface-2,#1A2740)] text-[var(--text-primary,#E2E8F0)] placeholder:text-[var(--text-muted,#94A3B8)] caret-[var(--text-primary,#E2E8F0)] text-sm transition-all focus:outline-none focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/40 focus:ring-offset-1 focus:ring-offset-[#0B1220] disabled:opacity-50 disabled:cursor-not-allowed ${
+            className={`w-full rounded-xl border border-slate-700 bg-[#0B1220] text-slate-100 placeholder:text-slate-500 caret-cyan-400 text-sm transition-all focus:outline-none focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/30 focus:ring-offset-1 focus:ring-offset-[#0B1220] disabled:opacity-50 disabled:cursor-not-allowed ${
               leftIcon ? "pl-10" : "px-3.5"
             } ${rightIcon ? "pr-10" : "pr-3.5"} py-2.5 ${
               error ? "border-red-500/80 focus:border-red-400 focus:ring-red-400/30" : ""

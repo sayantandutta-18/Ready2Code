@@ -1,11 +1,15 @@
 import uuid
+from datetime import datetime, timezone, timedelta
 from typing import Optional
-from fastapi import APIRouter, Depends, HTTPException, Header
+import bcrypt
+import jwt
+from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from ..database import get_db
 from ..models.entities import User, Streak, UserProblemStatus
-from ..auth_deps import get_current_user, get_current_user_optional
+from ..auth_deps import get_current_user
+from ..config import settings
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -24,6 +28,26 @@ class UserResponse(BaseModel):
     streak: int
     xp: int
     solved_count: int
+
+def hash_password(password: str) -> str:
+    salt = bcrypt.gensalt()
+    return bcrypt.hashpw(password.encode("utf-8"), salt).decode("utf-8")
+
+def verify_password(plain_password: str, hashed_password: str) -> bool:
+    try:
+        return bcrypt.checkpw(plain_password.encode("utf-8"), hashed_password.encode("utf-8"))
+    except Exception:
+        return False
+
+def create_access_token(user_id: str, username: str) -> str:
+    now = datetime.now(timezone.utc)
+    expire = now + timedelta(days=settings.JWT_EXPIRES_DAYS)
+    payload = {
+        "sub": user_id,
+        "username": username,
+        "exp": int(expire.timestamp()),
+    }
+    return jwt.encode(payload, settings.JWT_SECRET, algorithm=settings.JWT_ALGORITHM)
 
 def build_user_payload(user: User, db: Session) -> dict:
     streak_rec = db.query(Streak).filter(Streak.user_id == user.id).first()
@@ -57,9 +81,12 @@ def register(req: AuthRequest, db: Session = Depends(get_db)):
     if existing:
         raise HTTPException(status_code=409, detail="Username is already taken. Please choose another or sign in.")
 
+    password_hash = hash_password(req.password) if req.password else None
+
     user = User(
         id=f"user_{uuid.uuid4().hex[:12]}",
         username=clean_username,
+        password_hash=password_hash,
         display_name=req.display_name or req.username.strip(),
         timezone=req.timezone or "UTC"
     )
@@ -71,37 +98,47 @@ def register(req: AuthRequest, db: Session = Depends(get_db)):
     db.add(Streak(user_id=user.id, current_streak=0, longest_streak=0, last_active_date=None, freezes_left=2))
     db.commit()
 
+    token = create_access_token(user.id, user.username)
     user_payload = build_user_payload(user, db)
     return {
-        "token": user.id,
+        "token": token,
         "user": user_payload
     }
 
 @router.post("/login")
 def login(req: AuthRequest, db: Session = Depends(get_db)):
     clean_username = req.username.strip().lower()
-    user = db.query(User).filter(User.username == clean_username).first()
-    if not user:
-        # Check if username passed is user_id
-        user = db.query(User).filter(User.id == clean_username).first()
+    user = db.query(User).filter((User.username == clean_username) | (User.id == clean_username)).first()
 
     if not user:
-        # Auto-create for seamless demo login if desired
-        user = User(
-            id=f"user_{uuid.uuid4().hex[:12]}",
-            username=clean_username,
-            display_name=req.display_name or req.username.strip(),
-            timezone=req.timezone or "UTC"
-        )
-        db.add(user)
-        db.commit()
-        db.refresh(user)
-        db.add(Streak(user_id=user.id, current_streak=0, longest_streak=0, last_active_date=None, freezes_left=2))
-        db.commit()
+        if settings.DEV_DEMO_LOGIN:
+            # Auto-create demo user for smooth testing
+            user = User(
+                id=f"user_{uuid.uuid4().hex[:12]}",
+                username=clean_username,
+                password_hash=hash_password(req.password) if req.password else None,
+                display_name=req.display_name or req.username.strip(),
+                timezone=req.timezone or "UTC"
+            )
+            db.add(user)
+            db.commit()
+            db.refresh(user)
+            db.add(Streak(user_id=user.id, current_streak=0, longest_streak=0, last_active_date=None, freezes_left=2))
+            db.commit()
+        else:
+            raise HTTPException(status_code=401, detail="Invalid username or password")
 
+    if user.password_hash and req.password:
+        if not verify_password(req.password, user.password_hash):
+            raise HTTPException(status_code=401, detail="Invalid username or password")
+    elif user.password_hash and not req.password:
+        if not settings.DEV_DEMO_LOGIN:
+            raise HTTPException(status_code=401, detail="Password is required")
+
+    token = create_access_token(user.id, user.username)
     user_payload = build_user_payload(user, db)
     return {
-        "token": user.id,
+        "token": token,
         "user": user_payload
     }
 

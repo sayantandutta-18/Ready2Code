@@ -46,6 +46,8 @@ function LoginForm() {
   const [errorMsg, setErrorMsg] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const devDemoLogin = process.env.NEXT_PUBLIC_DEV_DEMO_LOGIN !== "false";
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg("");
@@ -270,42 +272,44 @@ function LoginForm() {
           </form>
 
           {/* Quick Demo Logins */}
-          <div className="mt-8 pt-6 border-t border-slate-800">
-            <div className="text-center mb-3">
-              <span className="text-[11px] font-mono text-slate-500 uppercase tracking-widest flex items-center justify-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
-                <span>Or explore with 1-click demo coder</span>
-              </span>
-            </div>
+          {devDemoLogin && (
+            <div className="mt-8 pt-6 border-t border-slate-800">
+              <div className="text-center mb-3">
+                <span className="text-[11px] font-mono text-slate-500 uppercase tracking-widest flex items-center justify-center gap-1.5">
+                  <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
+                  <span>Or explore with 1-click demo coder</span>
+                </span>
+              </div>
 
-            <div className="grid grid-cols-2 gap-2.5">
-              <button
-                type="button"
-                onClick={() => handleDemoLogin("algo_ninja")}
-                disabled={isSubmitting}
-                className="p-2.5 rounded-xl bg-[#0B1220] border border-slate-800 hover:border-cyan-500/50 hover:bg-cyan-500/5 text-left transition-all group"
-              >
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-slate-200 group-hover:text-cyan-300">algo_ninja</span>
-                  <Flame className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
-                </div>
-                <span className="text-[10px] text-slate-500 font-mono">7-day streak &bull; 420 XP</span>
-              </button>
+              <div className="grid grid-cols-2 gap-2.5">
+                <button
+                  type="button"
+                  onClick={() => handleDemoLogin("algo_ninja")}
+                  disabled={isSubmitting}
+                  className="p-2.5 rounded-xl bg-[#0B1220] border border-slate-800 hover:border-cyan-500/50 hover:bg-cyan-500/5 text-left transition-all group"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-slate-200 group-hover:text-cyan-300">algo_ninja</span>
+                    <Flame className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
+                  </div>
+                  <span className="text-[10px] text-slate-500 font-mono">7-day streak &bull; 420 XP</span>
+                </button>
 
-              <button
-                type="button"
-                onClick={() => handleDemoLogin("byte_master")}
-                disabled={isSubmitting}
-                className="p-2.5 rounded-xl bg-[#0B1220] border border-slate-800 hover:border-indigo-500/50 hover:bg-indigo-500/5 text-left transition-all group"
-              >
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-slate-200 group-hover:text-indigo-300">byte_master</span>
-                  <Zap className="w-3.5 h-3.5 text-violet-400 fill-violet-400" />
-                </div>
-                <span className="text-[10px] text-slate-500 font-mono">3-day streak &bull; 180 XP</span>
-              </button>
+                <button
+                  type="button"
+                  onClick={() => handleDemoLogin("byte_master")}
+                  disabled={isSubmitting}
+                  className="p-2.5 rounded-xl bg-[#0B1220] border border-slate-800 hover:border-indigo-500/50 hover:bg-indigo-500/5 text-left transition-all group"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-slate-200 group-hover:text-indigo-300">byte_master</span>
+                    <Zap className="w-3.5 h-3.5 text-violet-400 fill-violet-400" />
+                  </div>
+                  <span className="text-[10px] text-slate-500 font-mono">3-day streak &bull; 180 XP</span>
+                </button>
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Switch to Register link */}
           <div className="mt-6 text-center text-xs text-slate-400">

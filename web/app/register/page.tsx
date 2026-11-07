@@ -89,7 +89,7 @@ function RegisterForm() {
 
     setIsSubmitting(true);
     try {
-      await register(trimmedUser, trimmedDisplay);
+      await register(trimmedUser, password || undefined, trimmedDisplay);
       router.push(redirectPath);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Registration failed. Username may already be taken.";

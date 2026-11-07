@@ -18,6 +18,7 @@ class User(Base):
     id = Column(String(36), primary_key=True, default=gen_uuid)
     clerk_id = Column(String(64), unique=True, nullable=True, index=True)
     username = Column(String(32), unique=True, nullable=False, index=True)
+    password_hash = Column(String(255), nullable=True)
     display_name = Column(String(64), nullable=True)
     avatar_url = Column(String(255), nullable=True)
     timezone = Column(String(64), default="UTC")

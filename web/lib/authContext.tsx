@@ -19,7 +19,7 @@ interface AuthContextType {
   token: string | null;
   isLoading: boolean;
   login: (username: string, password?: string) => Promise<void>;
-  register: (username: string, displayName?: string, timezone?: string) => Promise<void>;
+  register: (username: string, password?: string, displayName?: string, timezone?: string) => Promise<void>;
   logout: () => void;
   refreshUser: () => Promise<void>;
   isAuthModalOpen: boolean;
@@ -76,8 +76,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     setToken(res.token);
     setUser(res.user);
-    localStorage.setItem("ready2code_auth_token", res.token);
-    localStorage.setItem("ready2code_auth_user", JSON.stringify(res.user));
+    if (typeof window !== "undefined") {
+      localStorage.setItem("ready2code_auth_token", res.token);
+      localStorage.setItem("ready2code_auth_user", JSON.stringify(res.user));
+      document.cookie = `ready2code_auth_token=${res.token}; path=/; max-age=604800; SameSite=Lax`;
+    }
     setIsAuthModalOpen(false);
 
     if (pendingAction) {
@@ -86,17 +89,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const register = async (username: string, displayName?: string, timezone?: string) => {
+  const register = async (username: string, password?: string, displayName?: string, timezone?: string) => {
     const tz = timezone || Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
     const res = await fetchApi<{ token: string; user: AuthUser }>("/auth/register", {
       method: "POST",
-      body: JSON.stringify({ username, display_name: displayName, timezone: tz }),
+      body: JSON.stringify({ username, password, display_name: displayName, timezone: tz }),
     });
 
     setToken(res.token);
     setUser(res.user);
-    localStorage.setItem("ready2code_auth_token", res.token);
-    localStorage.setItem("ready2code_auth_user", JSON.stringify(res.user));
+    if (typeof window !== "undefined") {
+      localStorage.setItem("ready2code_auth_token", res.token);
+      localStorage.setItem("ready2code_auth_user", JSON.stringify(res.user));
+      document.cookie = `ready2code_auth_token=${res.token}; path=/; max-age=604800; SameSite=Lax`;
+    }
     setIsAuthModalOpen(false);
 
     if (pendingAction) {
@@ -108,8 +114,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = () => {
     setToken(null);
     setUser(null);
-    localStorage.removeItem("ready2code_auth_token");
-    localStorage.removeItem("ready2code_auth_user");
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("ready2code_auth_token");
+      localStorage.removeItem("ready2code_auth_user");
+      document.cookie = "ready2code_auth_token=; path=/; max-age=0; SameSite=Lax";
+    }
   };
 
   const refreshUser = async () => {

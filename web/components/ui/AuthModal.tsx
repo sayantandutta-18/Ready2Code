@@ -38,7 +38,7 @@ export default function AuthModal() {
       if (tab === "login") {
         await login(username.trim());
       } else {
-        await register(username.trim(), displayName.trim() || undefined);
+        await register(username.trim(), undefined, displayName.trim() || undefined);
       }
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Authentication failed. Please try again.";
