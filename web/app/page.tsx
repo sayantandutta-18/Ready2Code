@@ -15,6 +15,7 @@ import {
   Trophy,
   CheckCircle,
   ExternalLink,
+  UserPlus,
 } from "lucide-react";
 
 // Lazy-load HeroCube with ssr: false as required in C0.4
@@ -218,6 +219,42 @@ export default function HomePage() {
               <ExternalLink className="w-3.5 h-3.5" />
             </Link>
           </TiltCard>
+        </div>
+
+        {/* Call to Action: Sign Up & Sign In */}
+        <div className="mt-16 rounded-3xl bg-gradient-to-r from-cyan-950/60 via-slate-900 to-indigo-950/60 border border-cyan-500/30 p-8 sm:p-12 text-center relative overflow-hidden shadow-2xl">
+          <div className="absolute top-0 right-0 -mt-12 -mr-12 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute bottom-0 left-0 -mb-12 -ml-12 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
+
+          <div className="relative z-10 max-w-2xl mx-auto flex flex-col items-center">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-xs font-mono uppercase tracking-wider mb-4">
+              <Sparkles className="w-3.5 h-3.5" />
+              Join 1,000+ Placement Aspirants
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight mb-3">
+              Ready to Master Algorithms in 3D?
+            </h2>
+            <p className="text-slate-300 text-sm sm:text-base leading-relaxed mb-8">
+              Create your account in seconds to save your code drafts, earn streak freezes, and prepare for placement rounds with 100+ curated problems.
+            </p>
+
+            <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
+              <Link
+                href="/register"
+                className="w-full sm:w-auto px-7 py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-500 hover:from-cyan-400 hover:to-indigo-400 text-slate-950 font-bold text-sm shadow-xl shadow-cyan-500/25 transition-all flex items-center justify-center gap-2 group cursor-pointer"
+              >
+                <UserPlus className="w-4 h-4" />
+                <span>Create Free Account</span>
+                <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
+              </Link>
+              <Link
+                href="/login"
+                className="w-full sm:w-auto px-6 py-3 rounded-xl bg-slate-800/80 hover:bg-slate-800 border border-slate-700 text-slate-200 hover:text-white font-medium text-sm transition-colors text-center"
+              >
+                Sign In to Existing Account
+              </Link>
+            </div>
+          </div>
         </div>
       </section>
     </div>

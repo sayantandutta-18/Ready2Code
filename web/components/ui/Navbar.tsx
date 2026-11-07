@@ -26,6 +26,7 @@ import {
   LogIn,
   LogOut,
   User as UserIcon,
+  UserPlus,
   Github,
 } from "lucide-react";
 
@@ -131,7 +132,7 @@ export default function Navbar() {
             <Github className="w-4 h-4" />
           </a>
 
-          {/* User Account / Profile or Sign In */}
+          {/* User Account / Profile or Sign In / Register */}
           {user ? (
             <div className="flex items-center gap-1.5">
               <Link
@@ -156,13 +157,21 @@ export default function Navbar() {
               </button>
             </div>
           ) : (
-            <button
-              onClick={openAuthModal}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-500 hover:from-cyan-600 hover:to-indigo-600 text-slate-950 font-bold text-xs shadow-md shadow-cyan-500/20 transition-all active:scale-95"
-            >
-              <LogIn className="w-3.5 h-3.5 stroke-[2.5]" />
-              <span>Sign In</span>
-            </button>
+            <div className="flex items-center gap-1.5">
+              <Link
+                href="/login"
+                className="px-2.5 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 text-xs font-medium transition-colors"
+              >
+                Sign In
+              </Link>
+              <Link
+                href="/register"
+                className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-500 hover:from-cyan-400 hover:to-indigo-400 text-slate-950 font-bold text-xs shadow-md shadow-cyan-500/20 transition-all active:scale-95"
+              >
+                <UserPlus className="w-3.5 h-3.5" />
+                <span>Register</span>
+              </Link>
+            </div>
           )}
 
           {/* Mobile Menu Hamburger Button */}
@@ -198,6 +207,24 @@ export default function Navbar() {
               </Link>
             );
           })}
+          {!user && (
+            <div className="col-span-2 sm:col-span-3 pt-2 mt-1 border-t border-slate-800/60 flex items-center gap-2">
+              <Link
+                href="/login"
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex-1 text-center py-2 px-3 rounded-lg bg-slate-800/80 text-xs font-semibold text-slate-200 hover:bg-slate-700 transition-colors"
+              >
+                Sign In
+              </Link>
+              <Link
+                href="/register"
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex-1 text-center py-2 px-3 rounded-lg bg-gradient-to-r from-cyan-500 to-indigo-500 text-xs font-bold text-slate-950 hover:opacity-90 transition-opacity"
+              >
+                Create Account
+              </Link>
+            </div>
+          )}
         </div>
       )}
     </nav>
