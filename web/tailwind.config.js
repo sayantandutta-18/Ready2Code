@@ -12,6 +12,11 @@ module.exports = {
           surface1: "#121C2F",
           surface2: "#1A2740",
         },
+        surface: {
+          base: "#0B1220",
+          card: "#121C2F",
+          input: "#1A2740",
+        },
         accent: {
           cyan: "#22D3EE",
           violet: "#8B5CF6",

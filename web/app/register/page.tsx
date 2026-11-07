@@ -5,6 +5,7 @@ import Link from "next/link";
 import dynamic from "next/dynamic";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/lib/authContext";
+import Input from "@/components/ui/Input";
 import {
   Code2,
   User,
@@ -239,87 +240,55 @@ function RegisterForm() {
 
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
-                      Username <span className="text-cyan-400">*</span>
-                    </label>
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-500">
-                        <User className="w-4 h-4" />
-                      </div>
-                      <input
-                        type="text"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                        placeholder="e.g. dev_sarah"
-                        required
-                        className="w-full pl-9 pr-3 py-2 rounded-xl bg-[#0B1220] border border-slate-700 text-cyan-300 font-semibold placeholder-slate-500 text-sm focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition-all font-mono"
-                      />
-                    </div>
-                  </div>
+                  <Input
+                    label={<>Username <span className="text-cyan-400">*</span></>}
+                    type="text"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    placeholder="e.g. dev_sarah"
+                    required
+                    leftIcon={<User className="w-4 h-4" />}
+                    className="font-mono"
+                  />
 
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
-                      Display Name
-                    </label>
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-500">
-                        <User className="w-4 h-4" />
-                      </div>
-                      <input
-                        type="text"
-                        value={displayName}
-                        onChange={(e) => setDisplayName(e.target.value)}
-                        placeholder="e.g. Sarah Connor"
-                        className="w-full pl-9 pr-3 py-2 rounded-xl bg-[#0B1220] border border-slate-700 text-cyan-300 font-semibold placeholder-slate-500 text-sm focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition-all"
-                      />
-                    </div>
-                  </div>
+                  <Input
+                    label="Display Name"
+                    type="text"
+                    value={displayName}
+                    onChange={(e) => setDisplayName(e.target.value)}
+                    placeholder="e.g. Sarah Connor"
+                    leftIcon={<User className="w-4 h-4" />}
+                  />
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
-                      Password
-                    </label>
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-500">
-                        <Lock className="w-4 h-4" />
-                      </div>
-                      <input
-                        type={showPassword ? "text" : "password"}
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        placeholder="At least 6 chars"
-                        className="w-full pl-9 pr-10 py-2 rounded-xl bg-[#0B1220] border border-slate-700 text-cyan-300 font-semibold placeholder-slate-500 text-sm focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition-all font-mono"
-                      />
+                  <Input
+                    label="Password"
+                    type={showPassword ? "text" : "password"}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="At least 6 chars"
+                    leftIcon={<Lock className="w-4 h-4" />}
+                    rightIcon={
                       <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
-                        className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-500 hover:text-white transition-colors"
+                        className="text-slate-400 hover:text-white transition-colors cursor-pointer"
+                        aria-label={showPassword ? "Hide password" : "Show password"}
                       >
                         {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                       </button>
-                    </div>
-                  </div>
+                    }
+                  />
 
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
-                      Confirm Password
-                    </label>
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-500">
-                        <Lock className="w-4 h-4" />
-                      </div>
-                      <input
-                        type={showPassword ? "text" : "password"}
-                        value={confirmPassword}
-                        onChange={(e) => setConfirmPassword(e.target.value)}
-                        placeholder="Re-type password"
-                        className="w-full pl-9 pr-3 py-2 rounded-xl bg-[#0B1220] border border-slate-700 text-cyan-300 font-semibold placeholder-slate-500 text-sm focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition-all font-mono"
-                      />
-                    </div>
-                  </div>
+                  <Input
+                    label="Confirm Password"
+                    type={showPassword ? "text" : "password"}
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    placeholder="Re-type password"
+                    leftIcon={<Lock className="w-4 h-4" />}
+                  />
                 </div>
 
                 {/* Experience Level */}

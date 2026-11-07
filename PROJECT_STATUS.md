@@ -39,6 +39,33 @@ Updated: November 2026
 
 ---
 
+## 🎨 Checkpoint S0.x - Input Contrast Fix on Auth Forms — COMPLETE
+- [x] **Root Cause Diagnosis**:
+  - Identified unstyled inputs on `/register` defaulting to User-Agent browser styles (`background-color: field;` -> `rgb(255, 255, 255)`) combined with light text/placeholder tokens, causing white-on-white text disappearance (1:1 contrast).
+  - Detected WebKit credential autofill overriding dark backgrounds with light blue box-shadows (`rgb(232, 240, 254)`).
+- [x] **Shared Reusable `Input` Component (`web/components/ui/Input.tsx`)**:
+  - Implemented shared `Input` component with forwardRef support, container wrapper, label, left/right icons, and accessible focus states.
+  - Background styled with `var(--surface-2)` (`#1A2740`).
+  - Text styled with `var(--text-primary)` (`#E2E8F0`).
+  - Placeholder styled with `var(--text-muted)` (`#94A3B8`). Contrast ratio calculated at **5.85:1** against the `#1A2740` input background (exceeds WCAG AA 4.5:1 requirement).
+  - Caret color synchronized with text color (`#E2E8F0`).
+  - High-visibility cyan focus ring (`focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/40`).
+- [x] **Global Stylesheet Hardening (`web/styles/tokens.css`)**:
+  - Set `color-scheme: dark;` on `:root` to ensure all native browser form controls default to dark palettes.
+  - Added global input background and placeholder contrast rules for standard form controls.
+  - Added `-webkit-autofill` overrides using inset box-shadow `0 0 0px 1000px #1A2740 inset` and `-webkit-text-fill-color: var(--text-primary)` to prevent browser credential managers from washing out input text.
+- [x] **Full Auth Flow Integration**:
+  - Integrated shared `Input` component across `web/app/register/page.tsx` (Username, Display Name, Password, Confirm Password).
+  - Integrated shared `Input` component across `web/app/login/page.tsx` (Username, Password).
+  - Integrated shared `Input` component across `web/components/ui/AuthModal.tsx` (Username, Display Name).
+- [x] **Verification & Photographic Evidence**:
+  - Verified on `localhost:3000/register` with headless Chrome CDP.
+  - Captured responsive screenshots with text populated across all fields at 1280px (`web/public/screenshots/register_1280px.png`) and 360px (`web/public/screenshots/register_360px.png`).
+  - `npx tsc --noEmit` passing with 0 errors.
+  - `npx next build` passing clean across all 49 routes.
+
+---
+
 ## 📦 Checkpoint S1.x - Load 100-Problem Content Bank & Problem Count Fix — COMPLETE
 - [x] **Launch Content Bank Ingestion (100 Problems, 10 Topics)**:
   - Extracted and verified all 100 launch problems from `content/problems/*.json` and `content/index.json`.

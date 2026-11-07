@@ -41,6 +41,22 @@ textarea:focus-visible {
   outline-offset: 2px;
 }
 
+/* Global Form Controls Contrast & Accessibility */
+input:not([type="checkbox"]):not([type="radio"]),
+select,
+textarea {
+  color-scheme: dark;
+  background-color: var(--surface-2);
+  color: var(--text-primary);
+  caret-color: var(--text-primary);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--text-muted);
+  opacity: 1;
+}
+
 /* 3D UI Elevation & Depth tokens */
 .elevation-0 {
   background: var(--bg-space);
@@ -113,8 +129,9 @@ input:-webkit-autofill:hover,
 input:-webkit-autofill:focus,
 textarea:-webkit-autofill,
 select:-webkit-autofill {
-  -webkit-text-fill-color: #67e8f9 !important;
-  -webkit-box-shadow: 0 0 0px 1000px #0B1220 inset !important;
-  box-shadow: 0 0 0px 1000px #0B1220 inset !important;
+  -webkit-text-fill-color: var(--text-primary, #E2E8F0) !important;
+  -webkit-box-shadow: 0 0 0px 1000px #1A2740 inset !important;
+  box-shadow: 0 0 0px 1000px #1A2740 inset !important;
+  caret-color: var(--text-primary, #E2E8F0) !important;
   transition: background-color 5000s ease-in-out 0s;
 }

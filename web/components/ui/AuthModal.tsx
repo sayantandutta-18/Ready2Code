@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../../lib/authContext";
+import Input from "./Input";
 import { X, Code2, Sparkles, User, ArrowRight, Loader2, Lock } from "lucide-react";
 
 export default function AuthModal() {
@@ -140,36 +141,26 @@ export default function AuthModal() {
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-3.5">
-          <div>
-            <label className="text-[11px] font-mono uppercase text-slate-400 block mb-1">
-              Username
-            </label>
-            <div className="relative">
-              <User className="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
-              <input
-                type="text"
-                required
-                placeholder="e.g. algo_master"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                className="w-full bg-[#0B1220] border border-slate-700 rounded-xl pl-9 pr-3.5 py-2 text-sm text-cyan-300 font-semibold placeholder-slate-500 focus:outline-none focus:border-cyan-400 font-mono"
-              />
-            </div>
-          </div>
+          <Input
+            label="Username"
+            type="text"
+            required
+            placeholder="e.g. algo_master"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            leftIcon={<User className="w-4 h-4" />}
+            className="font-mono text-sm py-2"
+          />
 
           {tab === "register" && (
-            <div>
-              <label className="text-[11px] font-mono uppercase text-slate-400 block mb-1">
-                Display Name (Optional)
-              </label>
-              <input
-                type="text"
-                placeholder="e.g. Alex Chen"
-                value={displayName}
-                onChange={(e) => setDisplayName(e.target.value)}
-                className="w-full bg-[#0B1220] border border-slate-700 rounded-xl px-3.5 py-2 text-sm text-cyan-300 font-semibold placeholder-slate-500 focus:outline-none focus:border-cyan-400"
-              />
-            </div>
+            <Input
+              label="Display Name (Optional)"
+              type="text"
+              placeholder="e.g. Alex Chen"
+              value={displayName}
+              onChange={(e) => setDisplayName(e.target.value)}
+              className="text-sm py-2"
+            />
           )}
 
           <button
