@@ -2,6 +2,7 @@
 
 import React, { useState, Suspense } from "react";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/lib/authContext";
 import {
@@ -21,6 +22,16 @@ import {
   ShieldCheck,
   Award,
 } from "lucide-react";
+
+// Lazy-load AuthSpatialCanvas with ssr: false
+const AuthSpatialCanvas = dynamic(() => import("@/components/3d/AuthSpatialCanvas"), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full h-[220px] sm:h-[260px] flex items-center justify-center text-emerald-400/60 font-mono text-xs">
+      Initializing 3D genesis matrix...
+    </div>
+  ),
+});
 
 const DEMO_PROFILES = [
   { username: "algo_ninja", display_name: "Algo Ninja", streak: 7, xp: 420 },
@@ -102,67 +113,66 @@ function RegisterForm() {
   };
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="w-full max-w-4xl grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
-        {/* Left Side: Value Proposition & Highlights */}
-        <div className="lg:col-span-5 bg-gradient-to-br from-cyan-950/40 via-surface-card to-indigo-950/30 border border-border/80 rounded-2xl p-8 flex flex-col justify-between shadow-xl">
+    <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-[#0B1220] relative overflow-hidden">
+      {/* Background ambient radial gradients */}
+      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
+
+      <div className="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch relative z-10">
+        {/* Left Side: 3D Genesis Matrix & Value Propositions */}
+        <div className="lg:col-span-5 bg-gradient-to-br from-cyan-950/40 via-surface-card to-indigo-950/30 border border-border/80 rounded-2xl p-6 sm:p-8 flex flex-col justify-between shadow-2xl">
           <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-xs font-mono uppercase tracking-wider mb-6">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-mono uppercase tracking-wider mb-4">
               <Sparkles className="w-3.5 h-3.5" />
-              Free Lifetime Access
+              <span>3D Algorithmic Genesis</span>
             </div>
-            <h2 className="text-2xl font-bold text-white mb-3 tracking-tight">
+            <h2 className="text-2xl font-bold text-white mb-2 tracking-tight">
               Level up your algorithmic mastery in 3D
             </h2>
-            <p className="text-sm text-text-secondary leading-relaxed mb-6">
-              Ready2Code pairs interactive 3D spatial execution with 100+ curated placement problems, live streaks, and real-time code analysis.
+            <p className="text-xs text-text-secondary leading-relaxed mb-4">
+              Interactive spatial execution with 100+ curated problems, live streaks, and real-time code analysis.
             </p>
 
-            <div className="space-y-4">
+            {/* Interactive 3D Canvas */}
+            <div className="my-2 rounded-xl overflow-hidden border border-emerald-500/20 bg-slate-950/40">
+              <AuthSpatialCanvas variant="register" className="w-full h-[220px] sm:h-[250px]" />
+            </div>
+
+            <div className="space-y-3 mt-4">
               <div className="flex items-start gap-3">
-                <div className="w-8 h-8 rounded-lg bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center flex-shrink-0 text-cyan-400 mt-0.5">
-                  <Boxes className="w-4 h-4" />
+                <div className="w-7 h-7 rounded-lg bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center flex-shrink-0 text-cyan-400 mt-0.5">
+                  <Boxes className="w-3.5 h-3.5" />
                 </div>
                 <div>
-                  <h4 className="text-sm font-semibold text-white">Interactive 3D Visualizer</h4>
-                  <p className="text-xs text-text-secondary">Watch pointers traverse trees, graphs, and linked lists in Three.js.</p>
+                  <h4 className="text-xs font-semibold text-white">Interactive 3D Visualizer</h4>
+                  <p className="text-[11px] text-text-secondary">Watch pointers traverse trees, graphs, and linked lists in Three.js.</p>
                 </div>
               </div>
 
               <div className="flex items-start gap-3">
-                <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center flex-shrink-0 text-emerald-400 mt-0.5">
-                  <Award className="w-4 h-4" />
+                <div className="w-7 h-7 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center flex-shrink-0 text-emerald-400 mt-0.5">
+                  <Award className="w-3.5 h-3.5" />
                 </div>
                 <div>
-                  <h4 className="text-sm font-semibold text-white">100+ Top Placement Problems</h4>
-                  <p className="text-xs text-text-secondary">Curated from FAANG, tier-1 tech firms, and competitive programming.</p>
+                  <h4 className="text-xs font-semibold text-white">100+ Curated Placement Labs</h4>
+                  <p className="text-[11px] text-text-secondary">FAANG & tier-1 technical questions with 1,192 verified test cases.</p>
                 </div>
               </div>
 
               <div className="flex items-start gap-3">
-                <div className="w-8 h-8 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center flex-shrink-0 text-amber-400 mt-0.5">
-                  <Flame className="w-4 h-4" />
+                <div className="w-7 h-7 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center flex-shrink-0 text-amber-400 mt-0.5">
+                  <Flame className="w-3.5 h-3.5" />
                 </div>
                 <div>
-                  <h4 className="text-sm font-semibold text-white">Daily Streaks & XP Leaderboards</h4>
-                  <p className="text-xs text-text-secondary">Maintain your streak, freeze missed days, and rise on global leaderboards.</p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-3">
-                <div className="w-8 h-8 rounded-lg bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center flex-shrink-0 text-indigo-400 mt-0.5">
-                  <ShieldCheck className="w-4 h-4" />
-                </div>
-                <div>
-                  <h4 className="text-sm font-semibold text-white">Zero Setup Required</h4>
-                  <p className="text-xs text-text-secondary">Browser-native Monaco code editor supporting Python, JavaScript, C++, and Java.</p>
+                  <h4 className="text-xs font-semibold text-white">Daily Streaks & XP Leaderboards</h4>
+                  <p className="text-[11px] text-text-secondary">Maintain your streak, freeze missed days, and rise on rankings.</p>
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="pt-6 border-t border-border/60 mt-6">
-            <div className="text-xs text-text-muted mb-2 font-mono uppercase tracking-wider">Instant Quick-Test</div>
+          <div className="pt-4 border-t border-border/60 mt-4">
+            <div className="text-[11px] text-text-muted mb-2 font-mono uppercase tracking-wider">Instant Quick-Test</div>
             <div className="flex flex-wrap gap-2">
               {DEMO_PROFILES.map((dp) => (
                 <button
@@ -170,10 +180,10 @@ function RegisterForm() {
                   type="button"
                   onClick={() => handleDemoRegister(dp.username)}
                   disabled={isSubmitting}
-                  className="px-3 py-1.5 rounded-lg bg-surface-base border border-border/70 hover:border-cyan-500/50 hover:bg-cyan-500/5 text-xs text-text-secondary hover:text-cyan-300 transition-colors flex items-center gap-1.5"
+                  className="px-2.5 py-1.5 rounded-lg bg-surface-base border border-border/70 hover:border-cyan-500/50 hover:bg-cyan-500/5 text-xs text-text-secondary hover:text-cyan-300 transition-colors flex items-center gap-1.5 cursor-pointer"
                 >
                   <Zap className="w-3 h-3 text-cyan-400" />
-                  Try as {dp.display_name}
+                  <span>Try as {dp.display_name}</span>
                 </button>
               ))}
             </div>
@@ -196,12 +206,12 @@ function RegisterForm() {
                   href="/problems"
                   className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-white font-medium text-sm transition-all flex items-center justify-center gap-2 shadow-lg shadow-cyan-500/20"
                 >
-                  Go to Problems
+                  <span>Go to Problems</span>
                   <ArrowRight className="w-4 h-4" />
                 </Link>
                 <button
                   onClick={logout}
-                  className="px-5 py-2.5 rounded-xl bg-surface-base border border-border hover:border-rose-500/50 text-text-secondary hover:text-rose-400 text-sm font-medium transition-colors"
+                  className="px-5 py-2.5 rounded-xl bg-surface-base border border-border hover:border-rose-500/50 text-text-secondary hover:text-rose-400 text-sm font-medium transition-colors cursor-pointer"
                 >
                   Sign Out
                 </button>
@@ -324,7 +334,7 @@ function RegisterForm() {
                         key={lvl.id}
                         type="button"
                         onClick={() => setExperienceLevel(lvl.id)}
-                        className={`p-2 rounded-xl border text-left transition-all ${
+                        className={`p-2 rounded-xl border text-left transition-all cursor-pointer ${
                           experienceLevel === lvl.id
                             ? "bg-cyan-500/10 border-cyan-500/60 text-cyan-300 shadow-sm"
                             : "bg-surface-base border-border text-text-secondary hover:border-border/90"
@@ -361,11 +371,11 @@ function RegisterForm() {
                   {isSubmitting ? (
                     <>
                       <Loader2 className="w-4 h-4 animate-spin" />
-                      Creating your account...
+                      <span>Creating your account...</span>
                     </>
                   ) : (
                     <>
-                      Create Account
+                      <span>Create Account</span>
                       <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
                     </>
                   )}
@@ -396,7 +406,7 @@ export default function RegisterPage() {
     <Suspense
       fallback={
         <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center text-text-muted text-sm">
-          Loading registration...
+          Loading 3D registration...
         </div>
       }
     >
