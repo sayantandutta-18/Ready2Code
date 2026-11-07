@@ -152,7 +152,7 @@ export default function AuthModal() {
                 placeholder="e.g. algo_master"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                className="w-full bg-[#0B1220] border border-slate-700 rounded-xl pl-9 pr-3.5 py-2 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-400"
+                className="w-full bg-[#0B1220] border border-slate-700 rounded-xl pl-9 pr-3.5 py-2 text-sm text-cyan-300 font-semibold placeholder-slate-500 focus:outline-none focus:border-cyan-400 font-mono"
               />
             </div>
           </div>
@@ -167,7 +167,7 @@ export default function AuthModal() {
                 placeholder="e.g. Alex Chen"
                 value={displayName}
                 onChange={(e) => setDisplayName(e.target.value)}
-                className="w-full bg-[#0B1220] border border-slate-700 rounded-xl px-3.5 py-2 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-400"
+                className="w-full bg-[#0B1220] border border-slate-700 rounded-xl px-3.5 py-2 text-sm text-cyan-300 font-semibold placeholder-slate-500 focus:outline-none focus:border-cyan-400"
               />
             </div>
           )}

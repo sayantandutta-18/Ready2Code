@@ -120,7 +120,7 @@ function RegisterForm() {
 
       <div className="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch relative z-10">
         {/* Left Side: 3D Genesis Matrix & Value Propositions */}
-        <div className="lg:col-span-5 bg-gradient-to-br from-cyan-950/40 via-surface-card to-indigo-950/30 border border-border/80 rounded-2xl p-6 sm:p-8 flex flex-col justify-between shadow-2xl">
+        <div className="lg:col-span-5 bg-gradient-to-br from-cyan-950/40 via-[#121C2F] to-indigo-950/30 border border-slate-800 rounded-2xl p-6 sm:p-8 flex flex-col justify-between shadow-2xl">
           <div>
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-mono uppercase tracking-wider mb-4">
               <Sparkles className="w-3.5 h-3.5" />
@@ -129,7 +129,7 @@ function RegisterForm() {
             <h2 className="text-2xl font-bold text-white mb-2 tracking-tight">
               Level up your algorithmic mastery in 3D
             </h2>
-            <p className="text-xs text-text-secondary leading-relaxed mb-4">
+            <p className="text-xs text-slate-300 leading-relaxed mb-4">
               Interactive spatial execution with 100+ curated problems, live streaks, and real-time code analysis.
             </p>
 
@@ -145,7 +145,7 @@ function RegisterForm() {
                 </div>
                 <div>
                   <h4 className="text-xs font-semibold text-white">Interactive 3D Visualizer</h4>
-                  <p className="text-[11px] text-text-secondary">Watch pointers traverse trees, graphs, and linked lists in Three.js.</p>
+                  <p className="text-[11px] text-slate-400">Watch pointers traverse trees, graphs, and linked lists in Three.js.</p>
                 </div>
               </div>
 
@@ -155,7 +155,7 @@ function RegisterForm() {
                 </div>
                 <div>
                   <h4 className="text-xs font-semibold text-white">100+ Curated Placement Labs</h4>
-                  <p className="text-[11px] text-text-secondary">FAANG & tier-1 technical questions with 1,192 verified test cases.</p>
+                  <p className="text-[11px] text-slate-400">FAANG & tier-1 technical questions with 1,192 verified test cases.</p>
                 </div>
               </div>
 
@@ -165,14 +165,14 @@ function RegisterForm() {
                 </div>
                 <div>
                   <h4 className="text-xs font-semibold text-white">Daily Streaks & XP Leaderboards</h4>
-                  <p className="text-[11px] text-text-secondary">Maintain your streak, freeze missed days, and rise on rankings.</p>
+                  <p className="text-[11px] text-slate-400">Maintain your streak, freeze missed days, and rise on rankings.</p>
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="pt-4 border-t border-border/60 mt-4">
-            <div className="text-[11px] text-text-muted mb-2 font-mono uppercase tracking-wider">Instant Quick-Test</div>
+          <div className="pt-4 border-t border-slate-800 mt-4">
+            <div className="text-[11px] text-slate-500 mb-2 font-mono uppercase tracking-wider">Instant Quick-Test</div>
             <div className="flex flex-wrap gap-2">
               {DEMO_PROFILES.map((dp) => (
                 <button
@@ -180,7 +180,7 @@ function RegisterForm() {
                   type="button"
                   onClick={() => handleDemoRegister(dp.username)}
                   disabled={isSubmitting}
-                  className="px-2.5 py-1.5 rounded-lg bg-surface-base border border-border/70 hover:border-cyan-500/50 hover:bg-cyan-500/5 text-xs text-text-secondary hover:text-cyan-300 transition-colors flex items-center gap-1.5 cursor-pointer"
+                  className="px-2.5 py-1.5 rounded-lg bg-[#0B1220] border border-slate-700 hover:border-cyan-500/50 hover:bg-cyan-500/10 text-xs text-slate-300 hover:text-cyan-300 transition-colors flex items-center gap-1.5 cursor-pointer"
                 >
                   <Zap className="w-3 h-3 text-cyan-400" />
                   <span>Try as {dp.display_name}</span>
@@ -191,14 +191,14 @@ function RegisterForm() {
         </div>
 
         {/* Right Side: Registration Form */}
-        <div className="lg:col-span-7 bg-surface-card border border-border rounded-2xl p-8 shadow-xl flex flex-col justify-center">
+        <div className="lg:col-span-7 bg-[#121C2F] border border-slate-800 rounded-2xl p-8 shadow-xl flex flex-col justify-center">
           {user ? (
             <div className="text-center py-6">
               <div className="w-16 h-16 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 flex items-center justify-center mx-auto mb-4">
                 <CheckCircle2 className="w-8 h-8" />
               </div>
               <h3 className="text-xl font-bold text-white mb-2">You are already registered</h3>
-              <p className="text-sm text-text-secondary mb-6">
+              <p className="text-sm text-slate-300 mb-6">
                 Logged in as <span className="font-semibold text-cyan-300">@{user.username}</span> ({user.display_name}).
               </p>
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
@@ -211,7 +211,7 @@ function RegisterForm() {
                 </Link>
                 <button
                   onClick={logout}
-                  className="px-5 py-2.5 rounded-xl bg-surface-base border border-border hover:border-rose-500/50 text-text-secondary hover:text-rose-400 text-sm font-medium transition-colors cursor-pointer"
+                  className="px-5 py-2.5 rounded-xl bg-[#0B1220] border border-slate-700 hover:border-rose-500/50 text-slate-300 hover:text-rose-400 text-sm font-medium transition-colors cursor-pointer"
                 >
                   Sign Out
                 </button>
@@ -225,7 +225,7 @@ function RegisterForm() {
                   <span className="text-xs font-mono uppercase tracking-widest text-cyan-300 font-semibold">Join Ready2Code</span>
                 </div>
                 <h1 className="text-2xl font-bold text-white tracking-tight">Create your account</h1>
-                <p className="text-sm text-text-secondary mt-1">
+                <p className="text-sm text-slate-300 mt-1">
                   Start coding and visualizing algorithmic concepts in under 30 seconds.
                 </p>
               </div>
@@ -240,11 +240,11 @@ function RegisterForm() {
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-medium text-text-secondary uppercase tracking-wider mb-1.5">
+                    <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
                       Username <span className="text-cyan-400">*</span>
                     </label>
                     <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-text-muted">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-500">
                         <User className="w-4 h-4" />
                       </div>
                       <input
@@ -253,32 +253,37 @@ function RegisterForm() {
                         onChange={(e) => setUsername(e.target.value)}
                         placeholder="e.g. dev_sarah"
                         required
-                        className="w-full pl-9 pr-3 py-2 rounded-xl bg-surface-base border border-border text-white placeholder-text-muted text-sm focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all font-mono"
+                        className="w-full pl-9 pr-3 py-2 rounded-xl bg-[#0B1220] border border-slate-700 text-cyan-300 font-semibold placeholder-slate-500 text-sm focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition-all font-mono"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-xs font-medium text-text-secondary uppercase tracking-wider mb-1.5">
+                    <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
                       Display Name
                     </label>
-                    <input
-                      type="text"
-                      value={displayName}
-                      onChange={(e) => setDisplayName(e.target.value)}
-                      placeholder="e.g. Sarah Connor"
-                      className="w-full px-3 py-2 rounded-xl bg-surface-base border border-border text-white placeholder-text-muted text-sm focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all"
-                    />
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-500">
+                        <User className="w-4 h-4" />
+                      </div>
+                      <input
+                        type="text"
+                        value={displayName}
+                        onChange={(e) => setDisplayName(e.target.value)}
+                        placeholder="e.g. Sarah Connor"
+                        className="w-full pl-9 pr-3 py-2 rounded-xl bg-[#0B1220] border border-slate-700 text-cyan-300 font-semibold placeholder-slate-500 text-sm focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition-all"
+                      />
+                    </div>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-medium text-text-secondary uppercase tracking-wider mb-1.5">
+                    <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
                       Password
                     </label>
                     <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-text-muted">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-500">
                         <Lock className="w-4 h-4" />
                       </div>
                       <input
@@ -286,12 +291,12 @@ function RegisterForm() {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         placeholder="At least 6 chars"
-                        className="w-full pl-9 pr-10 py-2 rounded-xl bg-surface-base border border-border text-white placeholder-text-muted text-sm focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all"
+                        className="w-full pl-9 pr-10 py-2 rounded-xl bg-[#0B1220] border border-slate-700 text-cyan-300 font-semibold placeholder-slate-500 text-sm focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition-all font-mono"
                       />
                       <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
-                        className="absolute inset-y-0 right-0 pr-3 flex items-center text-text-muted hover:text-white transition-colors"
+                        className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-500 hover:text-white transition-colors"
                       >
                         {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                       </button>
@@ -299,11 +304,11 @@ function RegisterForm() {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-medium text-text-secondary uppercase tracking-wider mb-1.5">
+                    <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
                       Confirm Password
                     </label>
                     <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-text-muted">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-500">
                         <Lock className="w-4 h-4" />
                       </div>
                       <input
@@ -311,7 +316,7 @@ function RegisterForm() {
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
                         placeholder="Re-type password"
-                        className="w-full pl-9 pr-3 py-2 rounded-xl bg-surface-base border border-border text-white placeholder-text-muted text-sm focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all"
+                        className="w-full pl-9 pr-3 py-2 rounded-xl bg-[#0B1220] border border-slate-700 text-cyan-300 font-semibold placeholder-slate-500 text-sm focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition-all font-mono"
                       />
                     </div>
                   </div>
@@ -319,7 +324,7 @@ function RegisterForm() {
 
                 {/* Experience Level */}
                 <div>
-                  <label className="block text-xs font-medium text-text-secondary uppercase tracking-wider mb-1.5">
+                  <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
                     Coding Experience
                   </label>
                   <div className="grid grid-cols-3 gap-2">
@@ -336,12 +341,12 @@ function RegisterForm() {
                         onClick={() => setExperienceLevel(lvl.id)}
                         className={`p-2 rounded-xl border text-left transition-all cursor-pointer ${
                           experienceLevel === lvl.id
-                            ? "bg-cyan-500/10 border-cyan-500/60 text-cyan-300 shadow-sm"
-                            : "bg-surface-base border-border text-text-secondary hover:border-border/90"
+                            ? "bg-cyan-500/20 border-cyan-500 text-cyan-300 shadow-sm shadow-cyan-500/20"
+                            : "bg-[#0B1220] border-slate-800 text-slate-300 hover:border-slate-700 hover:text-slate-100"
                         }`}
                       >
                         <div className="text-xs font-semibold">{lvl.label}</div>
-                        <div className="text-[10px] text-text-muted">{lvl.sub}</div>
+                        <div className="text-[10px] text-slate-400">{lvl.sub}</div>
                       </button>
                     ))}
                   </div>
@@ -349,12 +354,12 @@ function RegisterForm() {
 
                 {/* Terms agreement */}
                 <div className="pt-2">
-                  <label className="flex items-start gap-2.5 text-xs text-text-secondary cursor-pointer select-none">
+                  <label className="flex items-start gap-2.5 text-xs text-slate-300 cursor-pointer select-none">
                     <input
                       type="checkbox"
                       checked={agreeTerms}
                       onChange={(e) => setAgreeTerms(e.target.checked)}
-                      className="mt-0.5 rounded border-border bg-surface-base text-cyan-500 focus:ring-cyan-500"
+                      className="mt-0.5 rounded border-slate-700 bg-[#0B1220] text-cyan-500 focus:ring-cyan-500"
                     />
                     <span>
                       I agree to the Ready2Code terms of service and acknowledge that all problem submissions are benchmarked against official test suites.
@@ -382,8 +387,8 @@ function RegisterForm() {
                 </button>
               </form>
 
-              <div className="mt-6 pt-5 border-t border-border/60 text-center">
-                <p className="text-xs text-text-secondary">
+              <div className="mt-6 pt-5 border-t border-slate-800 text-center">
+                <p className="text-xs text-slate-400">
                   Already have an account?{" "}
                   <Link
                     href={`/login${redirectPath !== "/problems" ? `?redirect=${encodeURIComponent(redirectPath)}` : ""}`}
@@ -405,7 +410,7 @@ export default function RegisterPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center text-text-muted text-sm">
+        <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center text-slate-400 text-sm">
           Loading 3D registration...
         </div>
       }

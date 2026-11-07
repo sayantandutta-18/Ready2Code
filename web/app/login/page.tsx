@@ -213,7 +213,7 @@ function LoginForm() {
                   placeholder="e.g. algo_ninja"
                   autoComplete="username"
                   required
-                  className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#0B1220] border border-slate-700/80 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition-all font-mono"
+                  className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#0B1220] border border-slate-700/80 text-cyan-300 font-semibold placeholder-slate-500 text-sm focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition-all font-mono"
                 />
               </div>
             </div>
@@ -235,7 +235,7 @@ function LoginForm() {
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;"
                   autoComplete="current-password"
-                  className="w-full pl-10 pr-10 py-2.5 rounded-xl bg-[#0B1220] border border-slate-700/80 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition-all font-mono"
+                  className="w-full pl-10 pr-10 py-2.5 rounded-xl bg-[#0B1220] border border-slate-700/80 text-cyan-300 font-semibold placeholder-slate-500 text-sm focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition-all font-mono"
                 />
                 <button
                   type="button"

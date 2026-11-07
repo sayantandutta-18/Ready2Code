@@ -3,6 +3,7 @@
 @tailwind utilities;
 
 :root {
+  color-scheme: dark;
   --bg-space: #0B1220;
   --surface-1: #121C2F;
   --surface-2: #1A2740;
@@ -104,4 +105,16 @@ textarea:focus-visible {
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--accent-cyan);
+}
+
+/* Dark theme form controls & autofill styling */
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+select:-webkit-autofill {
+  -webkit-text-fill-color: #67e8f9 !important;
+  -webkit-box-shadow: 0 0 0px 1000px #0B1220 inset !important;
+  box-shadow: 0 0 0px 1000px #0B1220 inset !important;
+  transition: background-color 5000s ease-in-out 0s;
 }
