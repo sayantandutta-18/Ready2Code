@@ -3,6 +3,12 @@ set -e
 
 echo "[Ready2Code API] Initializing service container..."
 
+# Ensure alembic path exists in container
+if [ ! -d "api/alembic" ] && [ -d "alembic" ]; then
+  mkdir -p api
+  ln -s /app/alembic api/alembic
+fi
+
 # 1. Run Alembic database migrations
 echo "[Ready2Code API] Running database migrations..."
 for attempt in 1 2 3 4 5; do

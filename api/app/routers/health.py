@@ -30,14 +30,23 @@ def health_check(db: Session = Depends(get_db)):
     # 2. Redis Check
     redis_ok = False
     try:
-        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        sock.settimeout(0.2)
-        res = sock.connect_ex((settings.REDIS_HOST, settings.REDIS_PORT))
-        sock.close()
-        redis_ok = (res == 0)
+        import redis
+        r = redis.from_url(settings.REDIS_URL, socket_connect_timeout=1.0)
+        redis_ok = bool(r.ping())
     except Exception as exc:
-        logger.debug("Redis health check failed: %s", exc)
-        redis_ok = False
+        logger.debug("Redis ping failed: %s", exc)
+        try:
+            from urllib.parse import urlparse
+            p = urlparse(settings.REDIS_URL)
+            host = p.hostname or settings.REDIS_HOST
+            port = p.port or settings.REDIS_PORT
+            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            sock.settimeout(1.0)
+            res = sock.connect_ex((host, port))
+            sock.close()
+            redis_ok = (res == 0)
+        except Exception:
+            redis_ok = False
 
     # 3. Judge0 Check
     judge0_ok = False
