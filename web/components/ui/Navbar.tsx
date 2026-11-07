@@ -26,6 +26,7 @@ import {
   LogIn,
   LogOut,
   User as UserIcon,
+  Github,
 } from "lucide-react";
 
 export default function Navbar() {
@@ -117,6 +118,18 @@ export default function Navbar() {
           >
             <Settings className="w-4 h-4" />
           </Link>
+
+          {/* GitHub Repository */}
+          <a
+            href="https://github.com/sayantandutta-18/Ready2Code"
+            target="_blank"
+            rel="noreferrer"
+            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition-colors"
+            title="GitHub Repository"
+            aria-label="GitHub Repository"
+          >
+            <Github className="w-4 h-4" />
+          </a>
 
           {/* User Account / Profile or Sign In */}
           {user ? (
