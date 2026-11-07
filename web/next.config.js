@@ -7,14 +7,15 @@ const nextConfig = {
     return config;
   },
   async rewrites() {
-    const apiTarget = process.env.API_INTERNAL_URL || 'http://localhost:8000/:path*';
+    const rawTarget = process.env.API_INTERNAL_URL || process.env.NEXT_PUBLIC_API_URL || 'https://api-production-4000.up.railway.app';
+    const targetBase = rawTarget.replace(/\/$/, '');
     return [
       {
         source: '/api/:path*',
-        destination: apiTarget,
+        destination: `${targetBase}/:path*`,
       },
-    ]
+    ];
   },
-}
+};
 
-module.exports = nextConfig
+module.exports = nextConfig;
