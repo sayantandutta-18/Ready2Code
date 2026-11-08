@@ -13,3 +13,12 @@ api/.env
 *.tsbuildinfo
 playwright-report/
 test-results/
+
+.env
+.env.local
+api/.env
+web/.env.local
+venv/
+__pycache__/
+node_modules/
+.next/
