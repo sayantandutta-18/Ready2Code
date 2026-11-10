@@ -70,8 +70,8 @@ export default function ListDetailPage({ params }: { params: { id: string } }) {
   return (
     <div className="max-w-5xl mx-auto px-4 lg:px-8 py-10 space-y-8">
       {/* Back button */}
-      <Link href="/lists" className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-cyan-400 font-mono">
-        <ArrowLeft className="w-3.5 h-3.5" /> Back to Lists
+      <Link href="/lists" className="inline-flex items-center gap-1.5 min-h-[44px] px-2 text-xs text-slate-400 hover:text-cyan-400 font-mono">
+        <ArrowLeft className="w-4 h-4" /> Back to Lists
       </Link>
 
       {/* Header Info */}
@@ -110,35 +110,35 @@ export default function ListDetailPage({ params }: { params: { id: string } }) {
             {listData.problems.map((p, index) => (
               <div
                 key={p.slug}
-                className="p-4 flex items-center justify-between hover:bg-slate-800/30 transition-colors group"
+                className="p-3.5 sm:p-4 flex flex-wrap sm:flex-nowrap items-center justify-between gap-3 hover:bg-slate-800/30 transition-colors group"
               >
-                <div className="flex items-center gap-3">
-                  <GripVertical className="w-4 h-4 text-slate-600 cursor-grab" />
+                <div className="flex items-center gap-3 min-w-0 flex-1">
+                  <GripVertical className="w-4 h-4 text-slate-600 cursor-grab shrink-0 hidden sm:block" />
                   {p.solved ? (
-                    <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+                    <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
                   ) : (
-                    <Circle className="w-5 h-5 text-slate-600" />
+                    <Circle className="w-5 h-5 text-slate-600 shrink-0" />
                   )}
-                  <div>
+                  <div className="min-w-0 flex-1">
                     <Link
                       href={`/problems/${p.slug}`}
-                      className="text-sm font-semibold text-slate-100 group-hover:text-cyan-300 transition-colors flex items-center gap-2"
+                      className="text-sm font-semibold text-slate-100 group-hover:text-cyan-300 transition-colors flex items-center gap-1.5"
                     >
-                      <span className="text-slate-500 font-mono text-xs">{index + 1}.</span>
-                      <span>{p.title}</span>
+                      <span className="text-slate-500 font-mono text-xs shrink-0">{index + 1}.</span>
+                      <span className="truncate">{p.title}</span>
                     </Link>
-                    <div className="text-[11px] text-slate-400 mt-0.5">Topic: {p.topic}</div>
+                    <div className="text-[11px] text-slate-400 mt-0.5 truncate">Topic: {p.topic}</div>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2.5 shrink-0 ml-auto sm:ml-0">
                   <DifficultyChip difficulty={p.difficulty} />
                   <Link
                     href={`/problems/${p.slug}`}
-                    className="px-3 py-1 rounded-lg bg-slate-800 group-hover:bg-cyan-500/20 text-slate-300 group-hover:text-cyan-300 text-xs font-semibold transition-all flex items-center gap-1 border border-slate-700"
+                    className="min-h-[44px] px-3.5 py-2 rounded-xl bg-slate-800 group-hover:bg-cyan-500/20 text-slate-300 group-hover:text-cyan-300 text-xs font-semibold transition-all flex items-center gap-1.5 border border-slate-700"
                   >
                     <span>Solve</span>
-                    <ChevronRight className="w-3.5 h-3.5" />
+                    <ChevronRight className="w-4 h-4" />
                   </Link>
                 </div>
               </div>

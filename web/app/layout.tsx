@@ -23,7 +23,7 @@ export default function RootLayout({
             <Navbar />
             <AuthModal />
             <OnboardingModal />
-            <main className="min-h-[calc(100vh-65px)]">
+            <main className="min-h-[calc(100vh-64px)] pt-16">
               {children}
             </main>
           </QueryProvider>

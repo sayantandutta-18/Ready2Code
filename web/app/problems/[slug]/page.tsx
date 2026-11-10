@@ -381,28 +381,28 @@ export default function ProblemSolvePage({ params }: { params: { slug: string } 
       )}
 
       {/* Top Problem Header */}
-      <div className="px-6 py-2.5 bg-[#121C2F] border-b border-slate-800 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <Link href="/problems" className="text-xs text-slate-400 hover:text-cyan-400 font-mono">
+      <div className="px-4 sm:px-6 py-2.5 bg-[#121C2F] border-b border-slate-800 flex flex-wrap items-center justify-between gap-2">
+        <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+          <Link href="/problems" className="min-h-[44px] flex items-center text-xs text-slate-400 hover:text-cyan-400 font-mono shrink-0">
             &larr; Problems
           </Link>
           <span className="text-slate-600">/</span>
-          <h1 className="text-base font-bold text-white flex items-center gap-2">
-            <span>{problem.title}</span>
+          <h1 className="text-sm sm:text-base font-bold text-white flex items-center gap-2 truncate">
+            <span className="truncate">{problem.title}</span>
             <DifficultyChip difficulty={problem.difficulty} />
             {problem.user_status === "solved" && (
-              <span className="inline-flex items-center gap-1 text-[11px] font-mono px-2 py-0.5 rounded-full bg-emerald-950 border border-emerald-700/60 text-emerald-300">
+              <span className="inline-flex items-center gap-1 text-[11px] font-mono px-2 py-0.5 rounded-full bg-emerald-950 border border-emerald-700/60 text-emerald-300 shrink-0">
                 <CheckCircle2 className="w-3 h-3 text-emerald-400" /> Solved
               </span>
             )}
           </h1>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 shrink-0">
           {/* Optimization Ladder shortcut */}
           <Link
             href={`/ladder/${slug}`}
-            className="hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-lg bg-violet-500/10 hover:bg-violet-500/20 text-violet-300 border border-violet-500/30 text-xs font-semibold transition-all"
+            className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-violet-500/10 hover:bg-violet-500/20 text-violet-300 border border-violet-500/30 text-xs font-semibold transition-all min-h-[44px]"
             title="Brute to Optimal Ladder"
           >
             <Layers className="w-3.5 h-3.5 text-violet-400" />
@@ -412,65 +412,66 @@ export default function ProblemSolvePage({ params }: { params: { slug: string } 
           {/* Visualizer shortcut */}
           <Link
             href={`/visualizer/${slug}`}
-            className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 text-xs font-semibold transition-all"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 text-xs font-semibold transition-all min-h-[44px]"
             title="Launch 3D Algorithm Visualizer"
           >
             <PlaySquare className="w-3.5 h-3.5 text-cyan-400" />
-            <span>3D Visualizer</span>
+            <span className="hidden sm:inline">3D Visualizer</span>
           </Link>
 
           {/* Bookmark Button */}
           <button
             onClick={handleToggleBookmark}
-            className={`p-1.5 rounded-lg border text-xs transition-colors ${
+            className={`min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl border text-xs transition-colors ${
               isBookmarked
                 ? "bg-amber-500/20 border-amber-500/40 text-amber-300"
                 : "bg-slate-800 border-slate-700 text-slate-400 hover:text-white"
             }`}
             title="Bookmark Problem"
+            aria-label="Bookmark Problem"
           >
             <Bookmark className={`w-4 h-4 ${isBookmarked ? "fill-amber-400" : ""}`} />
           </button>
         </div>
       </div>
 
-      {/* Mobile Tab Switcher */}
-      <div className="lg:hidden flex bg-[#0B1220] p-1.5 border-b border-slate-800 text-xs shrink-0">
-        <button
-          onClick={() => setMobileView("editor")}
-          className={`flex-1 py-1.5 font-bold text-center rounded-xl transition-all ${
-            mobileView === "editor"
-              ? "bg-gradient-to-r from-cyan-500/20 to-indigo-500/20 text-cyan-300 border border-cyan-500/30 shadow-sm"
-              : "text-slate-400 hover:text-white"
-          }`}
-        >
-          Code Editor
-        </button>
+      {/* Mobile Tab Switcher (Below 768px: Problem vs Code) (Rule 5 & Rule 6) */}
+      <div className="md:hidden flex bg-[#0B1220] p-1.5 border-b border-slate-800 text-sm font-semibold shrink-0">
         <button
           onClick={() => setMobileView("statement")}
-          className={`flex-1 py-1.5 font-bold text-center rounded-xl transition-all ${
+          className={`flex-1 min-h-[44px] py-2 font-bold text-center rounded-xl transition-all ${
             mobileView === "statement"
               ? "bg-gradient-to-r from-cyan-500/20 to-indigo-500/20 text-cyan-300 border border-cyan-500/30 shadow-sm"
               : "text-slate-400 hover:text-white"
           }`}
         >
-          Statement & Notes
+          Problem
+        </button>
+        <button
+          onClick={() => setMobileView("editor")}
+          className={`flex-1 min-h-[44px] py-2 font-bold text-center rounded-xl transition-all ${
+            mobileView === "editor"
+              ? "bg-gradient-to-r from-cyan-500/20 to-indigo-500/20 text-cyan-300 border border-cyan-500/30 shadow-sm"
+              : "text-slate-400 hover:text-white"
+          }`}
+        >
+          Code
         </button>
       </div>
 
       {/* Main Split Pane Layout */}
-      <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 overflow-hidden">
+      <div className="flex-1 grid grid-cols-1 md:grid-cols-12 overflow-hidden">
         {/* Left Pane: Tabs (Description, Hints, Editorial, Notes, AI Review, Submissions) */}
         <div
-          className={`lg:col-span-5 border-r border-slate-800 flex-col h-full bg-[#0D1524] overflow-hidden ${
-            mobileView === "statement" ? "flex" : "hidden lg:flex"
+          className={`md:col-span-5 border-r border-slate-800 flex-col h-full bg-[#0D1524] overflow-hidden ${
+            mobileView === "statement" ? "flex" : "hidden md:flex"
           }`}
         >
           {/* Tab buttons */}
           <div className="flex items-center gap-1 p-2 bg-[#121C2F] border-b border-slate-800 text-xs overflow-x-auto">
             <button
               onClick={() => setActiveTab("statement")}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medium transition-all ${
+              className={`min-h-[44px] flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medium transition-all ${
                 activeTab === "statement"
                   ? "bg-slate-800 text-cyan-300 border border-cyan-500/30"
                   : "text-slate-400 hover:text-white"
@@ -482,7 +483,7 @@ export default function ProblemSolvePage({ params }: { params: { slug: string } 
 
             <button
               onClick={() => setActiveTab("hints")}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medium transition-all ${
+              className={`min-h-[44px] flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medium transition-all ${
                 activeTab === "hints"
                   ? "bg-slate-800 text-cyan-300 border border-cyan-500/30"
                   : "text-slate-400 hover:text-white"
@@ -494,7 +495,7 @@ export default function ProblemSolvePage({ params }: { params: { slug: string } 
 
             <button
               onClick={() => setActiveTab("editorial")}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medium transition-all ${
+              className={`min-h-[44px] flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medium transition-all ${
                 activeTab === "editorial"
                   ? "bg-slate-800 text-cyan-300 border border-cyan-500/30"
                   : "text-slate-400 hover:text-white"
@@ -506,7 +507,7 @@ export default function ProblemSolvePage({ params }: { params: { slug: string } 
 
             <button
               onClick={() => setActiveTab("notes")}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medium transition-all ${
+              className={`min-h-[44px] flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medium transition-all ${
                 activeTab === "notes"
                   ? "bg-slate-800 text-cyan-300 border border-cyan-500/30"
                   : "text-slate-400 hover:text-white"
@@ -517,7 +518,7 @@ export default function ProblemSolvePage({ params }: { params: { slug: string } 
 
             <button
               onClick={() => setActiveTab("ai")}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medium transition-all ${
+              className={`min-h-[44px] flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medium transition-all ${
                 activeTab === "ai"
                   ? "bg-slate-800 text-cyan-300 border border-cyan-500/30"
                   : "text-slate-400 hover:text-white"
@@ -529,7 +530,7 @@ export default function ProblemSolvePage({ params }: { params: { slug: string } 
 
             <button
               onClick={() => setActiveTab("submissions")}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medium transition-all ${
+              className={`min-h-[44px] flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medium transition-all ${
                 activeTab === "submissions"
                   ? "bg-slate-800 text-cyan-300 border border-cyan-500/30"
                   : "text-slate-400 hover:text-white"
@@ -805,14 +806,14 @@ export default function ProblemSolvePage({ params }: { params: { slug: string } 
           </div>
         </div>
 
-        {/* Right Pane: Monaco Code Editor & Execution Results */}
+        {/* Right Pane: Monaco Code Editor & Execution Results (Rule 5 & Rule 6) */}
         <div
-          className={`lg:col-span-7 flex-col h-full bg-[#0B1220] overflow-hidden ${
-            mobileView === "editor" ? "flex" : "hidden lg:flex"
+          className={`md:col-span-7 flex-col h-full bg-[#0B1220] overflow-hidden ${
+            mobileView === "editor" ? "flex" : "hidden md:flex"
           }`}
         >
           {/* Code Editor */}
-          <div className="flex-1 overflow-hidden p-3 pb-0">
+          <div className="flex-1 overflow-hidden p-3 pb-0 min-h-[300px]">
             <CodeEditor
               problemSlug={slug}
               language={language}
@@ -823,8 +824,8 @@ export default function ProblemSolvePage({ params }: { params: { slug: string } 
             />
           </div>
 
-          {/* Action Execution Footer Bar */}
-          <div className="p-3 border-t border-slate-800 bg-[#121C2F] flex flex-wrap items-center justify-between gap-3">
+          {/* Action Execution Footer Bar (Reachable without scrolling past statement) */}
+          <div className="p-3 border-t border-slate-800 bg-[#121C2F] flex flex-wrap items-center justify-between gap-3 shrink-0">
             <div className="flex items-center gap-3">
               {submissionVerdict && (
                 <div className="flex items-center gap-2">
@@ -841,10 +842,10 @@ export default function ProblemSolvePage({ params }: { params: { slug: string } 
               <button
                 onClick={handleRun}
                 disabled={isRunning || isSubmitting}
-                className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 font-semibold text-xs flex items-center gap-1.5 transition-colors disabled:opacity-50"
+                className="min-h-[44px] px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 font-semibold text-xs flex items-center gap-1.5 transition-colors disabled:opacity-50"
                 title="Run on sample test cases (Ctrl + Enter)"
               >
-                <Play className="w-3.5 h-3.5 fill-slate-200" />
+                <Play className="w-4 h-4 fill-slate-200" />
                 <span>{isRunning ? "Running..." : "Run"}</span>
                 <kbd className="hidden sm:inline-block px-1.5 py-0.5 rounded bg-slate-900 border border-slate-700 text-[10px] text-slate-400 font-mono ml-1">
                   Ctrl+Enter
@@ -854,10 +855,10 @@ export default function ProblemSolvePage({ params }: { params: { slug: string } 
               <button
                 onClick={handleSubmit}
                 disabled={isRunning || isSubmitting}
-                className="px-5 py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-bold text-xs shadow-lg shadow-emerald-500/20 flex items-center gap-1.5 transition-all disabled:opacity-50"
+                className="min-h-[44px] px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-bold text-xs shadow-lg shadow-emerald-500/20 flex items-center gap-1.5 transition-all disabled:opacity-50"
                 title="Submit solution against hidden tests (Ctrl + Shift + Enter)"
               >
-                <Send className="w-3.5 h-3.5" />
+                <Send className="w-4 h-4" />
                 <span>{isSubmitting ? "Submitting..." : "Submit"}</span>
                 <kbd className="hidden sm:inline-block px-1.5 py-0.5 rounded bg-emerald-950 border border-emerald-700/60 text-[10px] text-emerald-300 font-mono ml-1">
                   Ctrl+Shift+Enter

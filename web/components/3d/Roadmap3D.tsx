@@ -123,14 +123,25 @@ export default function Roadmap3D({
   selectedTopicSlug,
 }: Roadmap3DProps) {
   const [hasWebGL, setHasWebGL] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+
     try {
       const c = document.createElement("canvas");
       setHasWebGL(Boolean(c.getContext("webgl") || c.getContext("experimental-webgl")));
     } catch {
       setHasWebGL(false);
     }
+
+    return () => {
+      window.removeEventListener("resize", checkMobile);
+    };
   }, []);
 
   // Compute unlock rules: topic unlocks if prior topic has >= 80% solve rate
@@ -147,14 +158,62 @@ export default function Roadmap3D({
 
   return (
     <div className="w-full flex flex-col gap-6">
-      {/* 3D Visualizer Canvas (or flat fallback) */}
-      <div className="relative w-full h-[460px] bg-[#0B1220] rounded-2xl border border-slate-800 overflow-hidden shadow-2xl">
-        <div className="absolute top-4 left-4 z-10 bg-[#121C2F]/80 backdrop-blur-md px-3 py-1.5 rounded-lg border border-slate-700/60 text-xs text-slate-300 flex items-center gap-2">
+      {/* 3D Scene Platform or Mobile Flat Card Platform */}
+      <div className="relative w-full h-[clamp(260px,50vh,480px)] bg-[#0B1220] rounded-2xl border border-slate-800 overflow-hidden shadow-2xl flex flex-col">
+        <div className="absolute top-4 left-4 z-10 bg-[#121C2F]/90 backdrop-blur-md px-3 py-1.5 rounded-lg border border-slate-700/60 text-xs text-slate-300 flex items-center gap-2">
           <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
-          <span>Interactive 3D Curriculum &bull; Orbit with drag</span>
+          <span>{isMobile ? "Curriculum Roadmap Path" : "Interactive 3D Curriculum • Orbit with drag"}</span>
         </div>
 
-        {hasWebGL ? (
+        {isMobile ? (
+          /* Below 768px: Flat SVG / Simple Card version (Rule 3) */
+          <div className="w-full h-full pt-14 pb-4 px-4 overflow-y-auto flex flex-col gap-2.5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 my-auto">
+              {computedTopics.map((topic) => {
+                const isSelected = selectedTopicSlug === topic.slug;
+                const progressPct = topic.totalProblems > 0 ? Math.round((topic.solvedCount / topic.totalProblems) * 100) : 0;
+                return (
+                  <button
+                    key={topic.slug}
+                    disabled={!topic.isUnlocked}
+                    onClick={() => onSelectTopic(topic)}
+                    className={`min-h-[44px] p-3 rounded-xl border text-left flex items-center justify-between transition-all focus:outline-none focus:ring-2 focus:ring-cyan-400 ${
+                      isSelected
+                        ? "bg-cyan-500/20 border-cyan-400 text-cyan-300 shadow-md shadow-cyan-500/20"
+                        : topic.isUnlocked
+                        ? "bg-[#121C2F] border-slate-700/80 hover:border-slate-600 text-slate-200"
+                        : "bg-[#121C2F]/50 border-slate-800 text-slate-600 cursor-not-allowed opacity-60"
+                    }`}
+                  >
+                    <div className="flex items-center gap-2.5">
+                      {!topic.isUnlocked ? (
+                        <Lock className="w-4 h-4 text-slate-500 shrink-0" />
+                      ) : topic.isCompleted ? (
+                        <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                      ) : (
+                        <span className="w-2.5 h-2.5 rounded-full bg-cyan-400 shrink-0" />
+                      )}
+                      <div>
+                        <div className="font-semibold text-sm leading-tight">{topic.name}</div>
+                        <div className="text-[11px] text-slate-400 font-mono mt-0.5">
+                          {topic.solvedCount}/{topic.totalProblems} Solved
+                        </div>
+                      </div>
+                    </div>
+                    <span
+                      className={`text-[10px] font-mono px-2 py-0.5 rounded-full shrink-0 ${
+                        isSelected ? "bg-slate-900 text-cyan-300" : "bg-slate-800 text-slate-400"
+                      }`}
+                    >
+                      {progressPct}%
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        ) : hasWebGL ? (
+          /* Above 768px: WebGL 3D Canvas */
           <Canvas
             camera={{ position: [0, 4.5, 9.5], fov: 42 }}
             dpr={[1, 1.5]}
@@ -165,7 +224,6 @@ export default function Roadmap3D({
             <pointLight position={[-5, 5, -5]} intensity={1} color="#8B5CF6" />
 
             {computedTopics.map((topic, i) => {
-              // Spiral layout in 3D
               const angle = (i / computedTopics.length) * Math.PI * 1.5 - 0.7;
               const radius = 4.2;
               const x = Math.sin(angle) * radius;
@@ -213,7 +271,7 @@ export default function Roadmap3D({
                 key={topic.slug}
                 disabled={!topic.isUnlocked}
                 onClick={() => onSelectTopic(topic)}
-                className={`p-3.5 rounded-xl border text-left flex items-center justify-between transition-all focus:outline-none focus:ring-2 focus:ring-cyan-400 ${
+                className={`min-h-[44px] p-3.5 rounded-xl border text-left flex items-center justify-between transition-all focus:outline-none focus:ring-2 focus:ring-cyan-400 ${
                   isSelected
                     ? "bg-cyan-500/10 border-cyan-400 text-cyan-300 shadow-md shadow-cyan-500/10"
                     : topic.isUnlocked

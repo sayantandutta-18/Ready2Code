@@ -23,6 +23,7 @@ import {
   ArrowUp,
   ArrowDown,
   Zap,
+  Filter,
 } from "lucide-react";
 
 interface ProblemItem {
@@ -79,6 +80,15 @@ function ProblemsContent() {
   const [page, setPage] = useState(initialPage);
   const [search, setSearch] = useState(initialSearch);
   const [debouncedSearch, setDebouncedSearch] = useState(initialSearch);
+  const [showMobileFilters, setShowMobileFilters] = useState(false);
+
+  const activeFiltersCount = [
+    topic !== "all",
+    difficulty !== "all",
+    status !== "all",
+    tag !== "all",
+    company !== "all",
+  ].filter(Boolean).length;
 
   // 300ms search input debounce (C1.3 specification)
   useEffect(() => {
@@ -260,18 +270,41 @@ function ProblemsContent() {
 
       {/* Filter and Search Bar */}
       <div className="p-4 rounded-2xl bg-[#121C2F] border border-slate-800 space-y-3 shadow-xl">
-        <div className="relative">
-          <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-          <input
-            type="text"
-            placeholder="Search problems by name or tag (e.g. 'Two Sum', 'Sliding Window', 'Google')..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full bg-[#0B1220] border border-slate-700 rounded-xl pl-10 pr-4 py-2.5 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-400 transition-colors"
-          />
+        <div className="flex flex-col sm:flex-row gap-2.5">
+          <div className="relative flex-1">
+            <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+            <input
+              type="text"
+              placeholder="Search problems by name or tag (e.g. 'Two Sum', 'Google')..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full min-h-[44px] bg-[#0B1220] border border-slate-700 rounded-xl pl-10 pr-4 py-2.5 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-400 transition-colors"
+            />
+          </div>
+
+          {/* Mobile Filter Toggle Button (Rule 4) */}
+          <button
+            onClick={() => setShowMobileFilters(!showMobileFilters)}
+            className="md:hidden min-h-[44px] px-4 py-2.5 rounded-xl bg-[#0B1220] border border-slate-700 hover:border-cyan-400 text-slate-200 flex items-center justify-between text-xs font-semibold shrink-0 transition-colors"
+            aria-label="Toggle Filters"
+            aria-expanded={showMobileFilters}
+          >
+            <div className="flex items-center gap-2">
+              <Filter className="w-4 h-4 text-cyan-400" />
+              <span>Filters</span>
+            </div>
+            {activeFiltersCount > 0 ? (
+              <span className="px-2 py-0.5 rounded-full bg-cyan-500 text-slate-950 font-bold text-[10px]">
+                {activeFiltersCount} active
+              </span>
+            ) : (
+              <span className="text-[11px] text-slate-500">{showMobileFilters ? "Hide" : "Show"}</span>
+            )}
+          </button>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 pt-1">
+        {/* Collapsible on mobile below 768px, grid on desktop (Rule 4) */}
+        <div className={`${showMobileFilters ? "grid" : "hidden"} md:grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 pt-1`}>
           {/* Topic Filter */}
           <div>
             <label className="text-[10px] font-mono uppercase text-slate-400 block mb-1">Topic</label>
@@ -282,7 +315,7 @@ function ProblemsContent() {
                 setPage(1);
               }}
               aria-label="Filter by Topic"
-              className="w-full bg-[#0B1220] border border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-cyan-400"
+              className="w-full min-h-[44px] bg-[#0B1220] border border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-cyan-400"
             >
               <option value="all">All Topics</option>
               {topicsData.map((t) => (
@@ -303,7 +336,7 @@ function ProblemsContent() {
                 setPage(1);
               }}
               aria-label="Filter by Difficulty"
-              className="w-full bg-[#0B1220] border border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-cyan-400"
+              className="w-full min-h-[44px] bg-[#0B1220] border border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-cyan-400"
             >
               <option value="all">All Difficulties</option>
               <option value="easy">Easy</option>
@@ -322,7 +355,7 @@ function ProblemsContent() {
                 setPage(1);
               }}
               aria-label="Filter by Status"
-              className="w-full bg-[#0B1220] border border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-cyan-400"
+              className="w-full min-h-[44px] bg-[#0B1220] border border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-cyan-400"
             >
               <option value="all">All Statuses</option>
               <option value="todo">Todo</option>
@@ -341,7 +374,7 @@ function ProblemsContent() {
                 setPage(1);
               }}
               aria-label="Filter by Tag"
-              className="w-full bg-[#0B1220] border border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-cyan-400"
+              className="w-full min-h-[44px] bg-[#0B1220] border border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-cyan-400"
             >
               <option value="all">All Tags</option>
               <option value="Two Pointers">Two Pointers</option>
@@ -368,7 +401,7 @@ function ProblemsContent() {
                 setPage(1);
               }}
               aria-label="Filter by Company"
-              className="w-full bg-[#0B1220] border border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-cyan-400"
+              className="w-full min-h-[44px] bg-[#0B1220] border border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-cyan-400"
             >
               <option value="all">All Companies</option>
               <option value="Google">Google</option>
@@ -391,9 +424,10 @@ function ProblemsContent() {
         />
       )}
 
-      {/* Problems Table */}
+      {/* Problems Container */}
       <div className="bg-[#121C2F] rounded-2xl border border-slate-800 overflow-hidden shadow-2xl">
-        <div className="overflow-x-auto">
+        {/* Desktop Table View (>= 768px) */}
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="border-b border-slate-800 text-[11px] uppercase tracking-wider text-slate-400 bg-[#0E1726]/60 font-semibold select-none">
@@ -505,9 +539,76 @@ function ProblemsContent() {
           </table>
         </div>
 
+        {/* Mobile Card List View (< 768px) (Rule 4 & Rule 6) */}
+        <div className="md:hidden divide-y divide-slate-800/80">
+          {isLoading ? (
+            <div className="p-4">
+              <LoadingSkeleton rows={6} />
+            </div>
+          ) : problems.length === 0 ? (
+            <div className="p-6">
+              <EmptyState
+                title="No problems match these filters"
+                description="Try clearing your search query or broadening the selected topic, difficulty, or tag filters."
+                actionText="Clear all filters"
+                onAction={handleClearFilters}
+              />
+            </div>
+          ) : (
+            problems.map((p, index) => (
+              <Link
+                key={p.slug}
+                href={`/problems/${p.slug}`}
+                className="block min-h-[44px] p-4 hover:bg-slate-800/40 active:bg-slate-800/60 transition-colors group"
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex items-start gap-3 min-w-0 flex-1">
+                    <div className="pt-0.5 shrink-0">{statusIcon(p.status)}</div>
+                    <div className="min-w-0 flex-1">
+                      <div className="text-base font-bold text-slate-100 group-hover:text-cyan-300 transition-colors leading-snug break-words">
+                        <span className="text-slate-500 font-mono text-xs mr-1.5">
+                          {(page - 1) * 25 + index + 1}.
+                        </span>
+                        {p.title}
+                      </div>
+                      <div className="flex flex-wrap items-center gap-2 mt-1.5 text-xs text-slate-400">
+                        <span className="font-medium text-slate-300">{p.topic}</span>
+                        <span className="text-slate-600">&bull;</span>
+                        <span className="font-mono">{p.acceptance_rate}% AC</span>
+                        {p.status === "solved" && p.best_runtime_ms && (
+                          <span className="inline-flex items-center gap-1 text-[10px] font-mono px-1.5 py-0.5 rounded bg-cyan-950/80 text-cyan-400 border border-cyan-800/60">
+                            <Zap className="w-2.5 h-2.5" />
+                            {p.best_runtime_ms} ms
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="shrink-0 pt-0.5">
+                    <DifficultyChip difficulty={p.difficulty} />
+                  </div>
+                </div>
+
+                {p.tags && p.tags.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5 mt-2.5 pt-2 border-t border-slate-800/60">
+                    {p.tags.slice(0, 3).map((t) => (
+                      <span
+                        key={t}
+                        className="px-2 py-0.5 rounded-md bg-[#0B1220] border border-slate-700/60 text-[10px] text-slate-400"
+                      >
+                        {t}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </Link>
+            ))
+          )}
+        </div>
+
         {/* Server-Side Pagination Bar (25 items per page) */}
         {!isLoading && totalCount > 0 && (
-          <div className="flex flex-col sm:flex-row items-center justify-between px-6 py-4 border-t border-slate-800 bg-[#0E1726]/40 gap-3 text-xs text-slate-400">
+          <div className="flex flex-col sm:flex-row items-center justify-between px-4 sm:px-6 py-4 border-t border-slate-800 bg-[#0E1726]/40 gap-3 text-xs text-slate-400">
             <div>
               Showing{" "}
               <span className="text-slate-200 font-mono font-medium">
@@ -516,15 +617,15 @@ function ProblemsContent() {
               of <span className="text-slate-200 font-mono font-medium">{totalCount}</span> problems
             </div>
 
-            <div className="flex items-center gap-1.5">
+            <div className="flex flex-wrap items-center justify-center gap-2">
               <button
                 onClick={() => setPage((prev) => Math.max(1, prev - 1))}
                 disabled={page <= 1}
-                className="px-3 py-1.5 rounded-lg border border-slate-700 bg-[#0B1220] hover:bg-slate-800 text-slate-300 disabled:opacity-40 disabled:pointer-events-none flex items-center gap-1 transition-colors"
+                className="min-h-[44px] min-w-[44px] px-3.5 py-2 rounded-xl border border-slate-700 bg-[#0B1220] hover:bg-slate-800 text-slate-300 disabled:opacity-40 disabled:pointer-events-none flex items-center justify-center gap-1 transition-colors"
                 aria-label="Previous Page"
               >
-                <ChevronLeft className="w-3.5 h-3.5" />
-                <span>Prev</span>
+                <ChevronLeft className="w-4 h-4" />
+                <span className="hidden sm:inline">Prev</span>
               </button>
 
               {Array.from({ length: totalPages }).map((_, idx) => {
@@ -534,7 +635,7 @@ function ProblemsContent() {
                   <button
                     key={pNum}
                     onClick={() => setPage(pNum)}
-                    className={`w-8 h-8 rounded-lg font-mono font-medium text-xs transition-colors ${
+                    className={`min-h-[44px] min-w-[44px] rounded-xl font-mono font-semibold text-xs flex items-center justify-center transition-colors ${
                       isCurrent
                         ? "bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 shadow-sm"
                         : "bg-[#0B1220] border border-slate-700 hover:bg-slate-800 text-slate-400"
@@ -548,11 +649,11 @@ function ProblemsContent() {
               <button
                 onClick={() => setPage((prev) => Math.min(totalPages, prev + 1))}
                 disabled={page >= totalPages}
-                className="px-3 py-1.5 rounded-lg border border-slate-700 bg-[#0B1220] hover:bg-slate-800 text-slate-300 disabled:opacity-40 disabled:pointer-events-none flex items-center gap-1 transition-colors"
+                className="min-h-[44px] min-w-[44px] px-3.5 py-2 rounded-xl border border-slate-700 bg-[#0B1220] hover:bg-slate-800 text-slate-300 disabled:opacity-40 disabled:pointer-events-none flex items-center justify-center gap-1 transition-colors"
                 aria-label="Next Page"
               >
-                <span>Next</span>
-                <ChevronRight className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Next</span>
+                <ChevronRight className="w-4 h-4" />
               </button>
             </div>
           </div>

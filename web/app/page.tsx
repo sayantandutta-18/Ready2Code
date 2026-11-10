@@ -75,10 +75,10 @@ export default function HomePage() {
               topic island progression.
             </p>
 
-            <div className="flex flex-wrap items-center gap-4 pt-2">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-2 w-full sm:w-auto">
               <Link
                 href="/problems"
-                className="px-6 py-3.5 rounded-xl bg-gradient-to-r from-cyan-400 to-cyan-500 hover:from-cyan-300 hover:to-cyan-400 text-slate-950 font-bold text-sm shadow-xl shadow-cyan-500/25 flex items-center gap-2 hover:scale-105 transition-all"
+                className="min-h-[44px] px-6 py-3 rounded-xl bg-gradient-to-r from-cyan-400 to-cyan-500 hover:from-cyan-300 hover:to-cyan-400 text-slate-950 font-bold text-sm shadow-xl shadow-cyan-500/25 flex items-center justify-center gap-2 hover:scale-105 transition-all"
               >
                 <span>Start Solving Free</span>
                 <ArrowRight className="w-4 h-4" />
@@ -86,7 +86,7 @@ export default function HomePage() {
 
               <Link
                 href="/roadmap"
-                className="px-6 py-3.5 rounded-xl bg-[#121C2F] hover:bg-slate-800 border border-slate-700/80 text-slate-200 text-sm font-semibold flex items-center gap-2 transition-all hover:border-cyan-500/40"
+                className="min-h-[44px] px-6 py-3 rounded-xl bg-[#121C2F] hover:bg-slate-800 border border-slate-700/80 text-slate-200 text-sm font-semibold flex items-center justify-center gap-2 transition-all hover:border-cyan-500/40"
               >
                 <Layers className="w-4 h-4 text-cyan-400" />
                 <span>Explore 3D Roadmap</span>
@@ -94,13 +94,13 @@ export default function HomePage() {
             </div>
 
             {/* Quick stats pills */}
-            <div className="flex items-center gap-6 pt-4 text-xs font-medium text-slate-400">
+            <div className="flex flex-wrap items-center gap-3 sm:gap-6 pt-4 text-xs font-medium text-slate-400">
               <div className="flex items-center gap-2">
-                <CheckCircle className="w-4 h-4 text-emerald-400" />
+                <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0" />
                 <span>12 Hand-Crafted Starter Problems</span>
               </div>
               <div className="flex items-center gap-2">
-                <Cpu className="w-4 h-4 text-cyan-400" />
+                <Cpu className="w-4 h-4 text-cyan-400 shrink-0" />
                 <span>Judge0 Code Sandbox</span>
               </div>
             </div>
@@ -146,7 +146,7 @@ export default function HomePage() {
 
           <Link
             href={`/problems/${dailyProblem.slug}`}
-            className="px-5 py-2.5 rounded-xl bg-cyan-400 hover:bg-cyan-300 text-slate-950 font-bold text-sm shadow-md shadow-cyan-500/20 flex items-center gap-2 transition-all shrink-0"
+            className="min-h-[44px] w-full sm:w-auto px-5 py-2.5 rounded-xl bg-cyan-400 hover:bg-cyan-300 text-slate-950 font-bold text-sm shadow-md shadow-cyan-500/20 flex items-center justify-center gap-2 transition-all shrink-0"
           >
             <span>Solve Today's Problem</span>
             <ArrowRight className="w-4 h-4" />

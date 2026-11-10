@@ -94,8 +94,16 @@ function StarParticles() {
 export default function HeroCube({ onFaceClick }: { onFaceClick?: () => void }) {
   const [hasWebGL, setHasWebGL] = useState<boolean>(true);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState<boolean>(false);
+  const [isMobile, setIsMobile] = useState<boolean>(false);
 
   useEffect(() => {
+    // Check mobile viewport width (< 768px)
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+
     // Check prefers-reduced-motion
     const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
     setPrefersReducedMotion(mediaQuery.matches);
@@ -108,19 +116,23 @@ export default function HeroCube({ onFaceClick }: { onFaceClick?: () => void }) 
     } catch {
       setHasWebGL(false);
     }
+
+    return () => {
+      window.removeEventListener("resize", checkMobile);
+    };
   }, []);
 
-  // Accessible flat SVG cube fallback (Section 4.6 requirement)
-  if (!hasWebGL || prefersReducedMotion) {
+  // Below 768px or if WebGL is unavailable, render flat SVG (Rule 3)
+  if (isMobile || !hasWebGL || prefersReducedMotion) {
     return (
       <div
-        className="w-full h-[360px] flex items-center justify-center cursor-pointer group"
+        className="w-full h-[clamp(260px,50vh,480px)] flex flex-col items-center justify-center cursor-pointer group"
         onClick={onFaceClick}
         title="Interactive Ready2Code Isometric Cube"
       >
         <svg
           viewBox="0 0 200 200"
-          className="w-56 h-56 transition-transform group-hover:scale-105 duration-300 drop-shadow-[0_0_24px_rgba(34,211,238,0.4)]"
+          className="w-48 h-48 sm:w-56 sm:h-56 transition-transform group-hover:scale-105 duration-300 drop-shadow-[0_0_24px_rgba(34,211,238,0.4)]"
         >
           {/* Top Face */}
           <polygon
@@ -163,7 +175,7 @@ export default function HeroCube({ onFaceClick }: { onFaceClick?: () => void }) 
   }
 
   return (
-    <div className="w-full h-[360px] sm:h-[420px] relative select-none">
+    <div className="w-full h-[clamp(260px,50vh,480px)] relative select-none">
       <Canvas
         camera={{ position: [0, 0, 4.2], fov: 45 }}
         dpr={[1, 1.5]}
