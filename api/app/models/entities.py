@@ -23,6 +23,8 @@ class User(Base):
     avatar_url = Column(String(255), nullable=True)
     timezone = Column(String(64), default="UTC")
     rating = Column(Integer, default=1500)
+    terms_accepted_at = Column(DateTime(timezone=True), nullable=True)
+    terms_version = Column(String(32), nullable=True)
     created_at = Column(DateTime(timezone=True), default=utc_now)
 
     submissions = relationship("Submission", back_populates="user", cascade="all, delete-orphan")

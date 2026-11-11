@@ -1,5 +1,6 @@
 import "../styles/tokens.css";
 import Navbar from "../components/ui/Navbar";
+import Footer from "../components/ui/Footer";
 import QueryProvider from "../components/providers/QueryProvider";
 import { AuthProvider } from "../lib/authContext";
 import AuthModal from "../components/ui/AuthModal";
@@ -17,15 +18,16 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="dark">
-      <body className="min-h-screen bg-[#0B1220] text-[#E2E8F0] antialiased selection:bg-cyan-500/30 selection:text-cyan-200">
+      <body className="min-h-screen flex flex-col bg-[#0B1220] text-[#E2E8F0] antialiased selection:bg-cyan-500/30 selection:text-cyan-200">
         <AuthProvider>
           <QueryProvider>
             <Navbar />
             <AuthModal />
             <OnboardingModal />
-            <main className="min-h-[calc(100vh-64px)] pt-16">
+            <main className="flex-1 pt-16">
               {children}
             </main>
+            <Footer />
           </QueryProvider>
         </AuthProvider>
       </body>

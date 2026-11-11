@@ -29,6 +29,9 @@
 | 🗺️ **3D Topic Roadmap** | [ready2code.vercel.app/roadmap](https://ready2code.vercel.app/roadmap) | Interactive Three.js spatial topic progression |
 | ⚔️ **1v1 Battles** | [ready2code.vercel.app/battles](https://ready2code.vercel.app/battles) | Real-time competitive algorithmic code duels |
 | 🏆 **Leaderboard** | [ready2code.vercel.app/leaderboard](https://ready2code.vercel.app/leaderboard) | Global XP and daily streak rankings |
+| 📜 **Terms of Service** | [ready2code.vercel.app/terms](https://ready2code.vercel.app/terms) | Platform terms, sandbox rules, and liability disclaimers |
+| 🛡️ **Privacy Policy** | [ready2code.vercel.app/privacy](https://ready2code.vercel.app/privacy) | DPDP Act 2023 compliance, data retention, and rights |
+| 📬 **Contact & Grievance** | [ready2code.vercel.app/contact](https://ready2code.vercel.app/contact) | Support helpdesk and statutory Grievance Officer details |
 
 ---
 
@@ -48,8 +51,8 @@ Most DSA platforms present you with a problem and a blank code box. Ready2Code i
 
 | Category | Feature | Details |
 |---|---|---|
-| 🔐 **Authentication** | **Dedicated Sign In & Register** | Form validation, password masking, remember-me support, 1-click demo accounts (`algo_ninja`, `byte_master`), and token persistence. |
-| 🧩 **Problem Bank** | **100+ Verified Problems** | Curated across 10 DSA categories with 1,192 verified test cases and complete reference solutions. |
+| 🔐 **Authentication** | **Dedicated Sign In & Register** | Form validation, password masking, remember-me support, 1-click demo accounts (`algo_ninja`, `byte_master`), affirmative terms consent gating, and token persistence. |
+| 🧩 **Problem Bank** | **150+ Verified Problems** | Curated across 10 DSA categories with 1,812 verified test cases and complete reference solutions. |
 | 🖥️ **Monaco Editor** | **VS Code in Browser** | Syntax highlighting, autocompletion, separate drafts per language (Python, C++, Java, JS), and keyboard shortcuts (`Ctrl+Enter` / `Ctrl+Shift+Enter`). |
 | ⚖️ **Execution Sandbox** | **Judge0 Engine** | Isolated sandbox evaluation measuring millisecond runtime and memory usage against sample and secret tests. |
 | 🎬 **3D Visualizer** | **Spatial Three.js Engine** | Interactive step-by-step 3D playback with camera controls, pause/step/scrub, and low-power 2D fallback. |
@@ -257,9 +260,12 @@ Ready2Code/
 
 ---
 
-## 🔒 Security & Data Integrity
+## 🔒 Security, Privacy & Data Integrity
 
 - **Strict Parameterized Queries:** 100% of queries use SQLAlchemy ORM with zero raw SQL concatenation.
+- **Affirmative Consent & Audit Trail:** Registration mandates affirmative acceptance of Terms and Privacy Policy, persisting audit timestamps (`terms_accepted_at`) and legal versions.
+- **DPDP Act Compliance & Right to Erasure:** Complete self-service account deletion under Settings (`DELETE /api/users/me`), cascading user records and revoking active sessions.
+- **Sandboxed Code Execution Limits:** Hard thresholds of 1000ms CPU execution time and 128MB RAM with containerized isolation.
 - **Hidden Test Case Protection:** Hidden test inputs and outputs never reach the client; only execution verdicts, runtimes, and memory usages are returned.
 - **Rate Limiting:** Sliding-window throttling on submission, AI, and authentication endpoints.
 - **CORS Allowlist:** Strictly configured for trusted domains (`ready2code.vercel.app`).

@@ -51,7 +51,7 @@ function RegisterForm() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [experienceLevel, setExperienceLevel] = useState<"beginner" | "intermediate" | "advanced">("intermediate");
-  const [agreeTerms, setAgreeTerms] = useState(true);
+  const [agreeTerms, setAgreeTerms] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -83,13 +83,13 @@ function RegisterForm() {
       return;
     }
     if (!agreeTerms) {
-      setErrorMsg("Please accept the terms to create your account.");
+      setErrorMsg("Affirmative consent to the Terms of Service and Privacy Policy is required to create an account.");
       return;
     }
 
     setIsSubmitting(true);
     try {
-      await register(trimmedUser, password || undefined, trimmedDisplay);
+      await register(trimmedUser, password || undefined, trimmedDisplay, undefined, true, "2026-11-11");
       router.push(redirectPath);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Registration failed. Username may already be taken.";
@@ -321,17 +321,25 @@ function RegisterForm() {
                   </div>
                 </div>
 
-                {/* Terms agreement */}
+                {/* Terms and Privacy affirmative consent checkbox */}
                 <div className="pt-2">
                   <label className="flex items-start gap-2.5 text-xs text-slate-300 cursor-pointer select-none">
                     <input
                       type="checkbox"
                       checked={agreeTerms}
                       onChange={(e) => setAgreeTerms(e.target.checked)}
-                      className="mt-0.5 rounded border-slate-700 bg-[#0B1220] text-cyan-500 focus:ring-cyan-500"
+                      className="mt-0.5 rounded border-slate-700 bg-[#0B1220] text-cyan-500 focus:ring-cyan-500 cursor-pointer"
+                      required
                     />
                     <span>
-                      I agree to the Ready2Code terms of service and acknowledge that all problem submissions are benchmarked against official test suites.
+                      I agree to the{" "}
+                      <Link href="/terms" target="_blank" className="text-cyan-400 underline hover:text-cyan-300">
+                        Terms of Service
+                      </Link>{" "}
+                      and acknowledge the{" "}
+                      <Link href="/privacy" target="_blank" className="text-cyan-400 underline hover:text-cyan-300">
+                        Privacy Policy
+                      </Link>.
                     </span>
                   </label>
                 </div>

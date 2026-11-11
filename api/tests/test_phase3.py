@@ -12,8 +12,14 @@ def test_auth_registration_and_login():
     db = SessionLocal()
     try:
         uname = f"tester_{uuid.uuid4().hex[:8]}"
-        # Register new user
-        reg_req = AuthRequest(username=uname, display_name="Phase 3 Tester", timezone="America/New_York")
+        # Register new user with explicit terms consent
+        reg_req = AuthRequest(
+            username=uname,
+            display_name="Phase 3 Tester",
+            timezone="America/New_York",
+            terms_accepted=True,
+            terms_version="2026-11-11"
+        )
         reg_res = register(reg_req, db=db)
         assert "token" in reg_res
         assert reg_res["user"]["username"] == uname
@@ -25,6 +31,39 @@ def test_auth_registration_and_login():
         login_res = login(login_req, db=db)
         assert login_res["token"] == reg_res["token"]
         assert login_res["user"]["username"] == uname
+    finally:
+        db.close()
+
+def test_registration_requires_terms_consent():
+    db = SessionLocal()
+    try:
+        uname = f"noterms_{uuid.uuid4().hex[:8]}"
+        reg_req = AuthRequest(username=uname, terms_accepted=False)
+        with pytest.raises(HTTPException) as exc_info:
+            register(reg_req, db=db)
+        assert exc_info.value.status_code == 400
+        assert "Affirmative consent" in exc_info.value.detail
+    finally:
+        db.close()
+
+def test_user_account_deletion():
+    db = SessionLocal()
+    try:
+        from app.routers.users import delete_user_account
+        from app.models.entities import User
+
+        uname = f"del_{uuid.uuid4().hex[:8]}"
+        reg_req = AuthRequest(username=uname, terms_accepted=True)
+        reg_res = register(reg_req, db=db)
+        user_id = reg_res["user"]["id"]
+
+        # Delete account
+        del_res = delete_user_account(user_id=user_id, current_user=None, db=db)
+        assert del_res["status"] == "ok"
+
+        # Confirm user is deleted from DB
+        deleted_user = db.query(User).filter(User.id == user_id).first()
+        assert deleted_user is None
     finally:
         db.close()
 

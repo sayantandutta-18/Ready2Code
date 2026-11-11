@@ -373,3 +373,37 @@ Updated: November 2026
   - Generated full JSON specifications with standard schemas, starter code, 3 progressive hints, sample tests, and at least 10 hidden tests.
   - Verified 150/150 problems pass `content/scripts/validate_content.py` and `scripts/validate_problems.py` (1,812/1,812 tests passing, 0 failures).
   - Synchronized `content/index.json`, `web/lib/data/problems.json`, and `web/lib/data/catalogs.ts`.
+
+---
+
+## ⚖️ Phase A & B: Production Readiness, Legal Compliance & Account Privacy — COMPLETE
+- [x] **Centralized Legal & Grievance Configuration (`web/lib/legalConfig.ts`)**:
+  - Implemented centralized metadata config with company details, support channels, Grievance Officer contact, jurisdiction, and terms version (`2026-11-11`).
+  - Clear `[OWNER INPUT REQUIRED]` markers provided for final legal entity name, registered office address, and designated grievance officer contact.
+- [x] **Comprehensive Legal & Trust Pages**:
+  - `/terms` (Terms of Service): Platform scope, free launch tier, age eligibility (13+ / 18+ for direct contracting), code execution sandbox limits (1000ms CPU timeout, 128MB RAM), prohibited conduct (crypto-mining, denial of service, exploitation), user code ownership, AI review disclaimers, limitation of liability, and Indian jurisdiction (Information Technology Act 2000).
+  - `/privacy` (Privacy Policy): Explicit data categories collected (credentials, submitted code, streak/XP data, telemetry), DPDP Act 2023 compliance, verified data processors (Vercel, Railway, Neon, Upstash), data retention rules, technical security safeguards (bcrypt, JWT), and Grievance Redressal mechanism.
+  - `/contact` (Support & Grievance Redressal): Dedicated support desk, designated Grievance Officer details, statutory response SLA (48-hour acknowledgment, 30-day resolution under IT Rules 2021), and interactive multi-category contact form.
+  - `/cookies` (Cookies & Local Storage Policy): Full disclosure of local storage tokens (`ready2code_auth_token`, `ready2code_auth_user`, `ready2code_onboarding_dismissed`), strictly necessary classification, and zero third-party advertising tracking.
+- [x] **Global Responsive Footer (`web/components/ui/Footer.tsx`)**:
+  - Universal footer integrated into `web/app/layout.tsx` across desktop (1280px) and mobile (360px).
+  - Displays platform mission, quick navigation links, legal compliance links (`/terms`, `/privacy`, `/contact`, `/cookies`), and GitHub repository link.
+- [x] **Affirmative Registration Consent Gating**:
+  - Unchecked terms checkbox implemented on `/register` (`web/app/register/page.tsx`) and quick-auth modal (`web/components/ui/AuthModal.tsx`).
+  - Explicit consent check blocks registration submission until checked, linking directly to `/terms` and `/privacy`.
+  - Frontend passes `terms_accepted: true` and `terms_version: "2026-11-11"` to auth services.
+- [x] **Server-Side Consent Recording & Enactment**:
+  - Next.js serverless route (`web/app/api/auth/register/route.ts`) enforces `terms_accepted === true` with HTTP 400 rejection if omitted, storing `terms_accepted_at` and `terms_version`.
+  - FastAPI backend (`api/app/routers/auth.py`) enforces consent validation on `register()`.
+  - Alembic migration `api/alembic/versions/0004_add_user_consent_fields.py` added `terms_accepted_at` (DateTime) and `terms_version` (String) to `User` entity (`api/app/models/entities.py`).
+- [x] **Right to Erasure & Account Deletion Flow**:
+  - DPDP Act compliant account deletion modal under Settings (`web/app/settings/page.tsx`) requiring typed "DELETE" confirmation.
+  - Server-side deletion endpoint `DELETE /api/users/me` and `DELETE /users/me` in `api/app/routers/users.py` cascades deletion across user records, revokes JWT session, purges local storage, and redirects to homepage.
+- [x] **Phase C Monetization Posture**:
+  - Payment gateway kept explicitly unconfigured to ensure a clean, risk-free, 100% free public launch without legal or merchant compliance entanglements.
+- [x] **Testing & Verification**:
+  - Frontend: 15/15 tests passing in `web/tests/` (added `web/tests/legal_and_consent.test.js`).
+  - Backend: Unit tests in `api/tests/test_phase3.py` for consent gating and account deletion.
+  - Typecheck: `npx tsc --noEmit` passing with 0 errors.
+  - Build: `npx next build` clean across all 54 routes.
+

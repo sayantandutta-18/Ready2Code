@@ -103,6 +103,28 @@ def update_profile(req: UpdateProfileRequest, user_id: str = "guest", db: Sessio
     db.commit()
     return {"status": "ok", "username": user.username, "display_name": user.display_name}
 
+@router.delete("/me")
+def delete_user_account(
+    user_id: Optional[str] = None,
+    current_user: Optional[User] = Depends(get_current_user_optional),
+    db: Session = Depends(get_db)
+):
+    user_obj = current_user if isinstance(current_user, User) else None
+    eff_user_id = (user_obj.id if user_obj else None) or (user_id if user_id and user_id.lower() != "guest" else None)
+    if not eff_user_id:
+        raise HTTPException(
+            status_code=401,
+            detail="Authentication required to delete account."
+        )
+
+    target_user = db.query(User).filter(User.id == eff_user_id).first()
+    if not target_user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    db.delete(target_user)
+    db.commit()
+    return {"status": "ok", "message": "Account and associated personal records have been permanently deleted."}
+
 @router.get("/me/bookmarks")
 def get_user_bookmarks(
     problem_id: Optional[str] = None,

@@ -18,6 +18,8 @@ class AuthRequest(BaseModel):
     password: Optional[str] = None
     display_name: Optional[str] = None
     timezone: Optional[str] = "UTC"
+    terms_accepted: bool = False
+    terms_version: Optional[str] = "2026-11-11"
 
 class UserResponse(BaseModel):
     id: str
@@ -71,6 +73,12 @@ def build_user_payload(user: User, db: Session) -> dict:
 
 @router.post("/register")
 def register(req: AuthRequest, db: Session = Depends(get_db)):
+    if not req.terms_accepted:
+        raise HTTPException(
+            status_code=400,
+            detail="Affirmative consent to the Terms of Service and Privacy Policy is required to create an account."
+        )
+
     clean_username = req.username.strip().lower()
     if len(clean_username) < 3 or len(clean_username) > 24:
         raise HTTPException(status_code=400, detail="Username must be between 3 and 24 characters")
@@ -88,7 +96,9 @@ def register(req: AuthRequest, db: Session = Depends(get_db)):
         username=clean_username,
         password_hash=password_hash,
         display_name=req.display_name or req.username.strip(),
-        timezone=req.timezone or "UTC"
+        timezone=req.timezone or "UTC",
+        terms_accepted_at=datetime.now(timezone.utc),
+        terms_version=req.terms_version or "2026-11-11"
     )
     db.add(user)
     db.commit()

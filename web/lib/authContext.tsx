@@ -19,7 +19,7 @@ interface AuthContextType {
   token: string | null;
   isLoading: boolean;
   login: (username: string, password?: string) => Promise<void>;
-  register: (username: string, password?: string, displayName?: string, timezone?: string) => Promise<void>;
+  register: (username: string, password?: string, displayName?: string, timezone?: string, termsAccepted?: boolean, termsVersion?: string) => Promise<void>;
   logout: () => void;
   refreshUser: () => Promise<void>;
   isAuthModalOpen: boolean;
@@ -89,11 +89,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const register = async (username: string, password?: string, displayName?: string, timezone?: string) => {
+  const register = async (
+    username: string,
+    password?: string,
+    displayName?: string,
+    timezone?: string,
+    termsAccepted?: boolean,
+    termsVersion?: string
+  ) => {
     const tz = timezone || Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
     const res = await fetchApi<{ token: string; user: AuthUser }>("/auth/register", {
       method: "POST",
-      body: JSON.stringify({ username, password, display_name: displayName, timezone: tz }),
+      body: JSON.stringify({
+        username,
+        password,
+        display_name: displayName,
+        timezone: tz,
+        terms_accepted: termsAccepted ?? true,
+        terms_version: termsVersion || "2026-11-11",
+      }),
     });
 
     setToken(res.token);

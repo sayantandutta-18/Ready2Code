@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import Link from "next/link";
 import { useAuth } from "../../lib/authContext";
 import Input from "./Input";
 import { X, Code2, Sparkles, User, ArrowRight, Loader2, Lock } from "lucide-react";
@@ -10,6 +11,7 @@ export default function AuthModal() {
   const [tab, setTab] = useState<"login" | "register">("login");
   const [username, setUsername] = useState("");
   const [displayName, setDisplayName] = useState("");
+  const [agreeTerms, setAgreeTerms] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -33,12 +35,17 @@ export default function AuthModal() {
       return;
     }
 
+    if (tab === "register" && !agreeTerms) {
+      setErrorMsg("Affirmative consent to the Terms of Service and Privacy Policy is required to create an account.");
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       if (tab === "login") {
         await login(username.trim());
       } else {
-        await register(username.trim(), undefined, displayName.trim() || undefined);
+        await register(username.trim(), undefined, displayName.trim() || undefined, undefined, true, "2026-11-11");
       }
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Authentication failed. Please try again.";
@@ -163,10 +170,34 @@ export default function AuthModal() {
             />
           )}
 
+          {tab === "register" && (
+            <div className="pt-1">
+              <label className="flex items-start gap-2 text-[11px] text-slate-300 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={agreeTerms}
+                  onChange={(e) => setAgreeTerms(e.target.checked)}
+                  className="mt-0.5 rounded border-slate-700 bg-[#0B1220] text-cyan-500 focus:ring-cyan-500 cursor-pointer"
+                  required
+                />
+                <span>
+                  I agree to the{" "}
+                  <Link href="/terms" target="_blank" onClick={closeAuthModal} className="text-cyan-400 underline hover:text-cyan-300">
+                    Terms of Service
+                  </Link>{" "}
+                  and acknowledge the{" "}
+                  <Link href="/privacy" target="_blank" onClick={closeAuthModal} className="text-cyan-400 underline hover:text-cyan-300">
+                    Privacy Policy
+                  </Link>.
+                </span>
+              </label>
+            </div>
+          )}
+
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-500 hover:from-cyan-600 hover:to-indigo-600 text-slate-950 font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg shadow-cyan-500/20 active:scale-95 transition-all disabled:opacity-60"
+            className="w-full py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-500 hover:from-cyan-600 hover:to-indigo-600 text-slate-950 font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg shadow-cyan-500/20 active:scale-95 transition-all disabled:opacity-60 cursor-pointer"
           >
             {isSubmitting ? (
               <Loader2 className="w-4 h-4 animate-spin" />
@@ -190,7 +221,7 @@ export default function AuthModal() {
               type="button"
               disabled={isSubmitting}
               onClick={() => handleQuickLogin("algo_ninja")}
-              className="flex-1 px-2.5 py-1.5 rounded-lg bg-[#0B1220] hover:bg-slate-800 border border-slate-700/60 text-xs text-slate-300 font-medium transition-colors text-center"
+              className="flex-1 px-2.5 py-1.5 rounded-lg bg-[#0B1220] hover:bg-slate-800 border border-slate-700/60 text-xs text-slate-300 font-medium transition-colors text-center cursor-pointer"
             >
               Ninja Coder
             </button>
@@ -198,7 +229,7 @@ export default function AuthModal() {
               type="button"
               disabled={isSubmitting}
               onClick={() => handleQuickLogin("byte_master")}
-              className="flex-1 px-2.5 py-1.5 rounded-lg bg-[#0B1220] hover:bg-slate-800 border border-slate-700/60 text-xs text-slate-300 font-medium transition-colors text-center"
+              className="flex-1 px-2.5 py-1.5 rounded-lg bg-[#0B1220] hover:bg-slate-800 border border-slate-700/60 text-xs text-slate-300 font-medium transition-colors text-center cursor-pointer"
             >
               Byte Master
             </button>
