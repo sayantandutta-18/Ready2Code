@@ -354,3 +354,22 @@ Updated: November 2026
   - Enforced minimum 16px body font size on mobile to prevent automatic zooming on input focus.
   - Scaled all headings with fluid CSS `clamp()` (`h1`, `h2`, `h3`).
   - Added fixed header clearance (`pt-16` on `<main>`) ensuring page content is never hidden behind the navigation header.
+
+---
+
+## 📚 Problem Bank Expansion: 150 Problems — COMPLETE
+- [x] **Added 50 Curated Algorithmic Problems**:
+  - Integrated 50 new problems across the 10 canonical topics:
+    - Arrays and Hashing (6): `top-k-frequent-elements`, `find-all-duplicates`, `count-pairs-difference-k`, `sort-by-parity`, `find-pivot-index`, `relative-sort-array`
+    - Two Pointers & Sliding Window (6): `trapping-rain-water`, `sort-colors`, `permutation-in-string`, `find-all-anagrams`, `k-distinct-substring`, `subarray-product-less-k`
+    - Strings (6): `count-and-say`, `zigzag-conversion`, `reverse-vowels`, `excel-column-number`, `min-remove-valid-parentheses`, `repeated-dna-sequences`
+    - Stack and Queue (4): `basic-calculator-ii`, `remove-k-digits`, `online-stock-span`, `score-of-parentheses`
+    - Linked List (3): `add-two-numbers`, `intersection-linked-lists`, `odd-even-linked-list`
+    - Trees (4): `balanced-binary-tree`, `sum-root-to-leaf`, `kth-smallest-bst`, `zigzag-level-order`
+    - Graphs (4): `pacific-atlantic`, `surrounded-regions`, `network-delay-time`, `redundant-connection`
+    - Binary Search (3): `find-peak-element`, `capacity-ship-packages`, `median-two-sorted-arrays`
+    - Dynamic Programming (8): `house-robber-ii`, `longest-palindromic-subsequence`, `target-sum`, `stock-with-cooldown`, `longest-valid-parentheses`, `interleaving-string`, `maximal-square`, `burst-balloons`
+    - Heap and Greedy (6): `k-closest-points`, `reorganize-string`, `car-pooling`, `partition-labels`, `min-arrows-burst-balloons`, `hand-of-straights`
+  - Generated full JSON specifications with standard schemas, starter code, 3 progressive hints, sample tests, and at least 10 hidden tests.
+  - Verified 150/150 problems pass `content/scripts/validate_content.py` and `scripts/validate_problems.py` (1,812/1,812 tests passing, 0 failures).
+  - Synchronized `content/index.json`, `web/lib/data/problems.json`, and `web/lib/data/catalogs.ts`.

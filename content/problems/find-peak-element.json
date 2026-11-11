@@ -1,0 +1,240 @@
+{
+  "slug": "find-peak-element",
+  "title": "Find Peak Element",
+  "topic": "Binary Search",
+  "topic_key": "binary_search",
+  "difficulty": "medium",
+  "statement_md": "A peak element is an element that is strictly greater than its neighbors. Given a 0-indexed integer array `nums` where no two adjacent elements are equal, find a peak element and return its index using binary search.\n\n**Function:** `findPeakElement(nums)`\n\n**Input:** one JSON value per parameter, in the order above. **Output:** the returned value as JSON.",
+  "function_name": "findPeakElement",
+  "params": [
+    "nums"
+  ],
+  "examples": [
+    {
+      "input": [
+        [
+          1,
+          2,
+          3,
+          1
+        ]
+      ],
+      "output": 2
+    },
+    {
+      "input": [
+        [
+          1,
+          2,
+          1,
+          3,
+          5,
+          6,
+          4
+        ]
+      ],
+      "output": 5
+    }
+  ],
+  "sample_tests": [
+    {
+      "input": [
+        [
+          1,
+          2,
+          3,
+          1
+        ]
+      ],
+      "output": 2
+    },
+    {
+      "input": [
+        [
+          1,
+          2,
+          1,
+          3,
+          5,
+          6,
+          4
+        ]
+      ],
+      "output": 5
+    }
+  ],
+  "hidden_tests": [
+    {
+      "input": [
+        [
+          23,
+          -15,
+          -4,
+          42,
+          12,
+          0,
+          -6,
+          -27,
+          17,
+          -4,
+          13,
+          -17
+        ]
+      ],
+      "output": 3
+    },
+    {
+      "input": [
+        [
+          48,
+          -7,
+          33,
+          42,
+          -26,
+          26,
+          -27,
+          39,
+          1,
+          32,
+          47,
+          -40,
+          0
+        ]
+      ],
+      "output": 12
+    },
+    {
+      "input": [
+        [
+          13,
+          2,
+          47,
+          -24,
+          25,
+          -12,
+          23,
+          -40,
+          -45,
+          -29
+        ]
+      ],
+      "output": 2
+    },
+    {
+      "input": [
+        [
+          46,
+          0,
+          -5
+        ]
+      ],
+      "output": 0
+    },
+    {
+      "input": [
+        [
+          -14,
+          2,
+          -31,
+          3
+        ]
+      ],
+      "output": 1
+    },
+    {
+      "input": [
+        [
+          25
+        ]
+      ],
+      "output": 0
+    },
+    {
+      "input": [
+        [
+          42,
+          24,
+          44,
+          36
+        ]
+      ],
+      "output": 2
+    },
+    {
+      "input": [
+        [
+          -46,
+          -30,
+          46,
+          -50,
+          -19,
+          20,
+          14,
+          12,
+          24,
+          9,
+          34,
+          -50,
+          19,
+          -11,
+          3
+        ]
+      ],
+      "output": 14
+    },
+    {
+      "input": [
+        [
+          38,
+          48,
+          20,
+          -14,
+          13,
+          -3,
+          45,
+          0,
+          31,
+          50,
+          -10,
+          41,
+          46,
+          -34,
+          -43
+        ]
+      ],
+      "output": 12
+    },
+    {
+      "input": [
+        [
+          -34,
+          23,
+          16,
+          -17,
+          -21,
+          -22,
+          -12,
+          -3,
+          -4,
+          43,
+          35,
+          28,
+          -9
+        ]
+      ],
+      "output": 9
+    }
+  ],
+  "time_limit_ms": 1000,
+  "memory_limit_mb": 128,
+  "scene": "array",
+  "hints": [
+    "Ask whether the answer lies in the left or right half of the range.",
+    "Keep a range [lo, hi] and shrink it each step by looking at the middle value.",
+    "Data structure: two integer indexes lo and hi with mid = (lo + hi) // 2."
+  ],
+  "starter_code": {
+    "python": "def findPeakElement(nums):\n    # Write your solution here\n    pass\n"
+  },
+  "reference_python": "import math, bisect, heapq, os\nfrom collections import Counter, defaultdict, deque\nfrom itertools import groupby\n\nclass TN:\n    def __init__(self, val, left=None, right=None):\n        self.val, self.left, self.right = val, left, right\n\ndef build(a):\n    if not a or a[0] is None:\n        return None\n    root = TN(a[0]); q = deque([root]); i = 1\n    while q and i < len(a):\n        node = q.popleft()\n        if i < len(a) and a[i] is not None:\n            node.left = TN(a[i]); q.append(node.left)\n        i += 1\n        if i < len(a) and a[i] is not None:\n            node.right = TN(a[i]); q.append(node.right)\n        i += 1\n    return root\n\ndef ser(root):\n    out = []; q = deque([root])\n    while q:\n        n = q.popleft()\n        if n is None:\n            out.append(None); continue\n        out.append(n.val); q.append(n.left); q.append(n.right)\n    while out and out[-1] is None:\n        out.pop()\n    return out\n\ndef ins(root, v):\n    if root is None:\n        return TN(v)\n    if v < root.val:\n        root.left = ins(root.left, v)\n    else:\n        root.right = ins(root.right, v)\n    return root\n\ndef adj_from_edges(n, edges):\n    g = [[] for _ in range(n)]\n    for a, b in edges:\n        g[a].append(b); g[b].append(a)\n    return g\n\nROMAN = {\"I\": 1, \"V\": 5, \"X\": 10, \"L\": 50, \"C\": 100, \"D\": 500, \"M\": 1000}\n\ndef findPeakElement(nums):\n    left, right = 0, len(nums) - 1\n    while left < right:\n        mid = (left + right) // 2\n        if nums[mid] > nums[mid + 1]:\n            right = mid\n        else:\n            left = mid + 1\n    return left\n\n"
+}

@@ -1,0 +1,358 @@
+{
+  "slug": "odd-even-linked-list",
+  "title": "Odd Even Linked List",
+  "topic": "Linked List",
+  "topic_key": "linked_list",
+  "difficulty": "medium",
+  "statement_md": "Given an array of integers `values` representing a singly linked list, group all nodes with odd indices together followed by the nodes with even indices (1-indexed: 1st, 3rd, 5th... then 2nd, 4th, 6th...). Return the reordered array.\n\n**Function:** `oddEvenList(values)`\n\n**Input:** one JSON value per parameter, in the order above. **Output:** the returned value as JSON.",
+  "function_name": "oddEvenList",
+  "params": [
+    "values"
+  ],
+  "examples": [
+    {
+      "input": [
+        [
+          1,
+          2,
+          3,
+          4,
+          5
+        ]
+      ],
+      "output": [
+        1,
+        3,
+        5,
+        2,
+        4
+      ]
+    },
+    {
+      "input": [
+        [
+          2,
+          1,
+          3,
+          5,
+          6,
+          4,
+          7
+        ]
+      ],
+      "output": [
+        2,
+        3,
+        6,
+        7,
+        1,
+        5,
+        4
+      ]
+    }
+  ],
+  "sample_tests": [
+    {
+      "input": [
+        [
+          1,
+          2,
+          3,
+          4,
+          5
+        ]
+      ],
+      "output": [
+        1,
+        3,
+        5,
+        2,
+        4
+      ]
+    },
+    {
+      "input": [
+        [
+          2,
+          1,
+          3,
+          5,
+          6,
+          4,
+          7
+        ]
+      ],
+      "output": [
+        2,
+        3,
+        6,
+        7,
+        1,
+        5,
+        4
+      ]
+    }
+  ],
+  "hidden_tests": [
+    {
+      "input": [
+        [
+          39,
+          25,
+          7,
+          18,
+          26,
+          41,
+          5,
+          23,
+          13
+        ]
+      ],
+      "output": [
+        39,
+        7,
+        26,
+        5,
+        13,
+        25,
+        18,
+        41,
+        23
+      ]
+    },
+    {
+      "input": [
+        [
+          45,
+          14,
+          27,
+          39,
+          23,
+          31,
+          16,
+          13,
+          45,
+          17,
+          2,
+          42,
+          19,
+          36
+        ]
+      ],
+      "output": [
+        45,
+        27,
+        23,
+        16,
+        45,
+        2,
+        19,
+        14,
+        39,
+        31,
+        13,
+        17,
+        42,
+        36
+      ]
+    },
+    {
+      "input": [
+        [
+          34,
+          46,
+          5
+        ]
+      ],
+      "output": [
+        34,
+        5,
+        46
+      ]
+    },
+    {
+      "input": [
+        [
+          3,
+          9
+        ]
+      ],
+      "output": [
+        3,
+        9
+      ]
+    },
+    {
+      "input": [
+        [
+          23,
+          48,
+          19,
+          48,
+          50,
+          19,
+          44,
+          14,
+          22,
+          9,
+          9,
+          9,
+          8
+        ]
+      ],
+      "output": [
+        23,
+        19,
+        50,
+        44,
+        22,
+        9,
+        8,
+        48,
+        48,
+        19,
+        14,
+        9,
+        9
+      ]
+    },
+    {
+      "input": [
+        [
+          45,
+          20,
+          42,
+          8,
+          35,
+          46,
+          9,
+          46,
+          13,
+          6,
+          32,
+          11,
+          23
+        ]
+      ],
+      "output": [
+        45,
+        42,
+        35,
+        9,
+        13,
+        32,
+        23,
+        20,
+        8,
+        46,
+        46,
+        6,
+        11
+      ]
+    },
+    {
+      "input": [
+        [
+          19,
+          32,
+          28,
+          42,
+          14
+        ]
+      ],
+      "output": [
+        19,
+        28,
+        14,
+        32,
+        42
+      ]
+    },
+    {
+      "input": [
+        [
+          5,
+          46,
+          5,
+          1,
+          48,
+          11,
+          4,
+          37,
+          11
+        ]
+      ],
+      "output": [
+        5,
+        5,
+        48,
+        4,
+        11,
+        46,
+        1,
+        11,
+        37
+      ]
+    },
+    {
+      "input": [
+        [
+          10,
+          2,
+          17,
+          46,
+          37,
+          43,
+          36,
+          28,
+          31,
+          26,
+          19,
+          24,
+          50,
+          36,
+          11
+        ]
+      ],
+      "output": [
+        10,
+        17,
+        37,
+        36,
+        31,
+        19,
+        50,
+        11,
+        2,
+        46,
+        43,
+        28,
+        26,
+        24,
+        36
+      ]
+    },
+    {
+      "input": [
+        [
+          40
+        ]
+      ],
+      "output": [
+        40
+      ]
+    }
+  ],
+  "time_limit_ms": 1000,
+  "memory_limit_mb": 128,
+  "scene": "linked_list",
+  "hints": [
+    "Work out how the pointers (or positions) of the nodes must change.",
+    "Use two pointers, or first collect the values into a list and reason about indexes.",
+    "Data structure: two pointers (slow and fast), or a list of values to rebuild the order."
+  ],
+  "starter_code": {
+    "python": "def oddEvenList(values):\n    # Write your solution here\n    pass\n"
+  },
+  "reference_python": "import math, bisect, heapq, os\nfrom collections import Counter, defaultdict, deque\nfrom itertools import groupby\n\nclass TN:\n    def __init__(self, val, left=None, right=None):\n        self.val, self.left, self.right = val, left, right\n\ndef build(a):\n    if not a or a[0] is None:\n        return None\n    root = TN(a[0]); q = deque([root]); i = 1\n    while q and i < len(a):\n        node = q.popleft()\n        if i < len(a) and a[i] is not None:\n            node.left = TN(a[i]); q.append(node.left)\n        i += 1\n        if i < len(a) and a[i] is not None:\n            node.right = TN(a[i]); q.append(node.right)\n        i += 1\n    return root\n\ndef ser(root):\n    out = []; q = deque([root])\n    while q:\n        n = q.popleft()\n        if n is None:\n            out.append(None); continue\n        out.append(n.val); q.append(n.left); q.append(n.right)\n    while out and out[-1] is None:\n        out.pop()\n    return out\n\ndef ins(root, v):\n    if root is None:\n        return TN(v)\n    if v < root.val:\n        root.left = ins(root.left, v)\n    else:\n        root.right = ins(root.right, v)\n    return root\n\ndef adj_from_edges(n, edges):\n    g = [[] for _ in range(n)]\n    for a, b in edges:\n        g[a].append(b); g[b].append(a)\n    return g\n\nROMAN = {\"I\": 1, \"V\": 5, \"X\": 10, \"L\": 50, \"C\": 100, \"D\": 500, \"M\": 1000}\n\ndef oddEvenList(values):\n    if len(values) <= 2:\n        return list(values)\n    odds = values[0::2]\n    evens = values[1::2]\n    return odds + evens\n\n"
+}

@@ -1,0 +1,466 @@
+{
+  "slug": "maximal-square",
+  "title": "Maximal Square",
+  "topic": "Dynamic Programming",
+  "topic_key": "dp",
+  "difficulty": "medium",
+  "statement_md": "Given an `m x n` binary matrix filled with `'0'`s and `'1'`s, find the largest square containing only `'1'`s and return its area.\n\n**Function:** `maximalSquare(matrix)`\n\n**Input:** one JSON value per parameter, in the order above. **Output:** the returned value as JSON.",
+  "function_name": "maximalSquare",
+  "params": [
+    "matrix"
+  ],
+  "examples": [
+    {
+      "input": [
+        [
+          [
+            "1",
+            "0",
+            "1",
+            "0",
+            "0"
+          ],
+          [
+            "1",
+            "0",
+            "1",
+            "1",
+            "1"
+          ],
+          [
+            "1",
+            "1",
+            "1",
+            "1",
+            "1"
+          ],
+          [
+            "1",
+            "0",
+            "0",
+            "1",
+            "0"
+          ]
+        ]
+      ],
+      "output": 4
+    },
+    {
+      "input": [
+        [
+          [
+            "0",
+            "1"
+          ],
+          [
+            "1",
+            "0"
+          ]
+        ]
+      ],
+      "output": 1
+    },
+    {
+      "input": [
+        [
+          [
+            "0"
+          ]
+        ]
+      ],
+      "output": 0
+    }
+  ],
+  "sample_tests": [
+    {
+      "input": [
+        [
+          [
+            "1",
+            "0",
+            "1",
+            "0",
+            "0"
+          ],
+          [
+            "1",
+            "0",
+            "1",
+            "1",
+            "1"
+          ],
+          [
+            "1",
+            "1",
+            "1",
+            "1",
+            "1"
+          ],
+          [
+            "1",
+            "0",
+            "0",
+            "1",
+            "0"
+          ]
+        ]
+      ],
+      "output": 4
+    },
+    {
+      "input": [
+        [
+          [
+            "0",
+            "1"
+          ],
+          [
+            "1",
+            "0"
+          ]
+        ]
+      ],
+      "output": 1
+    },
+    {
+      "input": [
+        [
+          [
+            "0"
+          ]
+        ]
+      ],
+      "output": 0
+    }
+  ],
+  "hidden_tests": [
+    {
+      "input": [
+        [
+          [
+            "0",
+            "1",
+            "1"
+          ],
+          [
+            "0",
+            "1",
+            "0"
+          ],
+          [
+            "0",
+            "0",
+            "1"
+          ],
+          [
+            "0",
+            "0",
+            "0"
+          ],
+          [
+            "0",
+            "1",
+            "1"
+          ]
+        ]
+      ],
+      "output": 1
+    },
+    {
+      "input": [
+        [
+          [
+            "1",
+            "1",
+            "0",
+            "1",
+            "0",
+            "1"
+          ],
+          [
+            "0",
+            "1",
+            "0",
+            "0",
+            "0",
+            "0"
+          ]
+        ]
+      ],
+      "output": 1
+    },
+    {
+      "input": [
+        [
+          [
+            "1",
+            "0",
+            "0",
+            "1"
+          ],
+          [
+            "1",
+            "0",
+            "1",
+            "0"
+          ],
+          [
+            "0",
+            "0",
+            "1",
+            "1"
+          ],
+          [
+            "1",
+            "0",
+            "1",
+            "0"
+          ]
+        ]
+      ],
+      "output": 1
+    },
+    {
+      "input": [
+        [
+          [
+            "1",
+            "1",
+            "1",
+            "1",
+            "1",
+            "0"
+          ],
+          [
+            "0",
+            "0",
+            "0",
+            "0",
+            "1",
+            "1"
+          ],
+          [
+            "0",
+            "1",
+            "0",
+            "1",
+            "1",
+            "1"
+          ],
+          [
+            "0",
+            "0",
+            "1",
+            "1",
+            "0",
+            "1"
+          ],
+          [
+            "1",
+            "1",
+            "0",
+            "0",
+            "0",
+            "0"
+          ]
+        ]
+      ],
+      "output": 4
+    },
+    {
+      "input": [
+        [
+          [
+            "1",
+            "0"
+          ],
+          [
+            "0",
+            "0"
+          ]
+        ]
+      ],
+      "output": 1
+    },
+    {
+      "input": [
+        [
+          [
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          [
+            "0",
+            "1",
+            "0",
+            "0"
+          ],
+          [
+            "1",
+            "1",
+            "1",
+            "0"
+          ],
+          [
+            "0",
+            "0",
+            "1",
+            "0"
+          ],
+          [
+            "0",
+            "1",
+            "1",
+            "1"
+          ]
+        ]
+      ],
+      "output": 1
+    },
+    {
+      "input": [
+        [
+          [
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          [
+            "1",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          [
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          [
+            "0",
+            "0",
+            "1",
+            "1",
+            "0"
+          ],
+          [
+            "1",
+            "1",
+            "1",
+            "1",
+            "0"
+          ]
+        ]
+      ],
+      "output": 4
+    },
+    {
+      "input": [
+        [
+          [
+            "0",
+            "1",
+            "1",
+            "1",
+            "0",
+            "0"
+          ],
+          [
+            "0",
+            "0",
+            "1",
+            "1",
+            "1",
+            "0"
+          ],
+          [
+            "0",
+            "0",
+            "0",
+            "0",
+            "1",
+            "1"
+          ]
+        ]
+      ],
+      "output": 4
+    },
+    {
+      "input": [
+        [
+          [
+            "0",
+            "0"
+          ],
+          [
+            "1",
+            "0"
+          ],
+          [
+            "0",
+            "0"
+          ]
+        ]
+      ],
+      "output": 1
+    },
+    {
+      "input": [
+        [
+          [
+            "1",
+            "0",
+            "1",
+            "1",
+            "1",
+            "0"
+          ],
+          [
+            "1",
+            "0",
+            "0",
+            "1",
+            "1",
+            "0"
+          ],
+          [
+            "1",
+            "1",
+            "0",
+            "1",
+            "1",
+            "0"
+          ],
+          [
+            "1",
+            "0",
+            "0",
+            "1",
+            "1",
+            "0"
+          ]
+        ]
+      ],
+      "output": 4
+    }
+  ],
+  "time_limit_ms": 1000,
+  "memory_limit_mb": 128,
+  "scene": "dp_table",
+  "hints": [
+    "Break the problem into smaller versions of itself. What does the answer for size n depend on?",
+    "Write the recurrence first, then decide whether you need the whole table or just the last few values.",
+    "Data structure: a 1D or 2D array of subproblem answers, filled in order."
+  ],
+  "starter_code": {
+    "python": "def maximalSquare(matrix):\n    # Write your solution here\n    pass\n"
+  },
+  "reference_python": "import math, bisect, heapq, os\nfrom collections import Counter, defaultdict, deque\nfrom itertools import groupby\n\nclass TN:\n    def __init__(self, val, left=None, right=None):\n        self.val, self.left, self.right = val, left, right\n\ndef build(a):\n    if not a or a[0] is None:\n        return None\n    root = TN(a[0]); q = deque([root]); i = 1\n    while q and i < len(a):\n        node = q.popleft()\n        if i < len(a) and a[i] is not None:\n            node.left = TN(a[i]); q.append(node.left)\n        i += 1\n        if i < len(a) and a[i] is not None:\n            node.right = TN(a[i]); q.append(node.right)\n        i += 1\n    return root\n\ndef ser(root):\n    out = []; q = deque([root])\n    while q:\n        n = q.popleft()\n        if n is None:\n            out.append(None); continue\n        out.append(n.val); q.append(n.left); q.append(n.right)\n    while out and out[-1] is None:\n        out.pop()\n    return out\n\ndef ins(root, v):\n    if root is None:\n        return TN(v)\n    if v < root.val:\n        root.left = ins(root.left, v)\n    else:\n        root.right = ins(root.right, v)\n    return root\n\ndef adj_from_edges(n, edges):\n    g = [[] for _ in range(n)]\n    for a, b in edges:\n        g[a].append(b); g[b].append(a)\n    return g\n\nROMAN = {\"I\": 1, \"V\": 5, \"X\": 10, \"L\": 50, \"C\": 100, \"D\": 500, \"M\": 1000}\n\ndef maximalSquare(matrix):\n    if not matrix or not matrix[0]:\n        return 0\n    m, n = len(matrix), len(matrix[0])\n    dp = [[0] * (n + 1) for _ in range(m + 1)]\n    max_side = 0\n    for i in range(1, m + 1):\n        for j in range(1, n + 1):\n            if matrix[i - 1][j - 1] == \"1\" or matrix[i - 1][j - 1] == 1:\n                dp[i][j] = min(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1]) + 1\n                max_side = max(max_side, dp[i][j])\n    return max_side * max_side\n\n"
+}

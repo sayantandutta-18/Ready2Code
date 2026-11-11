@@ -1,0 +1,356 @@
+{
+  "slug": "sort-by-parity",
+  "title": "Sort Array by Parity",
+  "topic": "Arrays and Hashing",
+  "topic_key": "arrays",
+  "difficulty": "easy",
+  "statement_md": "Given an integer array `nums`, return an array with all even integers first (sorted ascending), followed by all odd integers (sorted ascending).\n\n**Function:** `sortArrayByParity(nums)`\n\n**Input:** one JSON value per parameter, in the order above. **Output:** the returned value as JSON.",
+  "function_name": "sortArrayByParity",
+  "params": [
+    "nums"
+  ],
+  "examples": [
+    {
+      "input": [
+        [
+          3,
+          1,
+          2,
+          4
+        ]
+      ],
+      "output": [
+        2,
+        4,
+        1,
+        3
+      ]
+    },
+    {
+      "input": [
+        [
+          0
+        ]
+      ],
+      "output": [
+        0
+      ]
+    }
+  ],
+  "sample_tests": [
+    {
+      "input": [
+        [
+          3,
+          1,
+          2,
+          4
+        ]
+      ],
+      "output": [
+        2,
+        4,
+        1,
+        3
+      ]
+    },
+    {
+      "input": [
+        [
+          0
+        ]
+      ],
+      "output": [
+        0
+      ]
+    }
+  ],
+  "hidden_tests": [
+    {
+      "input": [
+        [
+          36,
+          9,
+          42,
+          13,
+          11
+        ]
+      ],
+      "output": [
+        36,
+        42,
+        9,
+        11,
+        13
+      ]
+    },
+    {
+      "input": [
+        [
+          45,
+          42,
+          31,
+          24,
+          49,
+          13,
+          5,
+          9,
+          35,
+          11,
+          25,
+          22
+        ]
+      ],
+      "output": [
+        22,
+        24,
+        42,
+        5,
+        9,
+        11,
+        13,
+        25,
+        31,
+        35,
+        45,
+        49
+      ]
+    },
+    {
+      "input": [
+        [
+          23,
+          32,
+          9,
+          34,
+          32,
+          20,
+          30,
+          31,
+          25,
+          46,
+          2,
+          1,
+          4,
+          14,
+          17,
+          6
+        ]
+      ],
+      "output": [
+        2,
+        4,
+        6,
+        14,
+        20,
+        30,
+        32,
+        32,
+        34,
+        46,
+        1,
+        9,
+        17,
+        23,
+        25,
+        31
+      ]
+    },
+    {
+      "input": [
+        [
+          39,
+          43,
+          12,
+          10,
+          23,
+          7,
+          43,
+          27,
+          25,
+          4,
+          47,
+          17,
+          46
+        ]
+      ],
+      "output": [
+        4,
+        10,
+        12,
+        46,
+        7,
+        17,
+        23,
+        25,
+        27,
+        39,
+        43,
+        43,
+        47
+      ]
+    },
+    {
+      "input": [
+        [
+          2,
+          49,
+          23,
+          50,
+          49,
+          10,
+          9,
+          2
+        ]
+      ],
+      "output": [
+        2,
+        2,
+        10,
+        50,
+        9,
+        23,
+        49,
+        49
+      ]
+    },
+    {
+      "input": [
+        [
+          14,
+          19,
+          45,
+          43,
+          11,
+          44,
+          31
+        ]
+      ],
+      "output": [
+        14,
+        44,
+        11,
+        19,
+        31,
+        43,
+        45
+      ]
+    },
+    {
+      "input": [
+        [
+          3,
+          7,
+          21,
+          46,
+          14,
+          9,
+          15,
+          18,
+          13,
+          29,
+          4,
+          32,
+          43,
+          32,
+          7,
+          16,
+          22,
+          8
+        ]
+      ],
+      "output": [
+        4,
+        8,
+        14,
+        16,
+        18,
+        22,
+        32,
+        32,
+        46,
+        3,
+        7,
+        7,
+        9,
+        13,
+        15,
+        21,
+        29,
+        43
+      ]
+    },
+    {
+      "input": [
+        [
+          21,
+          32,
+          10,
+          29,
+          20,
+          31,
+          35
+        ]
+      ],
+      "output": [
+        10,
+        20,
+        32,
+        21,
+        29,
+        31,
+        35
+      ]
+    },
+    {
+      "input": [
+        [
+          50,
+          6,
+          29,
+          6,
+          39,
+          45
+        ]
+      ],
+      "output": [
+        6,
+        6,
+        50,
+        29,
+        39,
+        45
+      ]
+    },
+    {
+      "input": [
+        [
+          0,
+          49,
+          8,
+          2,
+          41
+        ]
+      ],
+      "output": [
+        0,
+        2,
+        8,
+        41,
+        49
+      ]
+    }
+  ],
+  "time_limit_ms": 1000,
+  "memory_limit_mb": 128,
+  "scene": "array",
+  "hints": [
+    "Scan the array once and ask what information you need about the values you have already seen.",
+    "A hash map or a running value can replace a nested loop.",
+    "Data structure: a hash map (dict). Store what you have seen; check each new value against it in O(1)."
+  ],
+  "starter_code": {
+    "python": "def sortArrayByParity(nums):\n    # Write your solution here\n    pass\n"
+  },
+  "reference_python": "import math, bisect, heapq, os\nfrom collections import Counter, defaultdict, deque\nfrom itertools import groupby\n\nclass TN:\n    def __init__(self, val, left=None, right=None):\n        self.val, self.left, self.right = val, left, right\n\ndef build(a):\n    if not a or a[0] is None:\n        return None\n    root = TN(a[0]); q = deque([root]); i = 1\n    while q and i < len(a):\n        node = q.popleft()\n        if i < len(a) and a[i] is not None:\n            node.left = TN(a[i]); q.append(node.left)\n        i += 1\n        if i < len(a) and a[i] is not None:\n            node.right = TN(a[i]); q.append(node.right)\n        i += 1\n    return root\n\ndef ser(root):\n    out = []; q = deque([root])\n    while q:\n        n = q.popleft()\n        if n is None:\n            out.append(None); continue\n        out.append(n.val); q.append(n.left); q.append(n.right)\n    while out and out[-1] is None:\n        out.pop()\n    return out\n\ndef ins(root, v):\n    if root is None:\n        return TN(v)\n    if v < root.val:\n        root.left = ins(root.left, v)\n    else:\n        root.right = ins(root.right, v)\n    return root\n\ndef adj_from_edges(n, edges):\n    g = [[] for _ in range(n)]\n    for a, b in edges:\n        g[a].append(b); g[b].append(a)\n    return g\n\nROMAN = {\"I\": 1, \"V\": 5, \"X\": 10, \"L\": 50, \"C\": 100, \"D\": 500, \"M\": 1000}\n\ndef sortArrayByParity(nums):\n    evens = sorted([x for x in nums if x % 2 == 0])\n    odds = sorted([x for x in nums if x % 2 != 0])\n    return evens + odds\n\n"
+}

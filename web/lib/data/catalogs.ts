@@ -25,16 +25,16 @@ export interface ProblemItem {
 export const PROBLEMS: ProblemItem[] = problemsData as ProblemItem[];
 
 export const TOPICS = [
-  { id: "topic_arrays", slug: "arrays", name: "Arrays and Hashing", order_index: 1, problem_count: 14 },
-  { id: "topic_two_pointers", slug: "two_pointers", name: "Two Pointers and Sliding Window", order_index: 2, problem_count: 12 },
-  { id: "topic_strings", slug: "strings", name: "Strings", order_index: 3, problem_count: 10 },
-  { id: "topic_stack", slug: "stack", name: "Stack and Queue", order_index: 4, problem_count: 11 },
-  { id: "topic_linked_list", slug: "linked_list", name: "Linked List", order_index: 5, problem_count: 9 },
-  { id: "topic_trees", slug: "trees", name: "Trees", order_index: 6, problem_count: 12 },
-  { id: "topic_graphs", slug: "graphs", name: "Graphs", order_index: 7, problem_count: 10 },
-  { id: "topic_binary_search", slug: "binary_search", name: "Binary Search", order_index: 8, problem_count: 8 },
-  { id: "topic_dp", slug: "dp", name: "Dynamic Programming", order_index: 9, problem_count: 8 },
-  { id: "topic_heap_greedy", slug: "heap_greedy", name: "Heap, Intervals and Greedy", order_index: 10, problem_count: 6 },
+  { id: "topic_arrays", slug: "arrays", name: "Arrays and Hashing", order_index: 1, problem_count: 22 },
+  { id: "topic_two_pointers", slug: "two_pointers", name: "Two Pointers and Sliding Window", order_index: 2, problem_count: 16 },
+  { id: "topic_strings", slug: "strings", name: "Strings", order_index: 3, problem_count: 18 },
+  { id: "topic_stack", slug: "stack", name: "Stack and Queue", order_index: 4, problem_count: 12 },
+  { id: "topic_linked_list", slug: "linked_list", name: "Linked List", order_index: 5, problem_count: 10 },
+  { id: "topic_trees", slug: "trees", name: "Trees", order_index: 6, problem_count: 13 },
+  { id: "topic_graphs", slug: "graphs", name: "Graphs", order_index: 7, problem_count: 12 },
+  { id: "topic_binary_search", slug: "binary_search", name: "Binary Search", order_index: 8, problem_count: 10 },
+  { id: "topic_dp", slug: "dp", name: "Dynamic Programming", order_index: 9, problem_count: 20 },
+  { id: "topic_heap_greedy", slug: "heap_greedy", name: "Heap, Intervals and Greedy", order_index: 10, problem_count: 17 },
 ];
 
 export const PATTERNS = [

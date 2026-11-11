@@ -1,0 +1,202 @@
+{
+  "slug": "sum-root-to-leaf",
+  "title": "Sum Root to Leaf Numbers",
+  "topic": "Trees",
+  "topic_key": "trees",
+  "difficulty": "medium",
+  "statement_md": "You are given the root of a binary tree containing digits from 0 to 9 only (as a level-order array). Each root-to-leaf path represents a number. Return the total sum of all root-to-leaf numbers.\n\n**Function:** `sumNumbers(root)`\n\n**Input:** one JSON value per parameter, in the order above. **Output:** the returned value as JSON.",
+  "function_name": "sumNumbers",
+  "params": [
+    "root"
+  ],
+  "examples": [
+    {
+      "input": [
+        [
+          1,
+          2,
+          3
+        ]
+      ],
+      "output": 25
+    },
+    {
+      "input": [
+        [
+          4,
+          9,
+          0,
+          5,
+          1
+        ]
+      ],
+      "output": 1026
+    }
+  ],
+  "sample_tests": [
+    {
+      "input": [
+        [
+          1,
+          2,
+          3
+        ]
+      ],
+      "output": 25
+    },
+    {
+      "input": [
+        [
+          4,
+          9,
+          0,
+          5,
+          1
+        ]
+      ],
+      "output": 1026
+    }
+  ],
+  "hidden_tests": [
+    {
+      "input": [
+        [
+          2,
+          7,
+          4,
+          6,
+          7,
+          0,
+          4,
+          6,
+          2
+        ]
+      ],
+      "output": 6289
+    },
+    {
+      "input": [
+        [
+          7,
+          8,
+          4,
+          9,
+          6,
+          8,
+          1
+        ]
+      ],
+      "output": 3064
+    },
+    {
+      "input": [
+        [
+          5,
+          3,
+          1,
+          7,
+          9,
+          5,
+          1,
+          4,
+          3
+        ]
+      ],
+      "output": 12312
+    },
+    {
+      "input": [
+        [
+          9,
+          0,
+          1
+        ]
+      ],
+      "output": 181
+    },
+    {
+      "input": [
+        [
+          6,
+          5
+        ]
+      ],
+      "output": 65
+    },
+    {
+      "input": [
+        [
+          3,
+          8,
+          9,
+          0,
+          4,
+          9,
+          4,
+          4,
+          8
+        ]
+      ],
+      "output": 8789
+    },
+    {
+      "input": [
+        [
+          9,
+          2
+        ]
+      ],
+      "output": 92
+    },
+    {
+      "input": [
+        [
+          8,
+          6,
+          3,
+          2,
+          7,
+          7,
+          3,
+          9
+        ]
+      ],
+      "output": 11166
+    },
+    {
+      "input": [
+        [
+          5,
+          3,
+          4,
+          7
+        ]
+      ],
+      "output": 591
+    },
+    {
+      "input": [
+        [
+          4,
+          5,
+          6,
+          5,
+          0
+        ]
+      ],
+      "output": 951
+    }
+  ],
+  "time_limit_ms": 1000,
+  "memory_limit_mb": 128,
+  "scene": "tree",
+  "hints": [
+    "Think recursively: what does each subtree return to its parent?",
+    "Visit nodes in a fixed order (depth-first) or level by level (breadth-first).",
+    "Data structure: recursion (call stack) for depth-first, or a queue for level-order."
+  ],
+  "starter_code": {
+    "python": "def sumNumbers(root):\n    # Write your solution here\n    pass\n"
+  },
+  "reference_python": "import math, bisect, heapq, os\nfrom collections import Counter, defaultdict, deque\nfrom itertools import groupby\n\nclass TN:\n    def __init__(self, val, left=None, right=None):\n        self.val, self.left, self.right = val, left, right\n\ndef build(a):\n    if not a or a[0] is None:\n        return None\n    root = TN(a[0]); q = deque([root]); i = 1\n    while q and i < len(a):\n        node = q.popleft()\n        if i < len(a) and a[i] is not None:\n            node.left = TN(a[i]); q.append(node.left)\n        i += 1\n        if i < len(a) and a[i] is not None:\n            node.right = TN(a[i]); q.append(node.right)\n        i += 1\n    return root\n\ndef ser(root):\n    out = []; q = deque([root])\n    while q:\n        n = q.popleft()\n        if n is None:\n            out.append(None); continue\n        out.append(n.val); q.append(n.left); q.append(n.right)\n    while out and out[-1] is None:\n        out.pop()\n    return out\n\ndef ins(root, v):\n    if root is None:\n        return TN(v)\n    if v < root.val:\n        root.left = ins(root.left, v)\n    else:\n        root.right = ins(root.right, v)\n    return root\n\ndef adj_from_edges(n, edges):\n    g = [[] for _ in range(n)]\n    for a, b in edges:\n        g[a].append(b); g[b].append(a)\n    return g\n\nROMAN = {\"I\": 1, \"V\": 5, \"X\": 10, \"L\": 50, \"C\": 100, \"D\": 500, \"M\": 1000}\n\ndef sumNumbers(root):\n    tree = build(root)\n    def dfs(node, cur_val):\n        if not node:\n            return 0\n        cur_val = cur_val * 10 + node.val\n        if not node.left and not node.right:\n            return cur_val\n        return dfs(node.left, cur_val) + dfs(node.right, cur_val)\n    return dfs(tree, 0)\n\n"
+}

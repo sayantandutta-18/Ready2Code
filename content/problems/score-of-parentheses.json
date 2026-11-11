@@ -1,0 +1,126 @@
+{
+  "slug": "score-of-parentheses",
+  "title": "Score of Parentheses",
+  "topic": "Stack and Queue",
+  "topic_key": "stack",
+  "difficulty": "medium",
+  "statement_md": "Given a balanced parentheses string `s`, return the score of the string. `()` has score 1, `AB` has score `A + B`, and `(A)` has score `2 * A`.\n\n**Function:** `scoreOfParentheses(s)`\n\n**Input:** one JSON value per parameter, in the order above. **Output:** the returned value as JSON.",
+  "function_name": "scoreOfParentheses",
+  "params": [
+    "s"
+  ],
+  "examples": [
+    {
+      "input": [
+        "()"
+      ],
+      "output": 1
+    },
+    {
+      "input": [
+        "(())"
+      ],
+      "output": 2
+    },
+    {
+      "input": [
+        "()()"
+      ],
+      "output": 2
+    }
+  ],
+  "sample_tests": [
+    {
+      "input": [
+        "()"
+      ],
+      "output": 1
+    },
+    {
+      "input": [
+        "(())"
+      ],
+      "output": 2
+    },
+    {
+      "input": [
+        "()()"
+      ],
+      "output": 2
+    }
+  ],
+  "hidden_tests": [
+    {
+      "input": [
+        "()()"
+      ],
+      "output": 2
+    },
+    {
+      "input": [
+        "()"
+      ],
+      "output": 1
+    },
+    {
+      "input": [
+        "(())"
+      ],
+      "output": 2
+    },
+    {
+      "input": [
+        "(()())"
+      ],
+      "output": 4
+    },
+    {
+      "input": [
+        "(())()()()()"
+      ],
+      "output": 6
+    },
+    {
+      "input": [
+        "()()()(())"
+      ],
+      "output": 5
+    },
+    {
+      "input": [
+        "()()()((()))"
+      ],
+      "output": 7
+    },
+    {
+      "input": [
+        "()()()()()"
+      ],
+      "output": 5
+    },
+    {
+      "input": [
+        "(()()(()))"
+      ],
+      "output": 8
+    },
+    {
+      "input": [
+        "(()())(()())"
+      ],
+      "output": 8
+    }
+  ],
+  "time_limit_ms": 1000,
+  "memory_limit_mb": 128,
+  "scene": "stack",
+  "hints": [
+    "Think about which element has to wait until a later element is seen.",
+    "Keep candidates in order. Pop when a new element resolves the ones on top.",
+    "Data structure: a stack (Python list used with append and pop)."
+  ],
+  "starter_code": {
+    "python": "def scoreOfParentheses(s):\n    # Write your solution here\n    pass\n"
+  },
+  "reference_python": "import math, bisect, heapq, os\nfrom collections import Counter, defaultdict, deque\nfrom itertools import groupby\n\nclass TN:\n    def __init__(self, val, left=None, right=None):\n        self.val, self.left, self.right = val, left, right\n\ndef build(a):\n    if not a or a[0] is None:\n        return None\n    root = TN(a[0]); q = deque([root]); i = 1\n    while q and i < len(a):\n        node = q.popleft()\n        if i < len(a) and a[i] is not None:\n            node.left = TN(a[i]); q.append(node.left)\n        i += 1\n        if i < len(a) and a[i] is not None:\n            node.right = TN(a[i]); q.append(node.right)\n        i += 1\n    return root\n\ndef ser(root):\n    out = []; q = deque([root])\n    while q:\n        n = q.popleft()\n        if n is None:\n            out.append(None); continue\n        out.append(n.val); q.append(n.left); q.append(n.right)\n    while out and out[-1] is None:\n        out.pop()\n    return out\n\ndef ins(root, v):\n    if root is None:\n        return TN(v)\n    if v < root.val:\n        root.left = ins(root.left, v)\n    else:\n        root.right = ins(root.right, v)\n    return root\n\ndef adj_from_edges(n, edges):\n    g = [[] for _ in range(n)]\n    for a, b in edges:\n        g[a].append(b); g[b].append(a)\n    return g\n\nROMAN = {\"I\": 1, \"V\": 5, \"X\": 10, \"L\": 50, \"C\": 100, \"D\": 500, \"M\": 1000}\n\ndef scoreOfParentheses(s):\n    stack = [0]\n    for ch in s:\n        if ch == '(':\n            stack.append(0)\n        else:\n            v = stack.pop()\n            stack[-1] += max(2 * v, 1)\n    return stack[0]\n\n"
+}
